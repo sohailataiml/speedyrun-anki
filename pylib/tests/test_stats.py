@@ -97,6 +97,21 @@ def test_performance_query():
     assert resp.insufficient.total_graded_reviews == 0
 
 
+def test_readiness_query():
+    col = getEmptyCol()
+    note = col.newNote()
+    note["Front"] = "foo"
+    col.addNote(note)
+    note.add_tag("topic::krebs_cycle")
+    note.flush()
+
+    # Same give-up gate cascade as performance_query: no reviews yet, so
+    # the Readiness mapper must never invent a score.
+    resp = col.readiness_query(["krebs_cycle"], average_difficulty=0.5, average_timing_seconds=70.0)
+    assert resp.WhichOneof("result") == "insufficient"
+    assert resp.insufficient.total_graded_reviews == 0
+
+
 def test_graphs_empty():
     col = getEmptyCol()
     assert col.stats().report()

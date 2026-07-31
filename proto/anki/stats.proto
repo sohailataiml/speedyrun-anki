@@ -19,6 +19,7 @@ service StatsService {
   rpc MasteryQuery(MasteryQueryRequest) returns (MasteryQueryResponse);
   rpc GiveUpGate(GiveUpGateRequest) returns (GiveUpGateResponse);
   rpc PerformanceQuery(PerformanceQueryRequest) returns (PerformanceQueryResponse);
+  rpc ReadinessQuery(ReadinessQueryRequest) returns (ReadinessQueryResponse);
 }
 
 // Implicitly includes any of the above methods that are not listed in the
@@ -150,6 +151,38 @@ message PerformanceData {
   // correctly.
   float predicted_accuracy = 1;
   GiveUpGateData inputs = 2;
+}
+
+// Speedrun addition: maps the Performance prediction onto the exam's real
+// scale (PRD §5/§6/§10.3), with a range and a confidence label, never a
+// single number. Runs PerformanceQuery first; see
+// rslib/src/stats/readiness_mapper.rs for the method and its stated
+// limitations.
+message ReadinessQueryRequest {
+  repeated string topics = 1;
+  float average_difficulty = 2;
+  float average_timing_seconds = 3;
+}
+
+message ReadinessQueryResponse {
+  oneof result {
+    ReadinessData data = 1;
+    InsufficientData insufficient = 2;
+  }
+}
+
+message ReadinessData {
+  // MCAT scale, 472-528.
+  uint32 projected_score = 1;
+  uint32 range_low = 2;
+  uint32 range_high = 3;
+  enum Confidence {
+    LOW = 0;
+    MEDIUM = 1;
+    HIGH = 2;
+  }
+  Confidence confidence = 4;
+  PerformanceData inputs = 5;
 }
 
 message GraphsRequest {

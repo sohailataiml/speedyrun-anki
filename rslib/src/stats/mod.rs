@@ -6,6 +6,7 @@ mod give_up_gate;
 mod graphs;
 mod mastery;
 mod performance_model;
+mod readiness_mapper;
 mod service;
 mod today;
 

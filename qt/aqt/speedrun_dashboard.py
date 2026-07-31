@@ -4,9 +4,8 @@
 """Speedrun addition: the three-score dashboard (PRD §5).
 
 Shows Memory (always available, straight from FSRS via mastery_query),
-Performance (gated by give_up_gate; refuses rather than guesses), and
-Readiness (not yet implemented - the Readiness mapper doesn't exist, so
-this is stated plainly rather than faked). See ARCHITECTURE.md §6 for the
+Performance and Readiness (both gated by give_up_gate; refuse rather than
+guess when there isn't enough data). See ARCHITECTURE.md §6 for the
 Scoring Service this reads from.
 """
 
@@ -35,21 +34,23 @@ ASSUMED_TIMING_SECONDS = 70.0
 class DashboardData:
     topics: list[str]
     mastery: list[stats_pb2.TopicMastery]
-    performance: stats_pb2.PerformanceQueryResponse | None
+    readiness: stats_pb2.ReadinessQueryResponse | None
 
 
 def _fetch_dashboard_data(col: Collection) -> DashboardData:
     tags = [t[len("topic::") :] for t in col.tags.all() if t.startswith("topic::")]
     topics = sorted(set(tags))
     if not topics:
-        return DashboardData(topics=[], mastery=[], performance=None)
+        return DashboardData(topics=[], mastery=[], readiness=None)
     mastery = list(col.mastery_query(topics))
-    performance = col.performance_query(
+    # readiness_query runs the give-up gate and Performance model
+    # internally, so one call gets us all three scores' worth of data.
+    readiness = col.readiness_query(
         topics,
         average_difficulty=ASSUMED_DIFFICULTY,
         average_timing_seconds=ASSUMED_TIMING_SECONDS,
     )
-    return DashboardData(topics=topics, mastery=mastery, performance=performance)
+    return DashboardData(topics=topics, mastery=mastery, readiness=readiness)
 
 
 def _headline_label(text: str) -> QLabel:
@@ -116,8 +117,8 @@ class SpeedrunDashboard(QDialog):
             return
 
         self._layout.addWidget(self._memory_group(data.mastery))
-        self._layout.addWidget(self._performance_group(data.performance))
-        self._layout.addWidget(self._readiness_group())
+        self._layout.addWidget(self._performance_group(data.readiness))
+        self._layout.addWidget(self._readiness_group(data.readiness))
         self._add_close_row()
 
     def _memory_group(self, mastery: list[stats_pb2.TopicMastery]) -> QGroupBox:
@@ -165,37 +166,37 @@ class SpeedrunDashboard(QDialog):
         return box
 
     def _performance_group(
-        self, performance: stats_pb2.PerformanceQueryResponse | None
+        self, readiness: stats_pb2.ReadinessQueryResponse | None
     ) -> QGroupBox:
         box = QGroupBox("Performance (DOK 2/3 — held-back exam-style questions)")
         layout = QVBoxLayout()
 
-        which = performance.WhichOneof("result") if performance else None
+        which = readiness.WhichOneof("result") if readiness else None
         if which == "data":
-            data = performance.data
+            performance = readiness.data.inputs
             layout.addWidget(
-                _headline_label(f"Performance: {data.predicted_accuracy:.0%}")
+                _headline_label(f"Performance: {performance.predicted_accuracy:.0%}")
             )
             layout.addWidget(
                 _wrapped_label(
-                    "Point estimate only — no range yet (needs the Readiness "
-                    "mapper below). Assumes an average-difficulty, "
+                    "Point estimate feeding the Readiness score below. Assumes "
+                    "an average-difficulty, "
                     f"~{ASSUMED_TIMING_SECONDS:.0f}s question; not yet measured "
                     "from a real exam-style question attempt."
                 )
             )
-            reasons = self._top_weak_topics(data.inputs.topics)
+            reasons = self._top_weak_topics(performance.inputs.topics)
             if reasons:
                 layout.addWidget(QLabel(f"Weakest topics: {reasons}"))
             layout.addWidget(
                 self._give_up_status_label(
-                    data.inputs.total_graded_reviews,
-                    data.inputs.topic_coverage,
+                    performance.inputs.total_graded_reviews,
+                    performance.inputs.topic_coverage,
                     passed=True,
                 )
             )
         elif which == "insufficient":
-            insufficient = performance.insufficient
+            insufficient = readiness.insufficient
             layout.addWidget(
                 _headline_label("Performance: refusing to score — not enough data")
             )
@@ -214,17 +215,44 @@ class SpeedrunDashboard(QDialog):
         box.setLayout(layout)
         return box
 
-    def _readiness_group(self) -> QGroupBox:
+    def _readiness_group(
+        self, readiness: stats_pb2.ReadinessQueryResponse | None
+    ) -> QGroupBox:
         box = QGroupBox("Readiness (DOK 4 — projected exam score)")
         layout = QVBoxLayout()
-        layout.addWidget(
-            _wrapped_label(
-                "Not yet available — the Readiness mapper (Performance → MCAT "
-                "scale, with a range) hasn't been built yet. This is stated "
-                "plainly rather than showing a number that isn't real; see "
-                "ARCHITECTURE.md §6."
+
+        which = readiness.WhichOneof("result") if readiness else None
+        if which == "data":
+            data = readiness.data
+            confidence_name = stats_pb2.ReadinessData.Confidence.Name(
+                data.confidence
+            ).capitalize()
+            layout.addWidget(
+                _headline_label(f"Projected MCAT: {data.projected_score}")
             )
-        )
+            layout.addWidget(
+                _wrapped_label(
+                    f"Likely range {data.range_low} to {data.range_high}. "
+                    f"Confidence: {confidence_name}, based on graded-review "
+                    "count and topic coverage."
+                )
+            )
+            layout.addWidget(
+                _wrapped_label(
+                    "Method: treats predicted accuracy as an approximate "
+                    "population percentile against AAMC's published MCAT "
+                    "score distribution (mean 500.5, SD ~10.6) — a stated "
+                    "simplifying assumption, not validated against real "
+                    "student outcomes. See rslib/src/stats/readiness_mapper.rs."
+                )
+            )
+        elif which == "insufficient":
+            layout.addWidget(
+                _headline_label("Readiness: refusing to score — not enough data")
+            )
+        else:
+            layout.addWidget(QLabel("Readiness: unavailable"))
+
         box.setLayout(layout)
         return box
 

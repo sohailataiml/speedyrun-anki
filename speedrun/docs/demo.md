@@ -9,20 +9,17 @@ wants to reproduce what's claimed elsewhere in `speedrun/docs/`.
 What you can actually demo today:
 
 - ✅ A real review session on both platforms, backed by the same Rust engine.
-- ✅ The Rust change (`mastery_query`), the give-up gate, and the Performance
-  model — live, on a real screen: `Ctrl+Shift+D` on desktop opens the
-  three-score dashboard (Memory, Performance, and an honest "not yet
-  available" for Readiness). Also reachable via each platform's debug
-  console if you want the raw protobuf output instead.
+- ✅ All three scores, live, on a real screen: `Ctrl+Shift+D` on desktop
+  opens the three-score dashboard — Memory, Performance, and a projected
+  MCAT score with a range and confidence label for Readiness. Also
+  reachable via each platform's debug console if you want the raw protobuf
+  output instead.
 - ✅ Sync, both directions, including the same-card-conflict case
   ([sync-test-results.md](sync-test-results.md)).
 - ❌ **No dashboard on Android yet.** Desktop's dashboard is a native PyQt
   screen that doesn't port to AnkiDroid's Kotlin/Compose UI automatically —
   Android still needs its own dashboard screen, or its scores shown via the
   console pattern in the Android section below.
-- ❌ **No Readiness score yet.** The dashboard says so plainly rather than
-  showing a number that isn't real — the Readiness mapper (Performance →
-  MCAT scale, with a range) hasn't been built.
 - ❌ **No AI subsystem exists yet.** There is nothing to demo here.
 
 If you're recording the actual submission video, the AI subsystem and an
@@ -48,10 +45,10 @@ behavior — this is the unmodified FSRS path.
 
 **Show the three-score dashboard:** `Ctrl+Shift+D` (no menu item —
 keyboard shortcut only, same as the Debug Console below). Shows Memory,
-Performance, and the give-up gate status for every `topic::<name>` tag in
-the collection, computed live. Readiness is shown as "not yet available"
-rather than a fabricated number. This is the better shot for a demo video
-than the console dump below — it's an actual screen.
+Performance, and Readiness (projected MCAT score, range, confidence label,
+and the mapper's stated method) for every `topic::<name>` tag in the
+collection, computed live. This is the better shot for a demo video than
+the console dump below — it's an actual screen.
 
 **Show the Rust change via console** (for the raw protobuf output instead
 of the dashboard's formatted view): `Ctrl+Shift+;` opens the Debug Console
@@ -152,12 +149,11 @@ Mapped to what PRD §12 actually asks for, against what exists today:
 1. Spiky POV, one sentence (from [brainlift.md](brainlift.md)).
 2. A review session on desktop (ordinary FSRS, unmodified).
 3. `Ctrl+Shift+D` — the three-score dashboard, ideally after the 200-review
-   loop so it shows a real passing gate and a real Performance number, not
-   just a refusal. This is the strongest shot in the whole demo: it's a real
-   screen, not console output.
+   loop so it shows a real passing gate, a real Performance number, and a
+   real projected MCAT score with a range, not just a refusal. This is the
+   strongest shot in the whole demo: it's a real screen, not console output.
 4. A review on Android, then a sync round-trip showing the card landing on
    desktop (`sync-test-results.md`'s script, or manual Sync button taps on
    both sides).
-5. **Not yet available:** Readiness (the dashboard says so honestly), an
-   Android dashboard, and any AI feature. State this plainly rather than
-   hiding it.
+5. **Not yet available:** an Android dashboard and any AI feature. State
+   this plainly rather than hiding it.

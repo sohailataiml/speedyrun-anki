@@ -1067,6 +1067,20 @@ class Collection(DeprecatedNamesMixin):
             average_timing_seconds=average_timing_seconds,
         )
 
+    def readiness_query(
+        self, topics: list[str], average_difficulty: float, average_timing_seconds: float
+    ) -> stats_pb2.ReadinessQueryResponse:
+        """Maps the Performance prediction onto the MCAT scale with a range
+        and confidence label (PRD §5/§6/§10.3). Runs the give-up gate and
+        Performance model first; check `response.WhichOneof("result")` the
+        same way as `give_up_gate`.
+        """
+        return self._backend.readiness_query(
+            topics=topics,
+            average_difficulty=average_difficulty,
+            average_timing_seconds=average_timing_seconds,
+        )
+
     def get_review_logs(
         self, card_id: CardId
     ) -> Sequence[stats_pb2.CardStatsResponse.StatsRevlogEntry]:

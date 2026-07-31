@@ -61,6 +61,17 @@ impl crate::services::StatsService for Collection {
             input.average_timing_seconds,
         )
     }
+
+    fn readiness_query(
+        &mut self,
+        input: anki_proto::stats::ReadinessQueryRequest,
+    ) -> error::Result<anki_proto::stats::ReadinessQueryResponse> {
+        self.readiness_query(
+            &input.topics,
+            input.average_difficulty,
+            input.average_timing_seconds,
+        )
+    }
 }
 
 impl From<RevlogReviewKind> for i32 {
