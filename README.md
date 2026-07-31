@@ -25,10 +25,12 @@ just test-py         # includes the 1 Python test for the Rust change
 ```
 Packaged installer: see [speedrun/docs/desktop-installer.md](speedrun/docs/desktop-installer.md).
 
-**Mobile (Android)** — a separate sibling repo, [AnkiDroid](https://github.com/ankidroid/Anki-Android)
-forked and pointed at this repo's Rust backend via
-[Anki-Android-Backend](https://github.com/ankidroid/Anki-Android-Backend).
-Full wiring (why two extra repos, the compatibility fixes required) in
+**Mobile (Android)** — a separate sibling repo,
+[speedyrun-android](https://github.com/sohailataiml/speedyrun-android)
+(AnkiDroid, forked) pointed at this repo's Rust backend via
+[speedyrun-anki-android-backend](https://github.com/sohailataiml/speedyrun-anki-android-backend)
+(Anki-Android-Backend, forked). Full wiring (why two extra repos, the
+compatibility fixes required) in
 [speedrun/docs/rust-change-note.md](speedrun/docs/rust-change-note.md#shipped-to-android).
 Short version:
 ```bash

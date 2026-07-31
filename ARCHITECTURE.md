@@ -204,7 +204,12 @@ core/                             # this repo — the public Anki fork
         └── scoring-train/         # Performance model training script + versioned weights
 ```
 
-The phone companion is **not** inside this repo — `apps/android` (AnkiDroid fork) and `apps/Anki-Android-Backend` (the JNI bridge that builds the Rust backend for Android) are separate sibling clones with their own upstream histories, referenced but not merged here. `speedrun/docs/rust-change-note.md` documents exactly how they're wired to this fork's Rust code.
+The phone companion is **not** inside this repo — it's two separate public forks:
+[speedyrun-android](https://github.com/sohailataiml/speedyrun-android) (AnkiDroid) and
+[speedyrun-anki-android-backend](https://github.com/sohailataiml/speedyrun-anki-android-backend)
+(the JNI bridge that builds this fork's Rust backend for Android — its `anki` submodule
+points at this repo, not upstream Anki). `speedrun/docs/rust-change-note.md` documents
+exactly how they're wired together.
 
 Not yet built, so not yet real directories: the Performance model's train-time consumer of real held-back questions (currently synthetic — see `speedrun/tools/scoring-train/`), the Readiness mapper, the AI subsystem, and the `paraphrase-test`/`leakage-check`/`ai-eval`/`crash-test`/`bench` tools listed in §10's table.
 
