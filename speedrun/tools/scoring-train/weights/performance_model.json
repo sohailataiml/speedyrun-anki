@@ -1,0 +1,15 @@
+{
+  "synthetic_placeholder": true,
+  "bias": -0.07905069679443218,
+  "weight_mastery": 1.4641171018937782,
+  "weight_difficulty": -1.062287428485801,
+  "weight_timing_z": 0.12503307627427207,
+  "weight_coverage": 0.49865682129147854,
+  "timing_mean_seconds": 101.50045724998905,
+  "timing_std_seconds": 46.81889582150131,
+  "n_train": 480,
+  "n_eval": 120,
+  "eval_accuracy": 0.6916666666666667,
+  "baseline_accuracy": 0.5916666666666667,
+  "seed": 20260731
+}
