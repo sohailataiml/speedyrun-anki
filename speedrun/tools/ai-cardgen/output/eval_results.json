@@ -1,0 +1,674 @@
+{
+  "ai_cards": [
+    {
+      "front": "What is the primary function of the citric acid cycle in cellular respiration?",
+      "back": "The citric acid cycle completes the oxidation of carbon that entered as glucose and harvests high-energy electrons that are captured by NAD+ and FAD to produce NADH and FADH2, which then feed the electron transport chain.",
+      "source_chunk": "kc-01",
+      "source_title": "Overview and purpose",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The answer accurately captures the passage's description of the citric acid cycle's primary function\u2014completing glucose oxidation and harvesting electrons for NADH and FADH2 production\u2014and is a clear, appropriately focused question for testing understanding of the cycle's role in cellular respiration."
+    },
+    {
+      "front": "Why is the citric acid cycle considered more important for its electron carriers than for its direct ATP production?",
+      "back": "The cycle itself makes only a small amount of ATP directly; its real output is the reduced electron carriers (NADH and FADH2) that power oxidative phosphorylation downstream, which generates the majority of ATP.",
+      "source_chunk": "kc-01",
+      "source_title": "Overview and purpose",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The question accurately reflects the passage's emphasis that the cycle's primary value lies in producing NADH and FADH2 rather than direct ATP, and the answer correctly explains this distinction with supporting details about oxidative phosphorylation."
+    },
+    {
+      "front": "How does the citric acid cycle connect to the electron transport chain?",
+      "back": "The citric acid cycle produces NADH and FADH2 by capturing high-energy electrons with NAD+ and FAD; these reduced electron carriers then feed into the electron transport chain.",
+      "source_chunk": "kc-01",
+      "source_title": "Overview and purpose",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The answer accurately reflects the passage's explanation of how the citric acid cycle connects to the electron transport chain through the production and transfer of NADH and FADH2, and it's a clear question that tests understanding of a key concept."
+    },
+    {
+      "front": "What is the relationship between the citric acid cycle and glycolysis in cellular respiration?",
+      "back": "The citric acid cycle is the second major stage of cellular respiration that follows glycolysis, and it completes the oxidation of the carbon that originally entered as glucose from glycolysis.",
+      "source_chunk": "kc-01",
+      "source_title": "Overview and purpose",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The answer accurately reflects the passage's statement that the citric acid cycle is the second major stage following glycolysis and finishes oxidizing the carbon from glucose, making it a clear question that tests understanding of the sequential relationship between these two processes."
+    },
+    {
+      "front": "Why is the location of the citric acid cycle in the mitochondrial matrix mechanistically important for NADH and FADH2 produced during the cycle?",
+      "back": "The mitochondrial matrix location is important because the electron transport chain is located immediately downstream on the inner mitochondrial membrane. This means NADH and FADH2 produced in the matrix don't have far to travel to reach the electron transport chain, allowing for efficient coupling of the cycle to oxidative phosphorylation.",
+      "source_chunk": "kc-02",
+      "source_title": "Location",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately captures the passage's explanation of why matrix location matters mechanistically\u2014that proximity to the electron transport chain on the inner membrane reduces the distance NADH and FADH2 must travel\u2014and presents it as a clear, testable question that requires understanding the functional relationship between these components."
+    },
+    {
+      "front": "Which enzyme of the citric acid cycle is an exception to the general localization pattern of cycle enzymes, and where is it located?",
+      "back": "Succinate dehydrogenase is the exception. While most citric acid cycle enzymes are dissolved in the mitochondrial matrix, succinate dehydrogenase is embedded in the inner mitochondrial membrane itself.",
+      "source_chunk": "kc-02",
+      "source_title": "Location",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies succinate dehydrogenase as the exception to the general localization pattern and correctly states that it is embedded in the inner mitochondrial membrane while other enzymes are dissolved in the matrix, making it a clear and testable learning question."
+    },
+    {
+      "front": "How does the compartmentalization of citric acid cycle enzymes in the mitochondrial matrix relate to the location of the electron transport chain?",
+      "back": "The citric acid cycle enzymes are dissolved in the mitochondrial matrix (except succinate dehydrogenase), and the electron transport chain is located on the inner mitochondrial membrane that encloses the matrix. This arrangement places the two processes in close proximity, minimizing the distance NADH and FADH2 must travel.",
+      "source_chunk": "kc-02",
+      "source_title": "Location",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately captures the passage's explanation of how the spatial organization of the citric acid cycle and electron transport chain creates an efficient system, and it's a well-constructed question that tests understanding of the mechanistic relationship between compartmentalization and metabolic efficiency."
+    },
+    {
+      "front": "What is the role of the pyruvate dehydrogenase complex, and where does this reaction occur?",
+      "back": "The pyruvate dehydrogenase complex converts pyruvate into acetyl-CoA in the mitochondrial matrix. This reaction releases one CO2 and reduces one NAD+ to NADH.",
+      "source_chunk": "kc-03",
+      "source_title": "Entry point - acetyl-CoA formation",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately captures the location (mitochondrial matrix), the enzyme's function (converting pyruvate to acetyl-CoA), and the byproducts (CO2 release and NAD+ reduction) directly from the passage, forming a clear question that tests understanding of a key metabolic step."
+    },
+    {
+      "front": "Why is the pyruvate dehydrogenase reaction called the 'link reaction,' and what is its relationship to the citric acid cycle?",
+      "back": "The pyruvate dehydrogenase reaction is called the 'link reaction' because it is not technically part of the citric acid cycle itself, but it is the required entry point that produces acetyl-CoA, which feeds into the cycle's first step.",
+      "source_chunk": "kc-03",
+      "source_title": "Entry point - acetyl-CoA formation",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately captures the passage's explanation of why the reaction is called the \"link reaction\" and correctly describes its relationship to the citric acid cycle as a required entry point that produces acetyl-CoA, making it a clear question that tests understanding of this important metabolic connection."
+    },
+    {
+      "front": "Describe the fate of pyruvate from glycolysis through acetyl-CoA formation.",
+      "back": "Pyruvate produced by glycolysis in the cytoplasm is transported into the mitochondrial matrix, where the pyruvate dehydrogenase complex converts it into acetyl-CoA, which then enters the citric acid cycle.",
+      "source_chunk": "kc-03",
+      "source_title": "Entry point - acetyl-CoA formation",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The answer accurately captures the key facts from the passage (pyruvate transport, conversion by pyruvate dehydrogenase complex, acetyl-CoA formation) and forms a clear question that tests understanding of an important metabolic transition."
+    },
+    {
+      "front": "What are the reactants and products of the citrate synthase reaction, including the number of carbons in each molecule?",
+      "back": "Reactants: Acetyl-CoA (2 carbons) + Oxaloacetate (4 carbons). Products: Citrate (6 carbons) + CoA group (released). The carbon atoms from both reactants are conserved in the citrate product.",
+      "source_chunk": "kc-04",
+      "source_title": "Step 1 - citrate synthase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies all reactants and products with correct carbon counts from the passage, and the question tests meaningful understanding of the citrate synthase reaction's stoichiometry and carbon conservation."
+    },
+    {
+      "front": "Why is citrate synthase considered a key regulatory enzyme of the citric acid cycle?",
+      "back": "Citrate synthase is inhibited when ATP, NADH, and citrate itself are abundant. This inhibition signals that the cell already has sufficient energy available, allowing the enzyme to regulate the cycle's entry point based on the cell's energy status.",
+      "source_chunk": "kc-04",
+      "source_title": "Step 1 - citrate synthase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The answer accurately captures the passage's explanation of citrate synthase's regulatory role and clearly explains the mechanism by which it senses and responds to the cell's energy status."
+    },
+    {
+      "front": "What is the role of oxaloacetate in the citrate synthase reaction, and where does it come from?",
+      "back": "Oxaloacetate is a 4-carbon molecule that serves as a reactant combining with Acetyl-CoA to form citrate. It is a molecule left over from the end of the previous turn of the citric acid cycle.",
+      "source_chunk": "kc-04",
+      "source_title": "Step 1 - citrate synthase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The answer accurately identifies oxaloacetate's role as a reactant in the citrate synthase reaction and correctly states its origin as a leftover from the previous cycle turn, making it a clear question that tests understanding of the citric acid cycle's continuity."
+    },
+    {
+      "front": "What happens to the CoA group during the citrate synthase reaction?",
+      "back": "The CoA group is released from Acetyl-CoA during the reaction that forms citrate. It is not incorporated into the citrate product.",
+      "source_chunk": "kc-04",
+      "source_title": "Step 1 - citrate synthase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately reflects the passage statement that citrate synthase \"releases the CoA group\" during the formation of citrate from Acetyl-CoA, and it's a clear question that tests understanding of a specific detail from the reaction mechanism."
+    },
+    {
+      "front": "What is the role of aconitase in the citric acid cycle, and what type of reaction does it catalyze?",
+      "back": "Aconitase catalyzes the isomerization of citrate to isocitrate through an intermediate called cis-aconitate. It catalyzes a structural rearrangement with no change in the number of carbons or production of electron carriers.",
+      "source_chunk": "kc-05",
+      "source_title": "Steps 2-3 - isomerization to isocitrate",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately captures the key facts about aconitase's role (isomerization of citrate to isocitrate via cis-aconitate) and correctly identifies the type of reaction (structural rearrangement with no carbon loss or electron carrier production), making it a clear question that tests understanding of this enzymatic step."
+    },
+    {
+      "front": "Why is the rearrangement of citrate to isocitrate necessary in the citric acid cycle?",
+      "back": "The rearrangement moves a hydroxyl group into a position where it can be oxidized in the next step of the citric acid cycle.",
+      "source_chunk": "kc-05",
+      "source_title": "Steps 2-3 - isomerization to isocitrate",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately captures the passage's explanation that the rearrangement positions a hydroxyl group for oxidation in the subsequent step, and it's a well-formed question that tests understanding of the functional purpose of this reaction."
+    },
+    {
+      "front": "What is cis-aconitate, and what is its relationship to the citrate-to-isocitrate conversion?",
+      "back": "Cis-aconitate is an intermediate formed during the isomerization of citrate to isocitrate. Both the citrate-to-cis-aconitate and cis-aconitate-to-isocitrate steps are catalyzed by aconitase.",
+      "source_chunk": "kc-05",
+      "source_title": "Steps 2-3 - isomerization to isocitrate",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies cis-aconitate as an intermediate in the citrate-to-isocitrate conversion and correctly states that aconitase catalyzes both steps, making it a clear question that tests understanding of this enzymatic pathway."
+    },
+    {
+      "front": "What is the product of isocitrate oxidation in the citric acid cycle, and how many carbons does it contain?",
+      "back": "Alpha-ketoglutarate, which contains 5 carbons. Isocitrate loses one carbon as CO2 during this oxidation.",
+      "source_chunk": "kc-06",
+      "source_title": "Step 4 - isocitrate dehydrogenase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies alpha-ketoglutarate as the product of isocitrate oxidation, correctly states it contains 5 carbons, and accurately describes the loss of one carbon as CO2, making it a clear question that tests understanding of a key citric acid cycle step."
+    },
+    {
+      "front": "Why is the isocitrate dehydrogenase reaction considered the cycle's first carbon-releasing, energy-yielding step?",
+      "back": "Because it both releases a carbon as CO2 and reduces NAD+ to NADH, thereby yielding energy in the form of the electron carrier NADH.",
+      "source_chunk": "kc-06",
+      "source_title": "Step 4 - isocitrate dehydrogenase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies both key aspects of why this step is the cycle's first carbon-releasing, energy-yielding step (CO2 release and NAD+ reduction to NADH), and the answer demonstrates clear understanding of the mechanism and energy yield."
+    },
+    {
+      "front": "How does isocitrate dehydrogenase function as the citric acid cycle's main throttle?",
+      "back": "It is allosterically activated by ADP and calcium (signals of low energy and high metabolic demand) and inhibited by ATP and NADH (signals of high energy and sufficient reducing power), allowing it to regulate the overall rate of the cycle.",
+      "source_chunk": "kc-06",
+      "source_title": "Step 4 - isocitrate dehydrogenase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately captures the passage's information about isocitrate dehydrogenase's allosteric regulation and correctly explains how these regulatory mechanisms allow it to function as the cycle's rate-limiting control point, making it an effective learning question."
+    },
+    {
+      "front": "What allosteric regulators activate isocitrate dehydrogenase, and what do they signal about the cell's energy status?",
+      "back": "ADP and calcium activate the enzyme. ADP signals low energy availability, and calcium signals increased metabolic demand, both conditions that warrant acceleration of the citric acid cycle.",
+      "source_chunk": "kc-06",
+      "source_title": "Step 4 - isocitrate dehydrogenase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies ADP and calcium as allosteric activators of isocitrate dehydrogenase from the passage and provides a logical interpretation of what these activators signal about cellular energy status that aligns with biochemical principles, making it an effective learning question."
+    },
+    {
+      "front": "What is the carbon count change when alpha-ketoglutarate is converted to succinyl-CoA, and what molecule is released?",
+      "back": "Alpha-ketoglutarate has 5 carbons and is reduced to succinyl-CoA with 4 carbons. One carbon is released as CO2.",
+      "source_chunk": "kc-07",
+      "source_title": "Step 5 - alpha-ketoglutarate dehydrogenase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "wrong",
+      "reasoning": "The answer incorrectly states that alpha-ketoglutarate is \"reduced\" to succinyl-CoA, when the passage clearly states it is \"oxidized.\""
+    },
+    {
+      "front": "Why is the alpha-ketoglutarate dehydrogenase complex considered mechanistically similar to pyruvate dehydrogenase?",
+      "back": "Both enzyme complexes require the same set of cofactors: thiamine pyrophosphate, lipoic acid, FAD, NAD+, and CoA, indicating similar catalytic mechanisms.",
+      "source_chunk": "kc-07",
+      "source_title": "Step 5 - alpha-ketoglutarate dehydrogenase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately reflects the passage's statement that both enzyme complexes are \"structurally and mechanistically very similar\" and correctly identifies the shared cofactor requirement as evidence of this similarity, making it a clear question that tests understanding of enzyme mechanism relationships."
+    },
+    {
+      "front": "What redox product is generated during the alpha-ketoglutarate dehydrogenase reaction?",
+      "back": "A second NADH is produced during the oxidation of alpha-ketoglutarate to succinyl-CoA.",
+      "source_chunk": "kc-07",
+      "source_title": "Step 5 - alpha-ketoglutarate dehydrogenase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies NADH as the redox product generated during the alpha-ketoglutarate dehydrogenase reaction, which is clearly stated in the passage, and the question is well-formed and tests understanding of a key metabolic detail."
+    },
+    {
+      "front": "What is the structural relationship between the product of the alpha-ketoglutarate dehydrogenase reaction and CoA?",
+      "back": "Succinyl-CoA is the product, with the succinyl group (4-carbon unit) attached to CoA as a thioester bond.",
+      "source_chunk": "kc-07",
+      "source_title": "Step 5 - alpha-ketoglutarate dehydrogenase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately describes that succinyl-CoA is the product with a 4-carbon succinyl group attached to CoA, and while the passage doesn't explicitly mention the thioester bond, this is standard biochemical knowledge about CoA attachments that logically follows from the passage's description of the product."
+    },
+    {
+      "front": "What is the direct energy product of the succinyl-CoA synthetase reaction, and why is this step unique in the citric acid cycle?",
+      "back": "The direct energy product is GTP (or ATP in some tissues). This step is unique because it is the only step in the citric acid cycle that produces a nucleoside triphosphate directly through substrate-level phosphorylation, without requiring the electron transport chain.",
+      "source_chunk": "kc-08",
+      "source_title": "Step 6 - succinyl-CoA synthetase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately captures both the direct energy product (GTP/ATP) and the unique mechanism (substrate-level phosphorylation without electron transport chain involvement) stated in the passage, and poses a clear question that tests understanding of an important concept."
+    },
+    {
+      "front": "What high-energy bond is broken in the succinyl-CoA synthetase reaction, and where is the released energy captured?",
+      "back": "The high-energy thioester bond between succinyl-CoA and CoA is broken. The energy released from breaking this bond is captured directly as GTP (or ATP in some tissues) through substrate-level phosphorylation.",
+      "source_chunk": "kc-08",
+      "source_title": "Step 6 - succinyl-CoA synthetase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies the thioester bond and correctly describes how the released energy is captured via substrate-level phosphorylation to form GTP/ATP, matching the passage precisely and testing meaningful understanding of this key metabolic step."
+    },
+    {
+      "front": "How does the mechanism of ATP/GTP generation in the succinyl-CoA synthetase reaction differ from other energy-producing steps in the citric acid cycle?",
+      "back": "The succinyl-CoA synthetase reaction generates ATP/GTP directly through substrate-level phosphorylation by coupling it to the hydrolysis of the high-energy thioester bond. In contrast, other energy-producing steps in the cycle generate ATP/GTP indirectly through the electron transport chain.",
+      "source_chunk": "kc-08",
+      "source_title": "Step 6 - succinyl-CoA synthetase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately reflects the passage's key distinction that succinyl-CoA synthetase uses substrate-level phosphorylation with the thioester bond, while other steps rely on the electron transport chain, and it forms a clear question that tests understanding of this important mechanistic difference."
+    },
+    {
+      "front": "Why is succinate dehydrogenase unique compared to other citric acid cycle enzymes in terms of its role in cellular respiration?",
+      "back": "Succinate dehydrogenase is the only citric acid cycle enzyme that is physically embedded in the inner mitochondrial membrane and functions as Complex II of the electron transport chain, making it the sole enzyme that directly participates in both the citric acid cycle and the electron transport chain.",
+      "source_chunk": "kc-09",
+      "source_title": "Step 7 - succinate dehydrogenase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately captures the key unique feature of succinate dehydrogenase described in the passage\u2014its dual role as both a citric acid cycle enzyme and Complex II of the electron transport chain\u2014and presents it as a clear, testable question that requires understanding of the enzyme's significance in cellular respiration."
+    },
+    {
+      "front": "What is the electron acceptor used by succinate dehydrogenase, and why is this significant for the citric acid cycle?",
+      "back": "Succinate dehydrogenase reduces FAD directly to FADH2 (rather than NAD+ to NADH). This is significant because it is the only step in the citric acid cycle that produces FADH2, making it the cycle's sole source of this electron carrier.",
+      "source_chunk": "kc-09",
+      "source_title": "Step 7 - succinate dehydrogenase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies FAD as the electron acceptor, correctly notes that FADH2 is the only product of this type in the citric acid cycle, and explains why this is significant for understanding the cycle's energy production."
+    },
+    {
+      "front": "How does the substrate and product of the succinate dehydrogenase reaction relate to the citric acid cycle?",
+      "back": "Succinate dehydrogenase oxidizes succinate to fumarate. This reaction is Step 7 of the citric acid cycle, converting a 4-carbon substrate (succinate) to its unsaturated counterpart (fumarate) while generating reducing equivalents.",
+      "source_chunk": "kc-09",
+      "source_title": "Step 7 - succinate dehydrogenase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately describes the succinate dehydrogenase reaction and its role in the citric acid cycle, correctly identifying succinate and fumarate as substrate and product, and accurately characterizing the structural relationship between them."
+    },
+    {
+      "front": "What is the structural location of succinate dehydrogenase, and how does this location relate to its dual function?",
+      "back": "Succinate dehydrogenase is embedded in the inner mitochondrial membrane. This location allows it to simultaneously participate in the citric acid cycle (which occurs in the mitochondrial matrix) and directly transfer electrons to the electron transport chain (which is located in the inner mitochondrial membrane).",
+      "source_chunk": "kc-09",
+      "source_title": "Step 7 - succinate dehydrogenase",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies succinate dehydrogenase's location in the inner mitochondrial membrane and correctly explains how this positioning enables its dual role in both the citric acid cycle and electron transport chain, making it a clear question that tests understanding of structure-function relationships."
+    },
+    {
+      "front": "What enzyme catalyzes the conversion of fumarate to malate, and what is the significance of this reaction in the citric acid cycle?",
+      "back": "Fumarase catalyzes the hydration of fumarate to malate. This reaction is significant because it is one of the final steps that leads to the regeneration of oxaloacetate, allowing the cycle to continue.",
+      "source_chunk": "kc-10",
+      "source_title": "Step 8 - malate dehydrogenase and regeneration",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies fumarase as the enzyme catalyzing fumarate hydration to malate, and correctly explains the significance of this reaction in maintaining the cyclic nature of the citric acid cycle by enabling oxaloacetate regeneration."
+    },
+    {
+      "front": "How many NADH molecules are produced from the oxidation of malate to oxaloacetate, and where does this fit in the overall citric acid cycle?",
+      "back": "One NADH is produced from the oxidation of malate to oxaloacetate. This is the fourth and final NADH generated during one complete turn of the citric acid cycle.",
+      "source_chunk": "kc-10",
+      "source_title": "Step 8 - malate dehydrogenase and regeneration",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately reflects the passage's statement that malate oxidation to oxaloacetate produces the cycle's fourth and final NADH, and it's a well-formed question that tests understanding of both the specific reaction and its place in the overall cycle."
+    },
+    {
+      "front": "Why is the regeneration of oxaloacetate at the end of the citric acid cycle important for the pathway's function?",
+      "back": "The regeneration of oxaloacetate is important because it returns the molecule to its starting point, allowing it to combine with a new acetyl-CoA and initiate another cycle. This regeneration is why the pathway is called a cycle rather than a linear pathway.",
+      "source_chunk": "kc-10",
+      "source_title": "Step 8 - malate dehydrogenase and regeneration",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately captures the passage's explanation of why oxaloacetate regeneration is functionally important\u2014it enables the pathway to repeat by combining with new acetyl-CoA molecules\u2014and tests genuine understanding of the cyclic nature of the citric acid cycle."
+    },
+    {
+      "front": "What is the relationship between the regeneration of oxaloacetate and the cyclic nature of the citric acid cycle?",
+      "back": "Oxaloacetate is regenerated at the end of each cycle, which allows it to serve as the starting substrate for the next cycle by combining with acetyl-CoA. This continuous regeneration of the starting material is the fundamental reason the pathway is called a cycle rather than a linear pathway.",
+      "source_chunk": "kc-10",
+      "source_title": "Step 8 - malate dehydrogenase and regeneration",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately captures the passage's explanation that oxaloacetate regeneration enables the cyclic nature of the pathway, and it presents a clear question that tests understanding of a key conceptual relationship in the citric acid cycle."
+    },
+    {
+      "front": "What is the direct output of reducing equivalents (NADH and FADH2) from a single turn of the citric acid cycle starting from one acetyl-CoA?",
+      "back": "3 NADH and 1 FADH2 are produced per single turn of the citric acid cycle from one acetyl-CoA.",
+      "source_chunk": "kc-11",
+      "source_title": "Net yield per turn",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies the specific reducing equivalents produced per single turn of the citric acid cycle from the passage and asks a clear question that tests understanding of a key metabolic output."
+    },
+    {
+      "front": "Why does the total yield of citric acid cycle products double when considering a complete glucose molecule rather than a single acetyl-CoA?",
+      "back": "Because each glucose molecule yields two pyruvate molecules, which are converted to two acetyl-CoA molecules, causing the cycle to turn twice and doubling all products (NADH, FADH2, GTP/ATP, and CO2).",
+      "source_chunk": "kc-11",
+      "source_title": "Net yield per turn",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The question accurately reflects the passage's explanation that glucose yields two pyruvate/acetyl-CoA molecules, causing two turns of the cycle and doubling all products, and the answer clearly articulates this causal relationship in a way that tests student understanding of the connection between glucose metabolism and citric acid cycle yield."
+    },
+    {
+      "front": "What is the complete list of products released per single turn of the citric acid cycle from one acetyl-CoA?",
+      "back": "3 NADH, 1 FADH2, 1 GTP (or ATP), and 2 CO2 are produced per single turn of the citric acid cycle.",
+      "source_chunk": "kc-11",
+      "source_title": "Net yield per turn",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately lists all products from one turn of the citric acid cycle as stated in the passage, and the question is clear and tests specific factual knowledge that a student needs to understand cellular respiration."
+    },
+    {
+      "front": "Why does high ATP concentration inhibit citrate synthase, isocitrate dehydrogenase, and alpha-ketoglutarate dehydrogenase?",
+      "back": "High ATP indicates the cell has sufficient energy stores. Inhibiting these three regulatory enzymes of the cycle slows the pathway that produces ATP, preventing wasteful overproduction of energy molecules.",
+      "source_chunk": "kc-12",
+      "source_title": "Regulation",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The answer accurately explains that high ATP signals sufficient energy and that inhibiting these enzymes slows ATP production as a feedback mechanism, which directly reflects the passage's description of classic feedback regulation where pathway products suppress the pathway once enough has accumulated."
+    },
+    {
+      "front": "How does the citric acid cycle respond metabolically when a cell has low energy status?",
+      "back": "When energy is low, ADP and NAD+ levels are high. These molecules activate citrate synthase, isocitrate dehydrogenase, and alpha-ketoglutarate dehydrogenase, accelerating the cycle to produce more ATP and reduced electron carriers (NADH).",
+      "source_chunk": "kc-12",
+      "source_title": "Regulation",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The answer accurately reflects the passage's description of feedback regulation\u2014when energy is low (high ADP/NAD+), the three regulatory enzymes are activated to increase ATP and NADH production\u2014and it's a clear question that tests understanding of metabolic regulation."
+    },
+    {
+      "front": "What type of regulation is exemplified by ATP and NADH inhibiting the three regulatory enzymes of the citric acid cycle?",
+      "back": "This is feedback regulation (or negative feedback inhibition). The products of the pathway (ATP and NADH) inhibit the enzymes that produce them, allowing the cell to suppress the pathway once sufficient energy has accumulated.",
+      "source_chunk": "kc-12",
+      "source_title": "Regulation",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies the regulatory mechanism as feedback regulation, correctly explains that pathway products inhibit their own production, and tests understanding of a key concept from the passage with a clear, well-formed question."
+    },
+    {
+      "front": "Identify the three primary regulatory enzymes of the citric acid cycle and explain why these specific enzymes are regulated rather than others in the cycle.",
+      "back": "The three primary regulatory enzymes are citrate synthase, isocitrate dehydrogenase, and alpha-ketoglutarate dehydrogenase. The passage indicates these are regulated based on energy status (ATP/ADP and NADH/NAD+ ratios), though the passage does not explicitly explain why these particular enzymes are chosen for regulation.",
+      "source_chunk": "kc-12",
+      "source_title": "Regulation",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies the three regulatory enzymes from the passage and honestly acknowledges that while the passage specifies which enzymes are regulated and how, it does not explain the mechanistic reason why these particular enzymes were selected for regulation, making this a fair and educational question that tests comprehension of what the passage actually states."
+    },
+    {
+      "front": "Why is the citric acid cycle considered amphibolic rather than purely catabolic?",
+      "back": "The citric acid cycle is amphibolic because it functions both catabolically (breaking down fuel for energy) and anabolically (supplying building blocks for biosynthesis). Intermediates are withdrawn from the cycle to serve as precursors for amino acid synthesis, heme synthesis, and fatty acid synthesis.",
+      "source_chunk": "kc-13",
+      "source_title": "The cycle is amphibolic",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately captures the definition of amphibolic and provides specific examples of anabolic functions from the passage, making it a clear question that tests understanding of the dual nature of the citric acid cycle."
+    },
+    {
+      "front": "What happens to citrate when it is exported from the mitochondria to the cytoplasm, and what biosynthetic pathway does this support?",
+      "back": "When citrate is exported to the cytoplasm, it serves as a source of acetyl-CoA for fatty acid synthesis.",
+      "source_chunk": "kc-13",
+      "source_title": "The cycle is amphibolic",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately reflects the passage's statement that citrate can be exported to the cytoplasm as a source of acetyl-CoA for fatty acid synthesis, and it tests understanding of a specific biosynthetic application of the citric acid cycle."
+    },
+    {
+      "front": "Which citric acid cycle intermediates are used as precursors for amino acid synthesis, and what metabolic consequence occurs if they are continuously withdrawn?",
+      "back": "Alpha-ketoglutarate and oxaloacetate are citric acid cycle intermediates used as precursors for amino acid synthesis. If they are continuously withdrawn without replenishment, the cycle would stall, necessitating anaplerotic reactions to replenish these intermediates.",
+      "source_chunk": "kc-13",
+      "source_title": "The cycle is amphibolic",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies the two intermediates from the passage and correctly explains both their role in amino acid synthesis and the consequence of their depletion (cycle stalling and need for anaplerotic reactions), making it a well-formed question that tests understanding of the amphibolic nature of the citric acid cycle."
+    },
+    {
+      "front": "How does succinyl-CoA function in anabolic pathways, and why is this significant for the amphibolic nature of the citric acid cycle?",
+      "back": "Succinyl-CoA feeds into heme synthesis, demonstrating that citric acid cycle intermediates serve biosynthetic purposes beyond energy production, which is central to the cycle's amphibolic function.",
+      "source_chunk": "kc-13",
+      "source_title": "The cycle is amphibolic",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies succinyl-CoA's role in heme synthesis and correctly explains how this exemplifies the amphibolic nature of the citric acid cycle, making it a well-constructed question that tests understanding of both specific biochemistry and broader conceptual principles."
+    },
+    {
+      "front": "Why do students often overestimate the direct ATP yield from the citric acid cycle?",
+      "back": "Students assume the cycle directly produces a large amount of ATP, but most of the energy payoff actually comes later when NADH and FADH2 are oxidized by the electron transport chain. The cycle itself produces relatively little ATP directly.",
+      "source_chunk": "kc-14",
+      "source_title": "MCAT relevance and common exam traps",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately captures the passage's explanation of a common MCAT trap, clearly distinguishing between direct ATP production in the cycle versus the larger energy yield from electron transport chain oxidation of NADH and FADH2, making it an effective learning tool."
+    },
+    {
+      "front": "How does forgetting that the citric acid cycle turns twice per glucose affect net-yield calculations?",
+      "back": "Since the cycle turns twice per glucose (not once), students who forget this fact will underestimate the total number of NADH, FADH2, and ATP molecules produced per glucose molecule, leading to incorrect net-yield calculations.",
+      "source_chunk": "kc-14",
+      "source_title": "MCAT relevance and common exam traps",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies a common student error and explains how forgetting the cycle turns twice per glucose leads to underestimating yields, which directly addresses the MCAT trap mentioned in the passage."
+    },
+    {
+      "front": "Which enzyme of the citric acid cycle is also a component of the electron transport chain, and what is its alternative name?",
+      "back": "Succinate dehydrogenase, which catalyzes the oxidation of succinate to fumarate in the citric acid cycle, is also known as Complex II of the electron transport chain.",
+      "source_chunk": "kc-14",
+      "source_title": "MCAT relevance and common exam traps",
+      "method": "ai_generated",
+      "model": "claude-haiku-4-5-20251001",
+      "verdict": "correct_and_useful",
+      "reasoning": "The flashcard accurately identifies succinate dehydrogenase as the shared enzyme between the citric acid cycle and electron transport chain (Complex II), which is explicitly mentioned in the passage as a key learning point (kc-09), and the answer provides appropriate context about its function."
+    }
+  ],
+  "baseline_cards": [
+    {
+      "front": "What is Its job?",
+      "back": "to finish oxidizing the carbon that entered as glucose, harvesting high-energy electrons along the way",
+      "source_chunk": "kc-01",
+      "source_title": "Overview and purpose",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "The answer is factually accurate per the passage, but the question uses an unresolved pronoun \"Its\" that forces students to guess what \"it\" refers to rather than testing their understanding of the citric acid cycle itself."
+    },
+    {
+      "front": "What are Those electrons?",
+      "back": "captured by NAD+ and FAD, producing NADH and FADH2, which then feed the electron transport chain",
+      "source_chunk": "kc-01",
+      "source_title": "Overview and purpose",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "While the answer is factually accurate per the passage, the question uses an unresolved pronoun (\"Those electrons\") that requires readers to look back at the previous sentence, making it an ambiguous and poorly constructed learning tool."
+    },
+    {
+      "front": "What is This reaction?",
+      "back": "catalyzed by citrate synthase and releases the CoA group",
+      "source_chunk": "kc-04",
+      "source_title": "Step 1 - citrate synthase",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "While the answer accurately describes the reaction catalyzed by citrate synthase, the question \"What is This reaction?\" uses an unresolved pronoun that makes it unclear and ambiguous for independent study."
+    },
+    {
+      "front": "What is Citrate?",
+      "back": "isomerized to isocitrate through an intermediate called cis-aconitate, both steps catalyzed by the enzyme aconitase",
+      "source_chunk": "kc-05",
+      "source_title": "Steps 2-3 - isomerization to isocitrate",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "While the answer is factually accurate to the passage, the question \"What is Citrate?\" is too vague and the answer reads as a sentence fragment rather than a clear definition that would help a student understand what citrate actually is or its role in metabolism."
+    },
+    {
+      "front": "What is This?",
+      "back": "a structural rearrangement only - no carbons are gained or lost, and no electron carriers are produced",
+      "source_chunk": "kc-05",
+      "source_title": "Steps 2-3 - isomerization to isocitrate",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "The answer is factually accurate to the passage, but the question \"What is This?\" is ambiguous with an unresolved pronoun that fails to clearly identify what concept is being asked about."
+    },
+    {
+      "front": "What is The point of the rearrangement?",
+      "back": "to move a hydroxyl group into a position where it can be oxidized in the next step",
+      "source_chunk": "kc-05",
+      "source_title": "Steps 2-3 - isomerization to isocitrate",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "The answer is factually accurate per the passage, but the question has an awkward capitalization error (\"The point\" instead of \"the point\") and is somewhat trivial since it asks students to simply recall a sentence directly stated in the source material rather than demonstrate understanding of why this rearrangement matters in metabolic context."
+    },
+    {
+      "front": "What is Isocitrate?",
+      "back": "oxidized and loses a carbon as CO2, becoming alpha-ketoglutarate (5 carbons)",
+      "source_chunk": "kc-06",
+      "source_title": "Step 4 - isocitrate dehydrogenase",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "While the answer accurately describes what happens to isocitrate, the question \"What is Isocitrate?\" is too vague and doesn't prompt meaningful learning\u2014a better question would ask \"What happens when isocitrate is oxidized?\" or \"What product forms when isocitrate loses a carbon?\""
+    },
+    {
+      "front": "What is This?",
+      "back": "the cycle's first carbon-releasing, energy-yielding step: it reduces one NAD+ to NADH",
+      "source_chunk": "kc-06",
+      "source_title": "Step 4 - isocitrate dehydrogenase",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "The answer is factually accurate to the passage, but the question \"What is This?\" is ambiguous and unresolved\u2014it fails to specify what noun it's asking about, making it unclear whether students should answer \"isocitrate oxidation,\" \"the conversion to alpha-ketoglutarate,\" or something else entirely."
+    },
+    {
+      "front": "What is A second NADH?",
+      "back": "produced here",
+      "source_chunk": "kc-07",
+      "source_title": "Step 5 - alpha-ketoglutarate dehydrogenase",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "While the passage does state that a second NADH is produced during alpha-ketoglutarate oxidation, the flashcard's question \"What is A second NADH?\" is grammatically awkward and poorly constructed, making it confusing and ineffective as a learning tool."
+    },
+    {
+      "front": "What is Succinate?",
+      "back": "oxidized to fumarate, reducing FAD directly to FADH2 (not NAD+ to NADH - this is the cycle's only FADH2-producing step)",
+      "source_chunk": "kc-09",
+      "source_title": "Step 7 - succinate dehydrogenase",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "While the answer accurately describes what happens to succinate in the citric acid cycle, the question \"What is Succinate?\" is too vague and doesn't guide the student toward meaningful learning\u2014a better question would ask about succinate's specific role or reaction in the cycle."
+    },
+    {
+      "front": "What is Fumarate?",
+      "back": "hydrated to malate (by fumarase), and then malate is oxidized to regenerate oxaloacetate, producing the cycle's fourth and final NADH",
+      "source_chunk": "kc-10",
+      "source_title": "Step 8 - malate dehydrogenase and regeneration",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "The answer describes what happens to fumarate rather than what fumarate is, making it factually accurate but poorly designed since it doesn't define the substance itself or test meaningful understanding of its identity or role."
+    },
+    {
+      "front": "What is Oxaloacetate?",
+      "back": "now back where the cycle started, ready to combine with a new acetyl-CoA and run again",
+      "source_chunk": "kc-10",
+      "source_title": "Step 8 - malate dehydrogenase and regeneration",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "While the answer is factually supported by the passage, the question \"What is Oxaloacetate?\" is too vague and the answer describes oxaloacetate's role/state rather than what it actually is, making it a poor learning tool that doesn't test understanding of the molecule itself."
+    },
+    {
+      "front": "What is This regeneration?",
+      "back": "why it's called a cycle rather than a linear pathway",
+      "source_chunk": "kc-10",
+      "source_title": "Step 8 - malate dehydrogenase and regeneration",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "While the answer accurately reflects what the passage states, the question uses an unresolved pronoun \"This\" that creates ambiguity about what is being asked, making it a poorly constructed learning tool."
+    },
+    {
+      "front": "What is The cycle?",
+      "back": "regulated primarily at three enzymes: citrate synthase, isocitrate dehydrogenase, and alpha-ketoglutarate dehydrogenase",
+      "source_chunk": "kc-12",
+      "source_title": "Regulation",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "While the answer is factually accurate to the passage, the question \"What is The cycle?\" is poorly formed because \"The cycle\" is an unresolved pronoun with no clear antecedent, making it ambiguous and confusing for a student encountering the flashcard without context."
+    },
+    {
+      "front": "What are All three?",
+      "back": "inhibited by high ATP and NADH (signs the cell has enough energy) and activated by high ADP or NAD+ (signs the cell needs more)",
+      "source_chunk": "kc-12",
+      "source_title": "Regulation",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "While the answer is factually accurate, the question \"What are All three?\" is poorly formed with an unresolved pronoun that forces readers to hunt back through the passage rather than standing as a clear, independent learning question."
+    },
+    {
+      "front": "What is The citric acid cycle?",
+      "back": "amphibolic, meaning it runs both catabolically (breaking down fuel for energy) and anabolically (supplying building blocks for biosynthesis)",
+      "source_chunk": "kc-13",
+      "source_title": "The cycle is amphibolic",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "While the answer is factually accurate and directly from the passage, the question \"What is The citric acid cycle?\" is too vague and generic to effectively test understanding\u2014a student could answer this with almost any characteristic of the cycle, making it a poor learning tool."
+    },
+    {
+      "front": "What produces A frequent MCAT trap is assuming the cycle directly?",
+      "back": "a large amount of ATP - it doesn't; most of the energy payoff comes later, when NADH and FADH2 are used by the electron transport chain",
+      "source_chunk": "kc-14",
+      "source_title": "MCAT relevance and common exam traps",
+      "method": "baseline_regex",
+      "verdict": "wrong",
+      "reasoning": "The flashcard question is grammatically malformed and nonsensical (\"What produces A frequent MCAT trap is assuming the cycle directly?\"), making it impossible to understand what is being asked."
+    },
+    {
+      "front": "What is Another common trap?",
+      "back": "forgetting that the cycle turns twice per glucose, not once, which trips up net-yield calculations",
+      "source_chunk": "kc-14",
+      "source_title": "MCAT relevance and common exam traps",
+      "method": "baseline_regex",
+      "verdict": "correct_but_bad_teaching",
+      "reasoning": "The answer is factually accurate per the passage, but the question \"What is Another common trap?\" is poorly formed because \"Another\" is an unresolved pronoun that doesn't clearly reference what is being discussed without rereading the passage."
+    }
+  ],
+  "ai_correct_and_useful_rate": 0.98,
+  "baseline_correct_and_useful_rate": 0.0,
+  "ai_beats_baseline": true,
+  "grading_method": "llm_as_judge",
+  "grading_model": "claude-haiku-4-5-20251001",
+  "grading_limitation": "Automated LLM-as-judge grading, not human-graded. A real limitation, stated per the project's honesty rule."
+}

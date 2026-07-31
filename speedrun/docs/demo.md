@@ -20,12 +20,19 @@ What you can actually demo today:
   screen that doesn't port to AnkiDroid's Kotlin/Compose UI automatically —
   Android still needs its own dashboard screen, or its scores shown via the
   console pattern in the Android section below.
-- ❌ **No AI subsystem exists yet.** There is nothing to demo here.
+- ✅ **The AI subsystem is real and run, but it's a terminal demo, not a
+  screen.** `speedrun/tools/ai-cardgen/` generates real cards from a
+  source document via Claude, traces each to its source chunk, and beats
+  a keyword-extraction baseline 98% to 0% on the gold-set eval — see
+  [ai-subsystem.md](ai-subsystem.md) for the full numbers. It isn't wired
+  into the desktop app UI (no "generate cards" button exists), so
+  demoing it means running the scripts and showing the output, not
+  clicking through the app.
 
-If you're recording the actual submission video, the AI subsystem and an
-Android dashboard are the two pieces still worth finishing first — or the
-video should honestly narrate what's console-only vs on-screen, matching
-the project's own honesty rule rather than hiding the gap.
+If you're recording the actual submission video, an Android dashboard is
+the main piece still worth finishing — or the video should honestly
+narrate what's console/terminal-only vs on-screen, matching the project's
+own honesty rule rather than hiding the gap.
 
 ## Desktop
 
@@ -155,5 +162,10 @@ Mapped to what PRD §12 actually asks for, against what exists today:
 4. A review on Android, then a sync round-trip showing the card landing on
    desktop (`sync-test-results.md`'s script, or manual Sync button taps on
    both sides).
-5. **Not yet available:** an Android dashboard and any AI feature. State
-   this plainly rather than hiding it.
+5. Run `speedrun/tools/ai-cardgen/eval.py`'s output (or just show
+   `ai-subsystem.md`'s results table) — real generated cards with source
+   provenance, beating the baseline 98% to 0%. Narrate that this is a
+   terminal/report demo, not an in-app button, since there's no
+   "generate cards" UI yet.
+6. **Not yet available:** an Android dashboard. State this plainly rather
+   than hiding it.

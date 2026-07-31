@@ -1,0 +1,128 @@
+[
+  {
+    "front": "What is Its job?",
+    "back": "to finish oxidizing the carbon that entered as glucose, harvesting high-energy electrons along the way",
+    "source_chunk": "kc-01",
+    "source_title": "Overview and purpose",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What are Those electrons?",
+    "back": "captured by NAD+ and FAD, producing NADH and FADH2, which then feed the electron transport chain",
+    "source_chunk": "kc-01",
+    "source_title": "Overview and purpose",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What is This reaction?",
+    "back": "catalyzed by citrate synthase and releases the CoA group",
+    "source_chunk": "kc-04",
+    "source_title": "Step 1 - citrate synthase",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What is Citrate?",
+    "back": "isomerized to isocitrate through an intermediate called cis-aconitate, both steps catalyzed by the enzyme aconitase",
+    "source_chunk": "kc-05",
+    "source_title": "Steps 2-3 - isomerization to isocitrate",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What is This?",
+    "back": "a structural rearrangement only - no carbons are gained or lost, and no electron carriers are produced",
+    "source_chunk": "kc-05",
+    "source_title": "Steps 2-3 - isomerization to isocitrate",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What is The point of the rearrangement?",
+    "back": "to move a hydroxyl group into a position where it can be oxidized in the next step",
+    "source_chunk": "kc-05",
+    "source_title": "Steps 2-3 - isomerization to isocitrate",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What is Isocitrate?",
+    "back": "oxidized and loses a carbon as CO2, becoming alpha-ketoglutarate (5 carbons)",
+    "source_chunk": "kc-06",
+    "source_title": "Step 4 - isocitrate dehydrogenase",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What is This?",
+    "back": "the cycle's first carbon-releasing, energy-yielding step: it reduces one NAD+ to NADH",
+    "source_chunk": "kc-06",
+    "source_title": "Step 4 - isocitrate dehydrogenase",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What is A second NADH?",
+    "back": "produced here",
+    "source_chunk": "kc-07",
+    "source_title": "Step 5 - alpha-ketoglutarate dehydrogenase",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What is Succinate?",
+    "back": "oxidized to fumarate, reducing FAD directly to FADH2 (not NAD+ to NADH - this is the cycle's only FADH2-producing step)",
+    "source_chunk": "kc-09",
+    "source_title": "Step 7 - succinate dehydrogenase",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What is Fumarate?",
+    "back": "hydrated to malate (by fumarase), and then malate is oxidized to regenerate oxaloacetate, producing the cycle's fourth and final NADH",
+    "source_chunk": "kc-10",
+    "source_title": "Step 8 - malate dehydrogenase and regeneration",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What is Oxaloacetate?",
+    "back": "now back where the cycle started, ready to combine with a new acetyl-CoA and run again",
+    "source_chunk": "kc-10",
+    "source_title": "Step 8 - malate dehydrogenase and regeneration",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What is This regeneration?",
+    "back": "why it's called a cycle rather than a linear pathway",
+    "source_chunk": "kc-10",
+    "source_title": "Step 8 - malate dehydrogenase and regeneration",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What is The cycle?",
+    "back": "regulated primarily at three enzymes: citrate synthase, isocitrate dehydrogenase, and alpha-ketoglutarate dehydrogenase",
+    "source_chunk": "kc-12",
+    "source_title": "Regulation",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What are All three?",
+    "back": "inhibited by high ATP and NADH (signs the cell has enough energy) and activated by high ADP or NAD+ (signs the cell needs more)",
+    "source_chunk": "kc-12",
+    "source_title": "Regulation",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What is The citric acid cycle?",
+    "back": "amphibolic, meaning it runs both catabolically (breaking down fuel for energy) and anabolically (supplying building blocks for biosynthesis)",
+    "source_chunk": "kc-13",
+    "source_title": "The cycle is amphibolic",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What produces A frequent MCAT trap is assuming the cycle directly?",
+    "back": "a large amount of ATP - it doesn't; most of the energy payoff comes later, when NADH and FADH2 are used by the electron transport chain",
+    "source_chunk": "kc-14",
+    "source_title": "MCAT relevance and common exam traps",
+    "method": "baseline_regex"
+  },
+  {
+    "front": "What is Another common trap?",
+    "back": "forgetting that the cycle turns twice per glucose, not once, which trips up net-yield calculations",
+    "source_chunk": "kc-14",
+    "source_title": "MCAT relevance and common exam traps",
+    "method": "baseline_regex"
+  }
+]

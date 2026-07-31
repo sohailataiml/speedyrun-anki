@@ -1,6 +1,6 @@
 # Speedrun — Architecture
 
-Status: Brainlift v1 complete, both decisions locked (§9 — exam: MCAT, Rust feature: mastery query). Core Engine, Android build, sync, and desktop installer are implemented and verified (see status notes in §3, §4, §5, §10). The full Scoring Service — give-up gate, Performance model, and Readiness mapper — is implemented (§6, Performance's training data is synthetic), and the desktop three-score dashboard (§4) shows all three scores live. Still not built: real held-back training data, an Android dashboard, the AI Subsystem, and the §9 thesis ablation.
+Status: Brainlift v1 complete, both decisions locked (§9 — exam: MCAT, Rust feature: mastery query). Core Engine, Android build, sync, and desktop installer are implemented and verified (see status notes in §3, §4, §5, §10). The full Scoring Service — give-up gate, Performance model, and Readiness mapper — is implemented (§6, Performance's training data is synthetic), the desktop three-score dashboard (§4) shows all three scores live, and the AI Subsystem (§7) is implemented and run for real — generation, provenance, leakage check, and gold-set eval all verified, AI beats its baseline 98% to 0%. Still not built: real held-back training data for the Performance model, an Android dashboard, the paraphrase test, and the §9 thesis ablation.
 
 ## 1. Mission → system shape
 
@@ -118,10 +118,11 @@ This service can run as a local process embedded in the desktop/mobile app (no n
 
 ## 7. AI Subsystem (optional, must degrade cleanly)
 
-- Card generation: source → chunking → retrieval → generation → gold-set eval (50 QA pairs, cutoff set before looking) → paraphrase test → leakage check, before anything reaches a student.
-- Every AI output must trace to a named source (Section 3 non-negotiable) — store provenance alongside generated cards, not just the card text.
-- Must beat a simpler baseline (keyword or vector search) on the held-out eval, or it doesn't ship.
-- Failure mode: if the AI service is offline or returns garbage, the app keeps working and keeps scoring — this is why AI is drawn as a side-branch in §2, not on the path from review → score.
+- Card generation: source → chunking → generation → gold-set eval (50 QA pairs, cutoff set before looking) → leakage check, before anything reaches a student. **Status: implemented and run for real**, full writeup in [speedrun/docs/ai-subsystem.md](speedrun/docs/ai-subsystem.md). `speedrun/ai/source_material.md` (14 chunks, original content) → `speedrun/tools/ai-cardgen/generate.py` (real Claude API calls, one per chunk) → 50 traced cards. Paraphrase test not yet built (separate PRD §8 item, tracked in §10's table below).
+- Every AI output must trace to a named source (Section 3 non-negotiable) — store provenance alongside generated cards, not just the card text. **Status: implemented.** Every generated card carries `source_chunk`/`source_title`; this is checked by the generator's own output schema, not just convention.
+- Must beat a simpler baseline (keyword or vector search) on the held-out eval, or it doesn't ship. **Status: verified — it beats the baseline by a wide, honest margin.** `speedrun/tools/ai-cardgen/baseline.py` (regex/keyword extraction, no LLM) vs the real generator, graded by `eval.py` against the same gold set with the same rubric: **98% correct-and-useful (AI) vs 0% (baseline)**. Full numbers, the one AI card that graded `wrong`, and a sample baseline failure in the doc above.
+- Leakage check. **Status: implemented, and it caught a real bug in itself first.** `speedrun/tools/leakage-check/check.py` verifies gold-set-specific content never reached the generation prompt (not just that the code doesn't read `gold_set.json` — checked empirically against the actual logged prompts). An earlier version of the check produced 19 false positives before being fixed to account for expected source-material overlap; see the doc for why.
+- Failure mode: if the AI service is offline or returns garbage, the app keeps working and keeps scoring — this is why AI is drawn as a side-branch in §2, not on the path from review → score. True by construction: none of `mastery_query`/`give_up_gate`/`performance_query`/`readiness_query` or the desktop dashboard touches `speedrun/tools/ai-cardgen/` at all.
 
 ## 8. Data model additions (on top of Anki's existing schema)
 
@@ -172,8 +173,8 @@ Every row must be reported as p50 / p95 / worst-case on the shared 50k-card deck
 | Sync test (20 cards, offline/reconnect, conflict rule) | `speedrun/tools/sync-test/` driving two headless client instances against the sync server |
 | Coverage map | Derived at runtime from §8's outline mapping; surfaced on dashboard |
 | Paraphrase test | `speedrun/tools/paraphrase-test/` — compares recall accuracy vs. reworded-question accuracy |
-| Leakage check | `speedrun/tools/leakage-check/` — scans training/generation inputs for held-back eval items |
-| AI card check (gold set) | `speedrun/tools/ai-eval/` |
+| Leakage check | `speedrun/tools/leakage-check/` — implemented, passes. See [speedrun/docs/ai-subsystem.md](speedrun/docs/ai-subsystem.md) |
+| AI card check (gold set) | `speedrun/tools/ai-cardgen/eval.py` — implemented, run for real. AI 98% correct-and-useful vs baseline 0%. See [speedrun/docs/ai-subsystem.md](speedrun/docs/ai-subsystem.md) |
 | Crash/offline test (20x kill mid-review) | `speedrun/tools/crash-test/` — scripted kill against both clients, asserts zero corrupted collections |
 | Benchmark (`make bench`) | `speedrun/tools/bench/` — loads the 50k-card fixture deck, prints p50/p95/worst-case per Section 10 target |
 | Desktop installer (clean-machine run) | `speedrun/docs/desktop-installer.md` — real `.msi` built from this fork's wheels via Briefcase; build verified, install-on-genuinely-separate-machine left to the grader (see doc for what's checked vs. not) |
@@ -192,17 +193,24 @@ core/                             # this repo — the public Anki fork
 │   └── readiness_mapper.rs       # Readiness mapper (implemented)
 ├── proto/anki/stats.proto        # new RPCs/messages for all of the above
 ├── pylib/anki/collection.py      # thin Python wrappers over the same RPCs
+├── qt/aqt/speedrun_dashboard.py  # desktop three-score dashboard (Ctrl+Shift+D)
 ├── qt/installer/                 # desktop installer packaging (Briefcase)
 └── speedrun/
+    ├── ai/
+    │   ├── source_material.md    # original content the AI generator runs on
+    │   └── gold_set.json         # 50 QA pairs, cutoff committed before generation ran
     ├── docs/
     │   ├── brainlift.md
     │   ├── rust-change-note.md
     │   ├── sync-test-results.md
     │   ├── desktop-installer.md
+    │   ├── ai-subsystem.md       # generation, leakage check, eval results
     │   └── demo.md                # how to run the demo on both platforms today
     └── tools/
         ├── sync-test/             # drives real desktop + Android clients against the sync server
-        └── scoring-train/         # Performance model training script + versioned weights
+        ├── scoring-train/         # Performance model training script + versioned weights
+        ├── ai-cardgen/            # baseline.py, generate.py, eval.py
+        └── leakage-check/
 ```
 
 The phone companion is **not** inside this repo — it's two separate public forks:
@@ -212,7 +220,7 @@ The phone companion is **not** inside this repo — it's two separate public for
 points at this repo, not upstream Anki). `speedrun/docs/rust-change-note.md` documents
 exactly how they're wired together.
 
-Not yet built, so not yet real directories: the Performance model's train-time consumer of real held-back questions (currently synthetic — see `speedrun/tools/scoring-train/`), an Android dashboard, the AI subsystem, and the `paraphrase-test`/`leakage-check`/`ai-eval`/`crash-test`/`bench` tools listed in §10's table.
+Not yet built, so not yet real directories: the Performance model's train-time consumer of real held-back questions (currently synthetic — see `speedrun/tools/scoring-train/`), an Android dashboard, and the `paraphrase-test`/`crash-test`/`bench` tools listed in §10's table.
 
 ## 12. Non-negotiables → architecture mapping
 
