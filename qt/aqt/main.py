@@ -60,6 +60,7 @@ from aqt.operations.deck import set_current_deck
 from aqt.profiles import ProfileManager as ProfileManagerType
 from aqt.qt import *
 from aqt.qt import sip
+from aqt.speedrun_dashboard import show_speedrun_dashboard
 from aqt.sync import sync_collection, sync_login
 from aqt.taskman import TaskManager
 from aqt.theme import Theme, theme_manager
@@ -1179,6 +1180,7 @@ title="{}" {}>{}</button>""".format(
     def setupKeys(self) -> None:
         globalShortcuts = [
             ("Ctrl+:", show_debug_console),
+            ("Ctrl+Shift+D", lambda: show_speedrun_dashboard(self)),
             ("d", lambda: self.moveToState("deckBrowser")),
             ("s", self.onStudyKey),
             ("a", self.onAddCard),

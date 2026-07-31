@@ -10,19 +10,25 @@ What you can actually demo today:
 
 - ✅ A real review session on both platforms, backed by the same Rust engine.
 - ✅ The Rust change (`mastery_query`), the give-up gate, and the Performance
-  model — live, via each platform's debug console (see below). No dashboard
-  UI renders these yet.
+  model — live, on a real screen: `Ctrl+Shift+D` on desktop opens the
+  three-score dashboard (Memory, Performance, and an honest "not yet
+  available" for Readiness). Also reachable via each platform's debug
+  console if you want the raw protobuf output instead.
 - ✅ Sync, both directions, including the same-card-conflict case
   ([sync-test-results.md](sync-test-results.md)).
-- ❌ **No three-score dashboard UI exists yet.** The scores are real and
-  computable (see below) but nothing in the Qt or Android UI displays them —
-  today's demo has to show them via each platform's console, not a screen.
+- ❌ **No dashboard on Android yet.** Desktop's dashboard is a native PyQt
+  screen that doesn't port to AnkiDroid's Kotlin/Compose UI automatically —
+  Android still needs its own dashboard screen, or its scores shown via the
+  console pattern in the Android section below.
+- ❌ **No Readiness score yet.** The dashboard says so plainly rather than
+  showing a number that isn't real — the Readiness mapper (Performance →
+  MCAT scale, with a range) hasn't been built.
 - ❌ **No AI subsystem exists yet.** There is nothing to demo here.
 
-If you're recording the actual submission video, the three-score dashboard
-and AI subsystem need to exist first, or the video should honestly narrate
-"scores computed here in the console; the dashboard is still open work" —
-matching the project's own honesty rule rather than hiding the gap.
+If you're recording the actual submission video, the AI subsystem and an
+Android dashboard are the two pieces still worth finishing first — or the
+video should honestly narrate what's console-only vs on-screen, matching
+the project's own honesty rule rather than hiding the gap.
 
 ## Desktop
 
@@ -40,8 +46,16 @@ if you specifically want to show the clean-machine install path.
 **Show a review session:** click a due card, grade it. Ordinary Anki
 behavior — this is the unmodified FSRS path.
 
-**Show the Rust change live:** `Ctrl+Shift+;` opens the Debug Console (no
-menu item — keyboard shortcut only). Paste:
+**Show the three-score dashboard:** `Ctrl+Shift+D` (no menu item —
+keyboard shortcut only, same as the Debug Console below). Shows Memory,
+Performance, and the give-up gate status for every `topic::<name>` tag in
+the collection, computed live. Readiness is shown as "not yet available"
+rather than a fabricated number. This is the better shot for a demo video
+than the console dump below — it's an actual screen.
+
+**Show the Rust change via console** (for the raw protobuf output instead
+of the dashboard's formatted view): `Ctrl+Shift+;` opens the Debug Console
+(no menu item — keyboard shortcut only). Paste:
 
 ```python
 mw.col.set_config("fsrs", True)  # memory_state only populates with FSRS on
@@ -137,12 +151,13 @@ Mapped to what PRD §12 actually asks for, against what exists today:
 
 1. Spiky POV, one sentence (from [brainlift.md](brainlift.md)).
 2. A review session on desktop (ordinary FSRS, unmodified).
-3. The Rust change live in the Debug Console — `mastery_query` →
-   `give_up_gate` refusing, then passing after 200 reviews →
-   `performance_query` returning a real number. Narrate that this proves the
-   backend, not that it's a finished UI.
+3. `Ctrl+Shift+D` — the three-score dashboard, ideally after the 200-review
+   loop so it shows a real passing gate and a real Performance number, not
+   just a refusal. This is the strongest shot in the whole demo: it's a real
+   screen, not console output.
 4. A review on Android, then a sync round-trip showing the card landing on
    desktop (`sync-test-results.md`'s script, or manual Sync button taps on
    both sides).
-5. **Not yet available:** the three scores on an actual dashboard screen, and
-   any AI feature. State this plainly rather than only showing the console.
+5. **Not yet available:** Readiness (the dashboard says so honestly), an
+   Android dashboard, and any AI feature. State this plainly rather than
+   hiding it.
