@@ -92,13 +92,43 @@ the phone: `apps/Anki-Android-Backend` (the JNI bridge project) was cloned
 as a sibling of `apps/android` per its own documented local-dev workflow,
 its `anki` git submodule was pointed at this fork's commit instead of
 upstream, and it was built locally (`cargo run -p build_rust`, cross-
-compiling `rsdroid` for `x86_64-linux-android` via `cargo-ndk`) to produce
-`rsdroid-release.aar`. `apps/android/local.properties` sets
-`local_backend=true`, which makes AnkiDroid's Gradle build link that local
-AAR instead of the Maven dependency.
+compiling `rsdroid` via `cargo-ndk`) to produce `rsdroid-release.aar`.
+`apps/android/local.properties` sets `local_backend=true`, which makes
+AnkiDroid's Gradle build link that local AAR instead of the Maven
+dependency.
 
-Two small compatibility fixes were needed, both isolated to tooling/AnkiDroid's
-own code, not this repo's Rust change:
+**Gotcha: `build_rust` only cross-compiles for one architecture by
+default.** Without `ALL_ARCHS=1` set, `add_android_rust_targets()`
+(`build_rust/src/main.rs`) picks a single target based on the *host* OS —
+`x86_64-linux-android` on non-Mac hosts (i.e. this one), which is exactly
+right for testing on an x86_64 emulator but produces an AAR with no real
+native library for `arm64-v8a`, the architecture essentially every actual
+phone uses. The app installs fine but crashes immediately on launch on a
+real device (`UnsatisfiedLinkError`-class native crash — surfaces to the
+user as "AnkiDroid has stopped"), because the arm64-v8a build variant
+packages whatever placeholder ended up in that ABI slot instead of a
+working library. Fix: set `ALL_ARCHS=1` before running `build_rust`, which
+cross-compiles `armv7-linux-androideabi`, `aarch64-linux-android`, and
+`x86_64-linux-android` together (the resulting AAR jumps from ~20MB to
+~56MB, and each per-ABI APK variant to ~100MB+, since real native code now
+ships for every architecture). Also needs `ANDROID_NDK_HOME` and
+`Anki-Android-Backend/local.properties` (`sdk.dir=...`) set explicitly if
+they aren't already exported in the shell that runs the build.
+```bash
+export ANDROID_NDK_HOME=/path/to/sdk/ndk/<version>
+export ALL_ARCHS=1
+cargo run -p build_rust    # in Anki-Android-Backend/
+```
+This was caught the hard way: the first APK shipped in the v0.1.0
+GitHub Release was built without `ALL_ARCHS`, installed fine on the
+x86_64 emulator used for all the earlier verification in this doc, and
+then crashed on first launch on an actual phone. Fixed and the release
+asset replaced — worth stating plainly rather than pretending the first
+build was fine, since "verified on an emulator" and "verified on a real
+device" are genuinely different claims and this is exactly why.
+
+Two other small compatibility fixes were needed, both isolated to
+tooling/AnkiDroid's own code, not this repo's Rust change:
 - `Anki-Android-Backend/build_rust/src/main.rs`: the Gradle wrapper was
   invoked as a bare `gradlew.bat`, which fails on this machine because
   `NoDefaultCurrentDirectoryInExePath=1` is set (a Windows hardening
@@ -111,5 +141,6 @@ own code, not this repo's Rust change:
 
 Verified: `GeneratedBackend.kt` now exposes
 `fun masteryQuery(topics: Iterable<String>): List<anki.stats.TopicMastery>`,
-the APK builds and installs, and the app runs on an emulator against a real
-collection with no crashes.
+the APK builds and installs, and the app runs with no crashes both on an
+x86_64 emulator and, after the `ALL_ARCHS` fix above, on a real arm64-v8a
+phone.
