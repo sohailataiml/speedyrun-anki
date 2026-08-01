@@ -16,18 +16,23 @@ What you can actually demo today:
   output instead.
 - ✅ Sync, both directions, including the same-card-conflict case
   ([sync-test-results.md](sync-test-results.md)).
-- ⚠️ **Android now has its own dashboard screen, built and verified by build
-  — not yet verified by a live screenshot.** Reachable from the deck
-  picker's overflow menu ("Speedrun dashboard"), it's a native
-  View/Fragment `AnkiActivity` (AnkiDroid's real UI pattern — the app
-  depends on Compose but doesn't use it for actual screens) showing the
-  same Memory/Performance/Readiness layout as desktop. It compiled and
-  built clean, and calls the same backend RPCs confirmed live in
-  `GeneratedBackend.kt`, but the dev emulator used to build this couldn't
-  hold a stable session long enough to confirm the on-screen render — see
-  the "Gotcha" note in [rust-change-note.md](rust-change-note.md). Confirm
-  on a real device or a healthier emulator before claiming this checkbox
-  done in the submission video.
+- ✅ **Android has its own dashboard screen, confirmed live on an
+  emulator.** Reachable from the deck picker's overflow menu ("Speedrun
+  dashboard"), it's a native View/Fragment `AnkiActivity` (AnkiDroid's
+  real UI pattern — the app depends on Compose but doesn't use it for
+  actual screens) showing the same Memory/Performance/Readiness layout as
+  desktop. Driven live via `adb` on a fresh emulator: the menu item is
+  present, the screen opens and renders its correct empty state ("No
+  topics tagged yet"), and a `topic::`-tagged note was added through the
+  real note editor and tag picker and saved with no crash (`logcat` clean
+  throughout). Still outstanding: a screenshot of the dashboard populated
+  with real numbers (Memory/Performance/Readiness), matching the desktop
+  shot — the emulator became too resource-starved partway through a
+  review pass to get one in this session; the review/dashboard code path
+  is identical to desktop's confirmed one, so this is a demo-recording
+  task, not a known code gap. See the "Gotcha" note in
+  [rust-change-note.md](rust-change-note.md) for the emulator stability
+  history.
 - ✅ **The AI subsystem is real and run, but it's a terminal demo, not a
   screen.** `speedrun/tools/ai-cardgen/` generates real cards from a
   source document via Claude, traces each to its source chunk, and beats
@@ -37,11 +42,13 @@ What you can actually demo today:
   demoing it means running the scripts and showing the output, not
   clicking through the app.
 
-If you're recording the actual submission video, confirming the Android
-dashboard renders on a real screen is the main piece still worth
-finishing — or the video should honestly narrate what's console/terminal-only
-vs on-screen, matching the project's own honesty rule rather than hiding
-the gap.
+If you're recording the actual submission video, getting one shot of the
+Android dashboard with real, populated scores (not just the empty state)
+is the main piece still worth finishing — ideally on a real device or a
+freshly-booted emulator with more headroom than this session had. The
+video should honestly narrate what's console/terminal-only vs on-screen
+for the AI subsystem, matching the project's own honesty rule rather than
+hiding the gap.
 
 ## Desktop
 
@@ -183,11 +190,13 @@ Mapped to what PRD §12 actually asks for, against what exists today:
    terminal/report demo, not an in-app button, since there's no
    "generate cards" UI yet.
 6. The Android dashboard, opened from the deck picker's overflow menu
-   ("Speedrun dashboard") — **confirm it actually renders on the device or
-   emulator you're recording with before this shot goes in the video.** It
-   builds and ships, but as of this writing it's only been verified by
-   build success and API-surface inspection, not by a live screenshot (dev
-   emulator was too unstable to hold a session — see the "Gotcha" note in
-   [rust-change-note.md](rust-change-note.md)). If it doesn't render
-   cleanly on your recording setup, narrate that plainly rather than
-   hiding it.
+   ("Speedrun dashboard") — confirmed live on an emulator: the menu item,
+   the screen open, and its correct empty state all rendered with no
+   crash. For the actual video, get a card tagged `topic::<name>` and
+   graded first so the shot shows real Memory/Performance/Readiness
+   numbers rather than the empty state — that populated shot is still
+   outstanding as of this writing (see the honest-scope note above). If
+   the emulator you're recording with is unstable, see the "Gotcha" note
+   in [rust-change-note.md](rust-change-note.md) for the known host
+   resource-pressure pattern and workarounds (`adb`-direct interaction,
+   `pm clear` for a clean slate, retry once host memory frees up).
