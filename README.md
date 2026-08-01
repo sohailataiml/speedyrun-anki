@@ -7,6 +7,12 @@ one blended confidence number. Full reasoning in
 
 <img width="2848" height="1600" alt="image" src="https://github.com/user-attachments/assets/9b1d8352-469b-4cc8-b161-429c8401d39f" />
 
+<img width="2848" height="1600" alt="image" src="https://github.com/user-attachments/assets/b9e944c8-5a2f-4f4a-ad8b-993941f2c15d" />
+
+<img width="2848" height="1600" alt="image" src="https://github.com/user-attachments/assets/23c50293-2d0c-4e58-9031-3cf435f367cc" />
+
+
+
 - **Architecture overview:** [ARCHITECTURE.md](ARCHITECTURE.md)
 - **The required Rust change** (mastery query + give-up gate + Performance
   model, why they belong in Rust, upstream files touched):
