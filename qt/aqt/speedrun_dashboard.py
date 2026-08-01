@@ -25,7 +25,9 @@ from aqt.utils import disable_help_button, restoreGeom, saveGeom, tr
 TITLE = "speedrunDashboard"
 
 # Placeholder inputs until a real exam-style question flow exists to
-# measure these per attempt (PRD §8's paraphrase test, not yet built).
+# measure these per attempt. The paraphrase test (speedrun/tools/
+# paraphrase-test/) measures accuracy for its own ablation purposes but
+# doesn't feed live per-attempt difficulty/timing back into this dashboard.
 ASSUMED_DIFFICULTY = 0.5
 ASSUMED_TIMING_SECONDS = 70.0
 

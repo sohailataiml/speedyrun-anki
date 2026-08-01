@@ -1,6 +1,6 @@
 # Speedrun — Architecture
 
-Status: Brainlift v1 complete, both decisions locked (§9 — exam: MCAT, Rust feature: mastery query). Core Engine, Android build, sync, and desktop installer are implemented and verified (see status notes in §3, §4, §5, §10). The full Scoring Service — give-up gate, Performance model, and Readiness mapper — is implemented (§6, Performance's training data is synthetic), both the desktop and Android three-score dashboards show all three scores live, and the AI Subsystem (§7) is implemented and run for real — generation, provenance, leakage check, and gold-set eval all verified, AI beats its baseline 98% to 0%. The §9 thesis ablation and paraphrase test are implemented and run for real: a second Rust feature (`speedrunTopicOrder`, a real queue-order toggle) drives a genuine three-way comparison, and both the item-side sufficiency test and the ablation produced real, non-fabricated results — see [speedrun/docs/paraphrase-test.md](speedrun/docs/paraphrase-test.md) and Brainlift §7. Still not built: real held-back training data for the Performance model, and the `crash-test`/`bench` tooling.
+Status: Brainlift v1 complete, both decisions locked (§9 — exam: MCAT, Rust feature: mastery query). Core Engine, Android build, sync, and desktop installer are implemented and verified (see status notes in §3, §4, §5, §10). The full Scoring Service — give-up gate, Performance model, and Readiness mapper — is implemented (§6, Performance's training data is synthetic), both the desktop and Android three-score dashboards show all three scores live, and the AI Subsystem (§7) is implemented and run for real — generation, provenance, leakage check, and gold-set eval all verified, AI beats its baseline 98% to 0%. The §9 thesis ablation and paraphrase test are implemented and run for real: a second Rust feature (`speedrunTopicOrder`, a real queue-order toggle) drives a genuine three-way comparison, and both the item-side sufficiency test and the ablation produced real, non-fabricated results — see [speedrun/docs/paraphrase-test.md](speedrun/docs/paraphrase-test.md) and Brainlift §7. `crash-test` (20/20 kill-mid-review, zero corrupted collections) and `bench` (real p50/p95/worst-case timings against a 50k-card fixture) are both implemented and run for real — bench caught and fixed a real O(topics × collection_size) scaling bug in `mastery_query` along the way (dashboard load: 13-28s → 1.7-2.6s), though the aggressive dashboard-load targets still aren't met at 50k cards. See [speedrun/docs/bench-and-crash-test.md](speedrun/docs/bench-and-crash-test.md). Still not built: real held-back training data for the Performance model.
 
 ## 1. Mission → system shape
 
@@ -154,18 +154,18 @@ See [speedrun/docs/brainlift.md](speedrun/docs/brainlift.md) for the full resear
 
 ### Performance targets (PRD §10, verbatim numbers)
 
-Every row must be reported as p50 / p95 / worst-case on the shared 50k-card deck — a single self-picked number does not satisfy this ("One number you picked yourself does not count."). `speedrun/tools/bench` (not yet built) is the single command that prints all of these.
+Every row must be reported as p50 / p95 / worst-case on the shared 50k-card deck — a single self-picked number does not satisfy this ("One number you picked yourself does not count."). `speedrun/tools/bench` — **implemented and run for real**; see [speedrun/docs/bench-and-crash-test.md](speedrun/docs/bench-and-crash-test.md) for full numbers and methodology.
 
-| Metric | Target | Notes |
+| Metric | Target | Result |
 |---|---|---|
-| Button press acknowledged | p95 < 50ms | Both platforms |
-| Next card after grading | p95 < 100ms | |
-| Dashboard first load | < 1s | |
-| Dashboard refresh | < 500ms | No frozen screen |
-| Normal session sync | < 5s | |
-| Memory at 50,000 cards | Under a limit we state | Desktop and midrange phone — limit not yet stated |
-| Cold start | < 5s desktop, < 4s phone | Nothing blocks the UI over 100ms |
-| Crash test | Zero corrupted collections | 20x kill mid-review, each app |
+| Button press acknowledged | p95 < 50ms | Not measured — requires driving the real GUI, not scriptable headlessly |
+| Next card after grading | p95 < 100ms | **PASS** — p50 4ms, p95 6ms, worst 33ms |
+| Dashboard first load | < 1s | **FAIL** — p50 1.76s, p95 2.15s (down from 13-28s pre-fix — see below) |
+| Dashboard refresh | < 500ms | **FAIL** — p50 1.88s, p95 2.58s |
+| Normal session sync | < 5s | Not run in bench.py — see `speedrun/tools/sync-test/`'s own timing |
+| Memory at 50,000 cards | Under a limit we state | 6.5MB RSS delta (harness process; not Qt/Android's own footprint) |
+| Cold start | < 5s desktop, < 4s phone | **PASS** (lower bound) — p50 8ms, p95 9ms (backend collection-open only, not full app launch) |
+| Crash test | Zero corrupted collections | **PASS** — 20/20, all kills landed on a live process |
 
 | Requirement | Lives in |
 |---|---|
@@ -175,8 +175,8 @@ Every row must be reported as p50 / p95 / worst-case on the shared 50k-card deck
 | Paraphrase test | `speedrun/tools/paraphrase-test/` — **implemented and run for real.** Item-side sufficiency (93% near-transfer vs. 73% discrimination, real Claude API calls) plus the full three-way ablation (real Rust queue output, counterfactual-content student simulation, 0% no-study control confirming no contamination). See [speedrun/docs/paraphrase-test.md](speedrun/docs/paraphrase-test.md). |
 | Leakage check | `speedrun/tools/leakage-check/` — implemented, passes. See [speedrun/docs/ai-subsystem.md](speedrun/docs/ai-subsystem.md) |
 | AI card check (gold set) | `speedrun/tools/ai-cardgen/eval.py` — implemented, run for real. AI 98% correct-and-useful vs baseline 0%. See [speedrun/docs/ai-subsystem.md](speedrun/docs/ai-subsystem.md) |
-| Crash/offline test (20x kill mid-review) | `speedrun/tools/crash-test/` — scripted kill against both clients, asserts zero corrupted collections |
-| Benchmark (`make bench`) | `speedrun/tools/bench/` — loads the 50k-card fixture deck, prints p50/p95/worst-case per Section 10 target |
+| Crash/offline test (20x kill mid-review) | `speedrun/tools/crash-test/` — **implemented and run for real: 20/20 pass, zero corrupted collections.** Desktop only — Android scoped out this session (emulator resource constraints). See [speedrun/docs/bench-and-crash-test.md](speedrun/docs/bench-and-crash-test.md). |
+| Benchmark (`make bench`) | `speedrun/tools/bench/` — **implemented and run for real** against the 50k-card fixture. Found and fixed a real scaling bug in `mastery_query` along the way (see [rust-change-note.md](speedrun/docs/rust-change-note.md)); dashboard-load targets still not met post-fix. See [speedrun/docs/bench-and-crash-test.md](speedrun/docs/bench-and-crash-test.md). |
 | Desktop installer (clean-machine run) | `speedrun/docs/desktop-installer.md` — real `.msi` built from this fork's wheels via Briefcase; build verified, install-on-genuinely-separate-machine left to the grader (see doc for what's checked vs. not) |
 
 ## 11. Repo layout
@@ -220,7 +220,7 @@ The phone companion is **not** inside this repo — it's two separate public for
 points at this repo, not upstream Anki). `speedrun/docs/rust-change-note.md` documents
 exactly how they're wired together.
 
-Not yet built, so not yet real directories: the Performance model's train-time consumer of real held-back questions (currently synthetic — see `speedrun/tools/scoring-train/`), and the `crash-test`/`bench` tools listed in §10's table. `paraphrase-test` is now real — see above.
+Not yet built, so not yet a real directory: the Performance model's train-time consumer of real held-back questions (currently synthetic — see `speedrun/tools/scoring-train/`). `paraphrase-test`, `crash-test`, and `bench` are all now real — see above.
 
 ## 12. Non-negotiables → architecture mapping
 

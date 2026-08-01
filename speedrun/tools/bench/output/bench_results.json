@@ -1,0 +1,40 @@
+{
+  "button_press_acknowledged": "NOT MEASURED - requires driving the real GUI, see module docstring",
+  "cold_start_backend": {
+    "n": 5,
+    "p50_ms": 7.57,
+    "p95_ms": 9.28,
+    "worst_ms": 9.43,
+    "target_ms": 5000,
+    "meets_p95_target": true
+  },
+  "next_card_after_grading": {
+    "n": 300,
+    "p50_ms": 3.87,
+    "p95_ms": 6.26,
+    "worst_ms": 33.07,
+    "target_ms": 100,
+    "meets_p95_target": true
+  },
+  "dashboard_refresh": {
+    "n": 30,
+    "p50_ms": 1884.87,
+    "p95_ms": 2583.21,
+    "worst_ms": 5913.05,
+    "target_ms": 500,
+    "meets_p95_target": false
+  },
+  "dashboard_first_load": {
+    "n": 30,
+    "p50_ms": 1759.28,
+    "p95_ms": 2146.95,
+    "worst_ms": 2989.7,
+    "target_ms": 1000,
+    "meets_p95_target": false
+  },
+  "memory_at_50k_cards": {
+    "rss_delta_mb": 6.5,
+    "note": "Python harness process RSS, not Qt/Android app RSS"
+  },
+  "sync": "NOT RUN HERE - see speedrun/tools/sync-test/ for real sync timing"
+}

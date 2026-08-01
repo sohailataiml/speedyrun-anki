@@ -238,3 +238,64 @@ harness, not just to check the reordering logic in isolation.
   the Python surface the desktop app and any harness scripts actually use.
 
 All pass; full `cargo test -p anki --lib` (557 tests) has zero regressions.
+
+# A scaling bug in the first Rust change, found by benchmarking at real scale
+
+## What broke and how it was found
+
+`speedrun/tools/bench/` (PRD §10's required 50k-card benchmark) measured
+the desktop dashboard's `mastery_query`/`readiness_query` calls at
+**13,000–28,000ms** against a 50-topic, 50k-card fixture. Every
+collection used to test `mastery_query` up to this point — the unit
+tests, the paraphrase-test's 30-card fixture, manual dashboard checks —
+was small enough (1–30 cards) that the bug was invisible: `topic_mastery`
+ran one `"tag:topic::x"` search per requested topic. `notes.tags` has no
+index (it's a free-text space-separated string; a LIKE-style match can't
+use a normal B-tree index), so every tag search does a full notes-table
+scan. At 50 requested topics, that's 50 full scans of the whole
+collection per dashboard load — O(topics × collection_size), not
+O(collection_size) as the original code's doc comment claimed ("no
+per-card queries, so this stays fast at scale" — narrowly true, but the
+*search itself* wasn't scale-safe).
+
+## The fix
+
+`rslib/src/stats/mastery.rs`'s `mastery_query` now does **one** combined
+`tag:topic::*` search across every topic-tagged card in the collection,
+then groups the results by each note's own `topic::` tag in memory
+(same lexicographically-smallest-tag tie-break as
+`topic_order.rs`'s `topic_map`, for consistency), instead of looping a
+fresh search per requested topic. The per-card mastery/recall math is
+byte-for-byte identical — it's fed from pre-grouped in-memory data
+instead of a fresh SQL search each time — split into a pure
+`topic_mastery_from(topic, cards, revlog_by_card)` function so the
+existing behavior tests didn't need to change at all.
+
+**Result:** dashboard load time dropped from 13–28s to 1.7–2.6s — roughly
+10x. Still doesn't meet the PRD's aggressive 500ms/1000ms targets at 50k
+cards; the remaining cost is the volume of revlog data (~600k rows at
+this fixture's scale) fetched and serialized across the Rust/Python FFI
+boundary per call, not the search itself — closing that gap would need
+incrementally-maintained per-topic aggregates rather than a full revlog
+scan on every load, a bigger change than fit in the time available. See
+[bench-and-crash-test.md](bench-and-crash-test.md) for the full numbers
+and this limitation stated in context.
+
+## Why this is exactly what benchmarking-at-real-scale is for
+
+Nothing about this bug would have been caught by more unit tests at
+small scale — the tests already passed, and still pass unchanged after
+the fix. It only exists because `speedrun/tools/bench/` did what PRD §10
+actually demands: measure against the shared 50k-card deck, not a
+convenient small one. Recorded here rather than quietly fixed and
+forgotten, per the project's own honesty rule.
+
+## Tests
+
+No new tests were needed — `mastery_query`'s existing 3 tests
+(`reviewed_card_contributes_mastery_and_recall`,
+`new_card_counts_toward_coverage_but_not_mastery`,
+`topics_are_isolated_from_each_other`) already exercise the public
+behavior this fix had to preserve exactly, and all 3 pass unchanged.
+Full `cargo test -p anki --lib` (557 tests) still has zero regressions
+after the fix.

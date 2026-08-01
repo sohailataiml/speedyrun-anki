@@ -1,0 +1,167 @@
+{
+  "iterations": 20,
+  "corrupted_count": 0,
+  "pass": true,
+  "results": [
+    {
+      "iteration": 0,
+      "sleep_s": 0.582,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 1,
+      "sleep_s": 0.292,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 2,
+      "sleep_s": 0.054,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 3,
+      "sleep_s": 0.551,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 4,
+      "sleep_s": 0.567,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 5,
+      "sleep_s": 0.37,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 6,
+      "sleep_s": 0.419,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 7,
+      "sleep_s": 0.096,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 8,
+      "sleep_s": 0.472,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 9,
+      "sleep_s": 0.18,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 10,
+      "sleep_s": 0.067,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 11,
+      "sleep_s": 0.484,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 12,
+      "sleep_s": 0.24,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 13,
+      "sleep_s": 0.393,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 14,
+      "sleep_s": 0.389,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 15,
+      "sleep_s": 0.132,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 16,
+      "sleep_s": 0.151,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 17,
+      "sleep_s": 0.113,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 18,
+      "sleep_s": 0.058,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    },
+    {
+      "iteration": 19,
+      "sleep_s": 0.318,
+      "worker_already_exited": false,
+      "integrity_ok": true,
+      "integrity_error": "Database rebuilt and optimized.",
+      "card_count_after": 1000
+    }
+  ]
+}

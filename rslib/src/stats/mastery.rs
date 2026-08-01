@@ -12,48 +12,101 @@ use fsrs::FSRS5_DEFAULT_DECAY;
 use crate::prelude::*;
 use crate::revlog::RevlogEntry;
 use crate::search::SortMode;
+use crate::tags::split_tags;
+
+const TOPIC_TAG_PREFIX: &str = "topic::";
 
 impl Collection {
     /// Computes mastery/recall for each requested topic. A topic is the
-    /// suffix of a `topic::<name>` tag. One tag search plus two batched
-    /// queries per topic; no per-card queries, so this stays fast at scale.
+    /// suffix of a `topic::<name>` tag.
+    ///
+    /// One combined search across ALL topic-tagged cards, not one search
+    /// per requested topic. `bench.py` (speedrun/tools/bench/) caught this
+    /// the hard way: at a 50k-card fixture, N per-topic `"tag:topic::x"`
+    /// searches took 7-10s total, because `notes.tags` has no index -
+    /// every tag search does a full notes-table scan, so N searches cost
+    /// O(topics × collection_size) instead of O(collection_size). A single
+    /// `tag:topic::*` search plus in-memory grouping by each note's topic
+    /// tag turns that into one scan regardless of how many topics are
+    /// requested. See rust-change-note.md for the before/after numbers.
     pub(crate) fn mastery_query(
         &mut self,
         topics: &[String],
     ) -> Result<anki_proto::stats::MasteryQueryResponse> {
-        let mut out = Vec::with_capacity(topics.len());
-        for topic in topics {
-            out.push(self.topic_mastery(topic)?);
+        if topics.is_empty() {
+            return Ok(anki_proto::stats::MasteryQueryResponse { topics: Vec::new() });
         }
-        Ok(anki_proto::stats::MasteryQueryResponse { topics: out })
-    }
 
-    fn topic_mastery(&mut self, topic: &str) -> Result<anki_proto::stats::TopicMastery> {
-        // Wrapping the whole `tag:topic::x` clause in quotes lets topic names
-        // contain spaces, matching how Anki's own UI quotes generated searches.
-        let escaped = topic.replace('\\', "\\\\").replace('"', "\\\"");
-        let search = format!("\"tag:topic::{escaped}\"");
-
-        let guard = self.search_cards_into_table(search.as_str(), SortMode::NoOrder)?;
-        let cards_total = guard.cards as u32;
+        let guard = self.search_cards_into_table("tag:topic::*", SortMode::NoOrder)?;
         let cards = guard.col.storage.all_searched_cards()?;
         let revlog = guard.col.storage.get_revlog_entries_for_searched_cards()?;
+        let note_ids: Vec<NoteId> = {
+            let mut ids: Vec<NoteId> = cards.iter().map(|c| c.note_id).collect();
+            ids.sort_unstable();
+            ids.dedup();
+            ids
+        };
+        let note_tags = guard.col.storage.get_note_tags_by_id_list(&note_ids)?;
         drop(guard);
 
-        let mut by_card: HashMap<CardId, Vec<&RevlogEntry>> = HashMap::new();
-        for entry in &revlog {
-            by_card.entry(entry.cid).or_default().push(entry);
+        // Same tie-break as the Speedrun topic-order queue feature
+        // (topic_order.rs): lexicographically smallest topic:: tag if a
+        // note carries more than one.
+        let mut topic_by_note: HashMap<NoteId, &str> = HashMap::new();
+        for nt in &note_tags {
+            if let Some(topic) = split_tags(&nt.tags)
+                .filter(|t| t.starts_with(TOPIC_TAG_PREFIX))
+                .map(|t| &t[TOPIC_TAG_PREFIX.len()..])
+                .min()
+            {
+                topic_by_note.insert(nt.id, topic);
+            }
         }
 
-        let now = TimestampSecs::now();
-        let mut retrievability_sum = 0f32;
-        let mut retrievability_count = 0u32;
-        let mut correct = 0u32;
-        let mut graded = 0u32;
-        let mut cards_with_reviews = 0u32;
-
+        let mut cards_by_topic: HashMap<&str, Vec<&crate::card::Card>> = HashMap::new();
         for card in &cards {
-            let entries = by_card.get(&card.id);
+            if let Some(&topic) = topic_by_note.get(&card.note_id) {
+                cards_by_topic.entry(topic).or_default().push(card);
+            }
+        }
+        let mut revlog_by_card: HashMap<CardId, Vec<&RevlogEntry>> = HashMap::new();
+        for entry in &revlog {
+            revlog_by_card.entry(entry.cid).or_default().push(entry);
+        }
+
+        let out = topics
+            .iter()
+            .map(|topic| {
+                topic_mastery_from(
+                    topic,
+                    cards_by_topic.get(topic.as_str()).map_or(&[][..], |v| v),
+                    &revlog_by_card,
+                )
+            })
+            .collect();
+        Ok(anki_proto::stats::MasteryQueryResponse { topics: out })
+    }
+}
+
+/// Pure: computes one topic's mastery/recall from cards+revlog already
+/// scoped to that topic. Same math as the original per-topic-search
+/// version, just fed from in-memory grouped data instead of a fresh SQL
+/// search per topic.
+fn topic_mastery_from(
+    topic: &str,
+    cards: &[&crate::card::Card],
+    revlog_by_card: &HashMap<CardId, Vec<&RevlogEntry>>,
+) -> anki_proto::stats::TopicMastery {
+    let cards_total = cards.len() as u32;
+    let now = TimestampSecs::now();
+    let mut retrievability_sum = 0f32;
+    let mut retrievability_count = 0u32;
+    let mut correct = 0u32;
+    let mut graded = 0u32;
+    let mut cards_with_reviews = 0u32;
+
+    for card in cards {
+            let entries = revlog_by_card.get(&card.id);
 
             // Fall back to deriving last-review time from the revlog we already
             // fetched, rather than persisting it onto the card as card_stats()
@@ -94,23 +147,22 @@ impl Collection {
                     cards_with_reviews += 1;
                 }
             }
-        }
+    }
 
-        Ok(anki_proto::stats::TopicMastery {
-            topic: topic.to_string(),
-            mastery: if retrievability_count > 0 {
-                retrievability_sum / retrievability_count as f32
-            } else {
-                0.0
-            },
-            average_recall: if graded > 0 {
-                correct as f32 / graded as f32
-            } else {
-                0.0
-            },
-            cards_with_reviews,
-            cards_total,
-        })
+    anki_proto::stats::TopicMastery {
+        topic: topic.to_string(),
+        mastery: if retrievability_count > 0 {
+            retrievability_sum / retrievability_count as f32
+        } else {
+            0.0
+        },
+        average_recall: if graded > 0 {
+            correct as f32 / graded as f32
+        } else {
+            0.0
+        },
+        cards_with_reviews,
+        cards_total,
     }
 }
 
