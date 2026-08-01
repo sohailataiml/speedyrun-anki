@@ -136,7 +136,7 @@ This service can run as a local process embedded in the desktop/mobile app (no n
 | `topic::<name>` tag | Links cards to outline topics | Done — reuses Anki's tag table |
 | Exam outline mapping file | Official outline → topic tags, for coverage map | Not built |
 | Held-back question bank (train/eval split) | Performance model training + input to leakage check | Not built |
-| Gold set (50 QA pairs) | AI card-quality eval | Not built |
+| Gold set (50 QA pairs) | AI card-quality eval | **Done** — `speedrun/ai/gold_set.json`, cutoff-committed before generation, used by `speedrun/tools/ai-cardgen/eval.py`. See [ai-subsystem.md](speedrun/docs/ai-subsystem.md). |
 | Performance history | Per-topic accuracy on held-back exam-style questions, feeds the Performance model | Not built |
 | Readiness prediction log | Each estimate + range + inputs, for the calibration chart (§10.1) | Not built |
 | Calibration log | Predicted-vs-actual outcomes, source of Brier/log-loss numbers (§6, §10) | Not built |
