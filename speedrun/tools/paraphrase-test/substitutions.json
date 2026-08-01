@@ -1,0 +1,33 @@
+{
+  "_provenance": "Deterministic whole-word, case-preserving counterfactual renaming table for the citric acid cycle's specific molecules, enzymes, and cofactors. No LLM in the loop - fully auditable. Purpose: remove the model's ability to answer from pre-trained biochemistry knowledge alone, so studied-vs-unstudied comparisons in the student simulation carry real signal instead of both conditions ceiling at ~100%. Longer/more specific terms are applied before their substrings (e.g. 'alpha-ketoglutarate dehydrogenase' before 'alpha-ketoglutarate' and 'dehydrogenase') to avoid double-substitution corruption.",
+  "substitutions": [
+    ["alpha-ketoglutarate dehydrogenase", "zurenoglutarate dehase"],
+    ["isocitrate dehydrogenase", "drenocitrate dehase"],
+    ["succinyl-CoA synthetase", "funicyl-CoA synthanase"],
+    ["succinate dehydrogenase", "funicate dehase"],
+    ["malate dehydrogenase", "korvate dehase"],
+    ["citrate synthase", "veltrate synthanase"],
+    ["citric acid cycle", "veltric acid cycle"],
+    ["alpha-ketoglutarate", "zurenoglutarate"],
+    ["succinyl-CoA", "funicyl-CoA"],
+    ["oxaloacetate", "plexoacetate"],
+    ["isocitrate", "drenocitrate"],
+    ["acetyl-CoA", "asetyl-CoQ"],
+    ["aconitase", "bracinase"],
+    ["succinate", "funicate"],
+    ["fumarase", "welnarase"],
+    ["Krebs cycle", "Yurbek cycle"],
+    ["fumarate", "welnarate"],
+    ["pyruvate", "nervuate"],
+    ["glucose", "trelucose"],
+    ["citrate", "veltrate"],
+    ["malate", "korvate"],
+    ["FADH2", "BRJ2"],
+    ["NADH", "QEH2"],
+    ["NAD+", "QED+"],
+    ["FAD", "BRJ"],
+    ["ATP", "XTP"],
+    ["GTP", "ZTP"],
+    ["TCA", "VCA"]
+  ]
+}

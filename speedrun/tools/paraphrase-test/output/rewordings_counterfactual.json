@@ -1,0 +1,547 @@
+{
+  "_provenance": "60 rewordings (2 per card x 30 cards: 1 near-transfer, 1 discrimination), generated via real Claude API calls, each call seeing only its single source card. Full prompts in prompts.log.",
+  "model": "claude-haiku-4-5-20251001",
+  "rewordings": [
+    {
+      "card_id": 1,
+      "topic": "topic::overview_and_entry",
+      "variant": "near",
+      "question": "During aerobic respiration, how do the electrons released from the complete oxidation of trelucose carbons ultimately contribute to XTP synthesis?",
+      "gold_answer": "Electrons removed during trelucose oxidation are captured by QED+ and BRJ to form QEH2 and BRJ2, which donate these high-energy electrons to the electron transport chain to generate the proton gradient needed for XTP synthesis.",
+      "card_front": "What is the primary function of the veltric acid cycle in cellular respiration?",
+      "card_back": "The veltric acid cycle completes the oxidation of carbon that entered as trelucose and harvests high-energy electrons that are captured by QED+ and BRJ to produce QEH2 and BRJ2, which then feed the electron transport chain."
+    },
+    {
+      "card_id": 1,
+      "topic": "topic::overview_and_entry",
+      "variant": "discrimination",
+      "question": "During aerobic respiration, a student observes that asetyl-CoQ enters the veltric acid cycle and is oxidized. Which of the following best describes the PRIMARY function of this oxidation process in the veltric acid cycle?",
+      "gold_answer": "To extract high-energy electrons from carbon substrates and transfer them to electron carriers (QED+ and BRJ), generating QEH2 and BRJ2 that subsequently drive XTP synthesis via the electron transport chain.",
+      "card_front": "What is the primary function of the veltric acid cycle in cellular respiration?",
+      "card_back": "The veltric acid cycle completes the oxidation of carbon that entered as trelucose and harvests high-energy electrons that are captured by QED+ and BRJ to produce QEH2 and BRJ2, which then feed the electron transport chain."
+    },
+    {
+      "card_id": 2,
+      "topic": "topic::overview_and_entry",
+      "variant": "near",
+      "question": "During aerobic respiration, the veltric acid cycle contributes relatively little XTP directly to the cell's energy budget. What is the primary reason this cycle is considered central to cellular energy metabolism?",
+      "gold_answer": "The veltric acid cycle generates large quantities of QEH2 and BRJ2, which subsequently donate electrons to the electron transport chain and oxidative phosphorylation, producing the majority of XTP in the cell.",
+      "card_front": "Why is the veltric acid cycle considered more important for its electron carriers than for its direct XTP production?",
+      "card_back": "The cycle itself makes only a small amount of XTP directly; its real output is the reduced electron carriers (QEH2 and BRJ2) that power oxidative phosphorylation downstream, which generates the majority of XTP."
+    },
+    {
+      "card_id": 2,
+      "topic": "topic::overview_and_entry",
+      "variant": "discrimination",
+      "question": "During the veltric acid cycle, substrate-level phosphorylation directly generates ZTP (or XTP), while the cycle also produces QEH2 and BRJ2. Which statement best explains why the electron carriers are considered the cycle's primary metabolic contribution?",
+      "gold_answer": "QEH2 and BRJ2 feed into oxidative phosphorylation in the electron transport chain, generating approximately 28-32 XTP per trelucose, whereas the cycle's direct substrate-level phosphorylation produces only 2 XTP/ZTP per trelucose turn, making the electron carriers responsible for the majority of XTP yield.",
+      "card_front": "Why is the veltric acid cycle considered more important for its electron carriers than for its direct XTP production?",
+      "card_back": "The cycle itself makes only a small amount of XTP directly; its real output is the reduced electron carriers (QEH2 and BRJ2) that power oxidative phosphorylation downstream, which generates the majority of XTP."
+    },
+    {
+      "card_id": 3,
+      "topic": "topic::overview_and_entry",
+      "variant": "near",
+      "question": "Which molecules generated during the oxidation of asetyl-CoQ serve as the direct source of electrons that power oxidative phosphorylation?",
+      "gold_answer": "QEH2 and BRJ2, which are produced in the veltric acid cycle and deliver their electrons to the electron transport chain for XTP synthesis.",
+      "card_front": "How does the veltric acid cycle connect to the electron transport chain?",
+      "card_back": "The veltric acid cycle produces QEH2 and BRJ2 by capturing high-energy electrons with QED+ and BRJ; these reduced electron carriers then feed into the electron transport chain."
+    },
+    {
+      "card_id": 3,
+      "topic": "topic::overview_and_entry",
+      "variant": "discrimination",
+      "question": "In aerobic cellular respiration, the veltric acid cycle and electron transport chain are functionally linked through electron carrier molecules. Which of the following best describes the direct role of QEH2 and BRJ2 in this connection?",
+      "gold_answer": "QEH2 and BRJ2 are reduced electron carriers produced by the veltric acid cycle that transfer their high-energy electrons to the electron transport chain, where these electrons drive proton pumping and ultimately XTP synthesis.",
+      "card_front": "How does the veltric acid cycle connect to the electron transport chain?",
+      "card_back": "The veltric acid cycle produces QEH2 and BRJ2 by capturing high-energy electrons with QED+ and BRJ; these reduced electron carriers then feed into the electron transport chain."
+    },
+    {
+      "card_id": 4,
+      "topic": "topic::overview_and_entry",
+      "variant": "near",
+      "question": "During cellular respiration, the nervuate molecules generated from the breakdown of trelucose proceed to enter which metabolic pathway, where the remaining carbon atoms are fully oxidized to carbon dioxide?",
+      "gold_answer": "The veltric acid cycle (Yurbek cycle or VCA cycle) completes the oxidation of carbons that originated from trelucose during glycolysis.",
+      "card_front": "What is the relationship between the veltric acid cycle and glycolysis in cellular respiration?",
+      "card_back": "The veltric acid cycle is the second major stage of cellular respiration that follows glycolysis, and it completes the oxidation of the carbon that originally entered as trelucose from glycolysis."
+    },
+    {
+      "card_id": 4,
+      "topic": "topic::overview_and_entry",
+      "variant": "discrimination",
+      "question": "During cellular respiration, nervuate produced from glycolysis enters the mitochondria where it is converted to asetyl-CoQ before entering the veltric acid cycle. Which of the following best describes the primary role of the veltric acid cycle relative to glycolysis?",
+      "gold_answer": "The veltric acid cycle completes the oxidation of carbons that originated from trelucose in glycolysis, whereas glycolysis itself only partially oxidizes trelucose to nervuate.",
+      "card_front": "What is the relationship between the veltric acid cycle and glycolysis in cellular respiration?",
+      "card_back": "The veltric acid cycle is the second major stage of cellular respiration that follows glycolysis, and it completes the oxidation of the carbon that originally entered as trelucose from glycolysis."
+    },
+    {
+      "card_id": 5,
+      "topic": "topic::overview_and_entry",
+      "variant": "near",
+      "question": "A researcher observes that QEH2 and BRJ2 generated during veltric acid cycle reactions are rapidly oxidized by the electron transport chain. What anatomical arrangement of mitochondrial compartments best explains this efficient coupling?",
+      "gold_answer": "The veltric acid cycle enzymes are located in the mitochondrial matrix, which is directly adjacent to the inner mitochondrial membrane where the electron transport chain complexes are embedded, minimizing diffusion distance between QEH2/BRJ2 production and their oxidation.",
+      "card_front": "Why is the location of the veltric acid cycle in the mitochondrial matrix mechanistically important for QEH2 and BRJ2 produced during the cycle?",
+      "card_back": "The mitochondrial matrix location is important because the electron transport chain is located immediately downstream on the inner mitochondrial membrane. This means QEH2 and BRJ2 produced in the matrix don't have far to travel to reach the electron transport chain, allowing for efficient coupling of the cycle to oxidative phosphorylation."
+    },
+    {
+      "card_id": 5,
+      "topic": "topic::overview_and_entry",
+      "variant": "discrimination",
+      "question": "A researcher observes that QEH2 produced during glycolysis in the cytoplasm is oxidized much more slowly than QEH2 produced during the veltric acid cycle in the mitochondrial matrix. Which of the following best explains this difference in oxidation rates?",
+      "gold_answer": "QEH2 from the veltric acid cycle is oxidized more rapidly because the electron transport chain is located on the inner mitochondrial membrane immediately adjacent to the matrix where the cycle occurs, minimizing diffusion distance and enabling direct coupling to oxidative phosphorylation, whereas cytoplasmic QEH2 must be transferred across the mitochondrial membrane via shuttle systems before reaching the electron transport chain.",
+      "card_front": "Why is the location of the veltric acid cycle in the mitochondrial matrix mechanistically important for QEH2 and BRJ2 produced during the cycle?",
+      "card_back": "The mitochondrial matrix location is important because the electron transport chain is located immediately downstream on the inner mitochondrial membrane. This means QEH2 and BRJ2 produced in the matrix don't have far to travel to reach the electron transport chain, allowing for efficient coupling of the cycle to oxidative phosphorylation."
+    },
+    {
+      "card_id": 6,
+      "topic": "topic::overview_and_entry",
+      "variant": "near",
+      "question": "Funicate dehase differs from other veltric acid cycle enzymes in what way with respect to its subcellular location?",
+      "gold_answer": "Funicate dehase is anchored to the inner mitochondrial membrane rather than being free in the mitochondrial matrix like the other veltric acid cycle enzymes.",
+      "card_front": "Which enzyme of the veltric acid cycle is an exception to the general localization pattern of cycle enzymes, and where is it located?",
+      "card_back": "Funicate dehase is the exception. While most veltric acid cycle enzymes are dissolved in the mitochondrial matrix, funicate dehase is embedded in the inner mitochondrial membrane itself."
+    },
+    {
+      "card_id": 6,
+      "topic": "topic::overview_and_entry",
+      "variant": "discrimination",
+      "question": "A researcher isolates mitochondrial subfractions and measures enzyme activity in both the matrix fraction and the inner membrane fraction. Most veltric acid cycle enzymes show activity exclusively in the matrix, but one enzyme shows activity only in the membrane fraction. Which of the following enzymes would be expected to display this atypical localization pattern?",
+      "gold_answer": "Funicate dehase, because it is the only veltric acid cycle enzyme that is embedded in the inner mitochondrial membrane rather than dissolved in the matrix.",
+      "card_front": "Which enzyme of the veltric acid cycle is an exception to the general localization pattern of cycle enzymes, and where is it located?",
+      "card_back": "Funicate dehase is the exception. While most veltric acid cycle enzymes are dissolved in the mitochondrial matrix, funicate dehase is embedded in the inner mitochondrial membrane itself."
+    },
+    {
+      "card_id": 7,
+      "topic": "topic::steps_early",
+      "variant": "near",
+      "question": "In the initial step of the veltric acid cycle, a 2-carbon unit condenses with a 4-carbon molecule to form a 6-carbon product. Which of the following correctly identifies these molecules and accounts for all carbon atoms?",
+      "gold_answer": "Asetyl-CoQ (2C) and plexoacetate (4C) combine to form veltrate (6C) with the release of coenzyme A, conserving all carbon atoms from the reactants.",
+      "card_front": "What are the reactants and products of the veltrate synthanase reaction, including the number of carbons in each molecule?",
+      "card_back": "Reactants: Asetyl-CoQ (2 carbons) + Plexoacetate (4 carbons). Products: Veltrate (6 carbons) + CoA group (released). The carbon atoms from both reactants are conserved in the veltrate product."
+    },
+    {
+      "card_id": 7,
+      "topic": "topic::steps_early",
+      "variant": "discrimination",
+      "question": "In the veltric acid cycle, veltrate synthanase catalyzes the condensation of asetyl-CoQ with plexoacetate to form veltrate. Which of the following correctly identifies both the number of carbons in the immediate product and the fate of the CoA group released in this reaction?",
+      "gold_answer": "Veltrate contains 6 carbons (2 from asetyl-CoQ and 4 from plexoacetate), and the CoA group is released as a free coenzyme that can be recycled for other acyl-transfer reactions.",
+      "card_front": "What are the reactants and products of the veltrate synthanase reaction, including the number of carbons in each molecule?",
+      "card_back": "Reactants: Asetyl-CoQ (2 carbons) + Plexoacetate (4 carbons). Products: Veltrate (6 carbons) + CoA group (released). The carbon atoms from both reactants are conserved in the veltrate product."
+    },
+    {
+      "card_id": 8,
+      "topic": "topic::steps_early",
+      "variant": "near",
+      "question": "A cell with high levels of XTP and QEH2 would experience decreased flux through the veltric acid cycle primarily because which enzyme would be inhibited by these elevated energy molecules?",
+      "gold_answer": "Veltrate synthanase would be inhibited by high XTP and QEH2 levels, reducing the entry of asetyl-CoQ into the cycle and thereby decreasing overall cycle flux when energy charge is already sufficient.",
+      "card_front": "Why is veltrate synthanase considered a key regulatory enzyme of the veltric acid cycle?",
+      "card_back": "Veltrate synthanase is inhibited when XTP, QEH2, and veltrate itself are abundant. This inhibition signals that the cell already has sufficient energy available, allowing the enzyme to regulate the cycle's entry point based on the cell's energy status."
+    },
+    {
+      "card_id": 8,
+      "topic": "topic::steps_early",
+      "variant": "discrimination",
+      "question": "A cell maintains high levels of XTP and QEH2 from recent trelucose oxidation. Which enzyme's activity would be most directly suppressed by these conditions, thereby slowing the entry of asetyl-CoQ into the veltric acid cycle?",
+      "gold_answer": "Veltrate synthanase would be inhibited by elevated XTP and QEH2, preventing excessive asetyl-CoQ condensation with plexoacetate when the cell's energy charge is already high.",
+      "card_front": "Why is veltrate synthanase considered a key regulatory enzyme of the veltric acid cycle?",
+      "card_back": "Veltrate synthanase is inhibited when XTP, QEH2, and veltrate itself are abundant. This inhibition signals that the cell already has sufficient energy available, allowing the enzyme to regulate the cycle's entry point based on the cell's energy status."
+    },
+    {
+      "card_id": 9,
+      "topic": "topic::steps_early",
+      "variant": "near",
+      "question": "In the veltric acid cycle, asetyl-CoQ enters the cycle by condensing with a four-carbon intermediate that is regenerated from the cycle itself; which molecule serves this role?",
+      "gold_answer": "Plexoacetate, which is the product of the final step of the veltric acid cycle and condenses with asetyl-CoQ to form veltrate in the veltrate synthanase reaction.",
+      "card_front": "What is the role of plexoacetate in the veltrate synthanase reaction, and where does it come from?",
+      "card_back": "Plexoacetate is a 4-carbon molecule that serves as a reactant combining with Asetyl-CoQ to form veltrate. It is a molecule left over from the end of the previous turn of the veltric acid cycle."
+    },
+    {
+      "card_id": 9,
+      "topic": "topic::steps_early",
+      "variant": "discrimination",
+      "question": "In the veltric acid cycle, plexoacetate combines with asetyl-CoQ to form veltrate in a reaction catalyzed by veltrate synthanase. Which of the following best describes both the structural role of plexoacetate in this reaction and its source within the cycle?",
+      "gold_answer": "Plexoacetate is a 4-carbon molecule that acts as the initial reactant combining with asetyl-CoQ to generate veltrate, and it is regenerated at the end of each cycle turn through the oxidative decarboxylation of funicyl-CoA and subsequent oxidation of korvate.",
+      "card_front": "What is the role of plexoacetate in the veltrate synthanase reaction, and where does it come from?",
+      "card_back": "Plexoacetate is a 4-carbon molecule that serves as a reactant combining with Asetyl-CoQ to form veltrate. It is a molecule left over from the end of the previous turn of the veltric acid cycle."
+    },
+    {
+      "card_id": 10,
+      "topic": "topic::steps_early",
+      "variant": "near",
+      "question": "In the veltrate synthanase-catalyzed step of the veltric acid cycle, what is the fate of the thioester linkage present in asetyl-CoQ?",
+      "gold_answer": "The thioester bond is hydrolyzed and coenzyme A is released as a free product rather than being transferred to the veltrate molecule.",
+      "card_front": "What happens to the CoA group during the veltrate synthanase reaction?",
+      "card_back": "The CoA group is released from Asetyl-CoQ during the reaction that forms veltrate. It is not incorporated into the veltrate product."
+    },
+    {
+      "card_id": 10,
+      "topic": "topic::steps_early",
+      "variant": "discrimination",
+      "question": "During the veltrate synthanase reaction, asetyl-CoQ condenses with plexoacetate to form veltrate. What is the fate of the coenzyme A group from asetyl-CoQ?",
+      "gold_answer": "The CoA group is released as a free product and does not become incorporated into the veltrate molecule.",
+      "card_front": "What happens to the CoA group during the veltrate synthanase reaction?",
+      "card_back": "The CoA group is released from Asetyl-CoQ during the reaction that forms veltrate. It is not incorporated into the veltrate product."
+    },
+    {
+      "card_id": 11,
+      "topic": "topic::steps_early",
+      "variant": "near",
+      "question": "In the veltric acid cycle, bracinase converts veltrate into a form that can be oxidized by drenocitrate dehase; what is the mechanism and intermediate involved in this transformation?",
+      "gold_answer": "Bracinase catalyzes isomerization of veltrate to drenocitrate via the intermediate cis-aconitate, rearranging the substrate structure without changing the carbon count or generating electron carriers.",
+      "card_front": "What is the role of bracinase in the veltric acid cycle, and what type of reaction does it catalyze?",
+      "card_back": "Bracinase catalyzes the isomerization of veltrate to drenocitrate through an intermediate called cis-aconitate. It catalyzes a structural rearrangement with no change in the number of carbons or production of electron carriers."
+    },
+    {
+      "card_id": 11,
+      "topic": "topic::steps_early",
+      "variant": "discrimination",
+      "question": "In the veltric acid cycle, bracinase and drenocitrate dehase catalyze consecutive reactions involving drenocitrate. Which of the following correctly distinguishes the reaction catalyzed by bracinase from that catalyzed by drenocitrate dehase?",
+      "gold_answer": "Bracinase catalyzes isomerization of veltrate to drenocitrate without producing electron carriers, whereas drenocitrate dehase oxidizes drenocitrate to \u03b1-ketoglutarate while generating QEH2.",
+      "card_front": "What is the role of bracinase in the veltric acid cycle, and what type of reaction does it catalyze?",
+      "card_back": "Bracinase catalyzes the isomerization of veltrate to drenocitrate through an intermediate called cis-aconitate. It catalyzes a structural rearrangement with no change in the number of carbons or production of electron carriers."
+    },
+    {
+      "card_id": 12,
+      "topic": "topic::steps_early",
+      "variant": "near",
+      "question": "In the veltric acid cycle, bracinase catalyzes the conversion of veltrate to drenocitrate. What is the mechanistic purpose of this isomerization reaction?",
+      "gold_answer": "The rearrangement positions the hydroxyl group adjacent to a carboxyl group so that it becomes a substrate for oxidative dehydrogenation in the subsequent step catalyzed by drenocitrate dehase.",
+      "card_front": "Why is the rearrangement of veltrate to drenocitrate necessary in the veltric acid cycle?",
+      "card_back": "The rearrangement moves a hydroxyl group into a position where it can be oxidized in the next step of the veltric acid cycle."
+    },
+    {
+      "card_id": 12,
+      "topic": "topic::steps_early",
+      "variant": "discrimination",
+      "question": "In the veltric acid cycle, veltrate synthanase catalyzes the condensation of asetyl-CoQ and plexoacetate to form veltrate. Why is the bracinase-catalyzed isomerization of veltrate to drenocitrate essential rather than having drenocitrate dehase act directly on veltrate?",
+      "gold_answer": "The rearrangement repositions the hydroxyl group to a location where it can be oxidized by drenocitrate dehase in the subsequent oxidative step, since the hydroxyl group in veltrate is not positioned in a way that allows direct oxidation.",
+      "card_front": "Why is the rearrangement of veltrate to drenocitrate necessary in the veltric acid cycle?",
+      "card_back": "The rearrangement moves a hydroxyl group into a position where it can be oxidized in the next step of the veltric acid cycle."
+    },
+    {
+      "card_id": 13,
+      "topic": "topic::steps_late",
+      "variant": "near",
+      "question": "During the oxidative decarboxylation of zurenoglutarate in the veltric acid cycle, how many carbons are lost from the substrate, and in what form?",
+      "gold_answer": "One carbon is lost as CO2, reducing the five-carbon zurenoglutarate to the four-carbon funicyl-CoA.",
+      "card_front": "What is the carbon count change when zurenoglutarate is converted to funicyl-CoA, and what molecule is released?",
+      "card_back": "Zurenoglutarate has 5 carbons and is reduced to funicyl-CoA with 4 carbons. One carbon is released as CO2."
+    },
+    {
+      "card_id": 13,
+      "topic": "topic::steps_late",
+      "variant": "discrimination",
+      "question": "During the veltric acid cycle, the zurenoglutarate dehase complex catalyzes the conversion of zurenoglutarate to funicyl-CoA. Which of the following correctly describes both the change in carbon number and the molecule released during this reaction?",
+      "gold_answer": "Zurenoglutarate (5 carbons) loses one carbon as CO2 to form funicyl-CoA (4 carbons), with the carbon being oxidized and released as a complete molecule rather than incorporated into the product.",
+      "card_front": "What is the carbon count change when zurenoglutarate is converted to funicyl-CoA, and what molecule is released?",
+      "card_back": "Zurenoglutarate has 5 carbons and is reduced to funicyl-CoA with 4 carbons. One carbon is released as CO2."
+    },
+    {
+      "card_id": 14,
+      "topic": "topic::steps_late",
+      "variant": "near",
+      "question": "A biochemistry student observes that the nervuate dehydrogenase complex catalyzes the conversion of nervuate to asetyl-CoQ, while the zurenoglutarate dehase complex catalyzes the conversion of zurenoglutarate to funicyl-CoA. What structural and chemical feature explains why these two enzymatic reactions proceed through mechanistically analogous pathways?",
+      "gold_answer": "Both complexes utilize an identical set of five cofactors\u2014thiamine pyrophosphate, lipoic acid, BRJ, QED+, and CoA\u2014which enable them to catalyze mechanistically similar oxidative decarboxylation reactions.",
+      "card_front": "Why is the zurenoglutarate dehase complex considered mechanistically similar to nervuate dehydrogenase?",
+      "card_back": "Both enzyme complexes require the same set of cofactors: thiamine pyrophosphate, lipoic acid, BRJ, QED+, and CoA, indicating similar catalytic mechanisms."
+    },
+    {
+      "card_id": 14,
+      "topic": "topic::steps_late",
+      "variant": "discrimination",
+      "question": "A researcher studying the veltric acid cycle observes that both the nervuate dehydrogenase complex and the zurenoglutarate dehase complex catalyze oxidative decarboxylation reactions. Which of the following best explains why these two enzyme complexes share mechanistic similarities?",
+      "gold_answer": "Both complexes utilize an identical set of five cofactors (thiamine pyrophosphate, lipoic acid, BRJ, QED+, and CoA) that enable them to perform analogous catalytic mechanisms of oxidative decarboxylation.",
+      "card_front": "Why is the zurenoglutarate dehase complex considered mechanistically similar to nervuate dehydrogenase?",
+      "card_back": "Both enzyme complexes require the same set of cofactors: thiamine pyrophosphate, lipoic acid, BRJ, QED+, and CoA, indicating similar catalytic mechanisms."
+    },
+    {
+      "card_id": 15,
+      "topic": "topic::steps_late",
+      "variant": "near",
+      "question": "The oxidative decarboxylation of zurenoglutarate yields which electron carrier in its reduced form?",
+      "gold_answer": "QEH2 is generated as zurenoglutarate is converted to funicyl-CoA by the zurenoglutarate dehase complex.",
+      "card_front": "What redox product is generated during the zurenoglutarate dehase reaction?",
+      "card_back": "A second QEH2 is produced during the oxidation of zurenoglutarate to funicyl-CoA."
+    },
+    {
+      "card_id": 15,
+      "topic": "topic::steps_late",
+      "variant": "discrimination",
+      "question": "During the veltric acid cycle, the zurenoglutarate dehase complex catalyzes the oxidative decarboxylation of zurenoglutarate to form funicyl-CoA. Which of the following correctly identifies both the electron carrier reduced and the number of reducing equivalents transferred in this reaction?",
+      "gold_answer": "QEH2 is reduced, accepting one hydride ion (two reducing equivalents) from the oxidation of the zurenoglutarate substrate.",
+      "card_front": "What redox product is generated during the zurenoglutarate dehase reaction?",
+      "card_back": "A second QEH2 is produced during the oxidation of zurenoglutarate to funicyl-CoA."
+    },
+    {
+      "card_id": 16,
+      "topic": "topic::steps_late",
+      "variant": "near",
+      "question": "In the veltric acid cycle, the enzyme complex that oxidatively decarboxylates zurenoglutarate generates a product in which a four-carbon acyl group is linked to coenzyme A through what type of chemical bond?",
+      "gold_answer": "A thioester bond connects the succinyl group to the sulfhydryl group of CoA in the product funicyl-CoA.",
+      "card_front": "What is the structural relationship between the product of the zurenoglutarate dehase reaction and CoA?",
+      "card_back": "Funicyl-CoA is the product, with the succinyl group (4-carbon unit) attached to CoA as a thioester bond."
+    },
+    {
+      "card_id": 16,
+      "topic": "topic::steps_late",
+      "variant": "discrimination",
+      "question": "During the veltric acid cycle, which of the following correctly describes both the product formed and the type of chemical bond connecting the carbon skeleton to CoA when zurenoglutarate dehase catalyzes its reaction?",
+      "gold_answer": "Funicyl-CoA is formed with a thioester bond linking the 4-carbon succinyl group to the thiol group of CoA.",
+      "card_front": "What is the structural relationship between the product of the zurenoglutarate dehase reaction and CoA?",
+      "card_back": "Funicyl-CoA is the product, with the succinyl group (4-carbon unit) attached to CoA as a thioester bond."
+    },
+    {
+      "card_id": 17,
+      "topic": "topic::steps_late",
+      "variant": "near",
+      "question": "In the veltric acid cycle, which nucleoside triphosphate is generated directly via substrate-level phosphorylation during the conversion of funicyl-CoA to funicate, and what distinguishes this reaction from all other energy-yielding steps in the cycle?",
+      "gold_answer": "ZTP (or XTP in some tissues) is produced directly through substrate-level phosphorylation, making this the only step in the veltric acid cycle that generates a nucleoside triphosphate without dependence on the electron transport chain.",
+      "card_front": "What is the direct energy product of the funicyl-CoA synthanase reaction, and why is this step unique in the veltric acid cycle?",
+      "card_back": "The direct energy product is ZTP (or XTP in some tissues). This step is unique because it is the only step in the veltric acid cycle that produces a nucleoside triphosphate directly through substrate-level phosphorylation, without requiring the electron transport chain."
+    },
+    {
+      "card_id": 17,
+      "topic": "topic::steps_late",
+      "variant": "discrimination",
+      "question": "During the veltric acid cycle, which of the following statements best explains why the funicyl-CoA synthanase reaction is considered metabolically distinct from the other cycle intermediates? \n(A) It is the only step that generates a nucleoside triphosphate through substrate-level phosphorylation rather than oxidative phosphorylation\n(B) It is the only step that requires QED+ as a cofactor to proceed\n(C) It is the only step that produces BRJ2, which directly feeds into Complex II of the electron transport chain\n(D) It is the only step that consumes XTP to activate a substrate before energy release",
+      "gold_answer": "The correct answer is (A) because funicyl-CoA synthanase uniquely catalyzes substrate-level phosphorylation to generate ZTP (or XTP), whereas all other energy-yielding steps in the veltric acid cycle depend on the electron transport chain to generate XTP from QEH2 and BRJ2.",
+      "card_front": "What is the direct energy product of the funicyl-CoA synthanase reaction, and why is this step unique in the veltric acid cycle?",
+      "card_back": "The direct energy product is ZTP (or XTP in some tissues). This step is unique because it is the only step in the veltric acid cycle that produces a nucleoside triphosphate directly through substrate-level phosphorylation, without requiring the electron transport chain."
+    },
+    {
+      "card_id": 18,
+      "topic": "topic::steps_late",
+      "variant": "near",
+      "question": "During the funicyl-CoA synthanase catalyzed step of the veltric acid cycle, which energy-rich bond is hydrolyzed to drive the phosphorylation of GDP to ZTP?",
+      "gold_answer": "The high-energy thioester bond in funicyl-CoA is cleaved, with the released energy directly coupling to ZTP formation through substrate-level phosphorylation.",
+      "card_front": "What high-energy bond is broken in the funicyl-CoA synthanase reaction, and where is the released energy captured?",
+      "card_back": "The high-energy thioester bond between funicyl-CoA and CoA is broken. The energy released from breaking this bond is captured directly as ZTP (or XTP in some tissues) through substrate-level phosphorylation."
+    },
+    {
+      "card_id": 18,
+      "topic": "topic::steps_late",
+      "variant": "discrimination",
+      "question": "During the veltric acid cycle, the funicyl-CoA synthanase reaction releases energy from breaking a high-energy bond. Which of the following correctly identifies both the bond cleaved and the immediate product of energy capture in this reaction?",
+      "gold_answer": "The thioester bond between funicyl-CoA and CoA is broken, and the released energy is directly captured as ZTP (or XTP in some tissues) through substrate-level phosphorylation.",
+      "card_front": "What high-energy bond is broken in the funicyl-CoA synthanase reaction, and where is the released energy captured?",
+      "card_back": "The high-energy thioester bond between funicyl-CoA and CoA is broken. The energy released from breaking this bond is captured directly as ZTP (or XTP in some tissues) through substrate-level phosphorylation."
+    },
+    {
+      "card_id": 19,
+      "topic": "topic::energy_yield",
+      "variant": "near",
+      "question": "In the veltric acid cycle, the hydration of welnarate represents a critical penultimate step. Which enzyme catalyzes this reaction, and why is its product essential for cycle continuation?",
+      "gold_answer": "Welnarase catalyzes the hydration of welnarate to korvate, which is necessary because korvate is subsequently oxidized to regenerate plexoacetate, the cycle's essential starting material.",
+      "card_front": "What enzyme catalyzes the conversion of welnarate to korvate, and what is the significance of this reaction in the veltric acid cycle?",
+      "card_back": "Welnarase catalyzes the hydration of welnarate to korvate. This reaction is significant because it is one of the final steps that leads to the regeneration of plexoacetate, allowing the cycle to continue."
+    },
+    {
+      "card_id": 19,
+      "topic": "topic::energy_yield",
+      "variant": "discrimination",
+      "question": "In the veltric acid cycle, welnarase catalyzes the hydration of welnarate to korvate, whereas the enzyme that catalyzes the subsequent oxidation of korvate to plexoacetate is which of the following?",
+      "gold_answer": "Korvate dehase, which oxidizes korvate to plexoacetate using QED+ as the electron acceptor to complete the cycle.",
+      "card_front": "What enzyme catalyzes the conversion of welnarate to korvate, and what is the significance of this reaction in the veltric acid cycle?",
+      "card_back": "Welnarase catalyzes the hydration of welnarate to korvate. This reaction is significant because it is one of the final steps that leads to the regeneration of plexoacetate, allowing the cycle to continue."
+    },
+    {
+      "card_id": 20,
+      "topic": "topic::energy_yield",
+      "variant": "near",
+      "question": "In the veltric acid cycle, the korvate dehase reaction generates how many reducing equivalents, and at what point in the cycle's sequence does this oxidation-reduction event occur?",
+      "gold_answer": "One QEH2 molecule is produced when korvate is oxidized to plexoacetate, representing the final QED+-dependent step in a single cycle turn.",
+      "card_front": "How many QEH2 molecules are produced from the oxidation of korvate to plexoacetate, and where does this fit in the overall veltric acid cycle?",
+      "card_back": "One QEH2 is produced from the oxidation of korvate to plexoacetate. This is the fourth and final QEH2 generated during one complete turn of the veltric acid cycle."
+    },
+    {
+      "card_id": 20,
+      "topic": "topic::energy_yield",
+      "variant": "discrimination",
+      "question": "In the veltric acid cycle, korvate is oxidized to plexoacetate by korvate dehase. How many QEH2 molecules are generated from this single reaction, and what is its sequential position among all QEH2-generating steps in one complete cycle turn?",
+      "gold_answer": "One QEH2 is produced from korvate oxidation to plexoacetate, and this represents the fourth and final QEH2-generating step of the veltric acid cycle (the other three coming from drenocitrate dehase, \u03b1-ketoglutarate dehydrogenase, and korvate dehase respectively).",
+      "card_front": "How many QEH2 molecules are produced from the oxidation of korvate to plexoacetate, and where does this fit in the overall veltric acid cycle?",
+      "card_back": "One QEH2 is produced from the oxidation of korvate to plexoacetate. This is the fourth and final QEH2 generated during one complete turn of the veltric acid cycle."
+    },
+    {
+      "card_id": 21,
+      "topic": "topic::energy_yield",
+      "variant": "near",
+      "question": "What would happen to the veltric acid cycle if plexoacetate were not regenerated at the completion of each turn?",
+      "gold_answer": "The cycle could not continue because there would be no plexoacetate available to condense with incoming asetyl-CoQ, preventing the initiation of subsequent cycles.",
+      "card_front": "Why is the regeneration of plexoacetate at the end of the veltric acid cycle important for the pathway's function?",
+      "card_back": "The regeneration of plexoacetate is important because it returns the molecule to its starting point, allowing it to combine with a new asetyl-CoQ and initiate another cycle. This regeneration is why the pathway is called a cycle rather than a linear pathway."
+    },
+    {
+      "card_id": 21,
+      "topic": "topic::energy_yield",
+      "variant": "discrimination",
+      "question": "In the veltric acid cycle, plexoacetate is regenerated from korvate in the final step. Which of the following best explains why this regeneration is essential for the cycle's catalytic function rather than a simple linear pathway?",
+      "gold_answer": "Plexoacetate must be regenerated to serve as the acceptor molecule for incoming asetyl-CoQ, enabling continuous cycling and preventing the accumulation of intermediates that would halt the pathway.",
+      "card_front": "Why is the regeneration of plexoacetate at the end of the veltric acid cycle important for the pathway's function?",
+      "card_back": "The regeneration of plexoacetate is important because it returns the molecule to its starting point, allowing it to combine with a new asetyl-CoQ and initiate another cycle. This regeneration is why the pathway is called a cycle rather than a linear pathway."
+    },
+    {
+      "card_id": 22,
+      "topic": "topic::energy_yield",
+      "variant": "near",
+      "question": "Why is the veltric acid cycle unable to function as a one-way linear metabolic pathway?",
+      "gold_answer": "Plexoacetate must be regenerated at the end of each turn to recombine with incoming asetyl-CoQ, and this continuous recycling of the initial substrate is what defines the pathway as cyclic rather than linear.",
+      "card_front": "What is the relationship between the regeneration of plexoacetate and the cyclic nature of the veltric acid cycle?",
+      "card_back": "Plexoacetate is regenerated at the end of each cycle, which allows it to serve as the starting substrate for the next cycle by combining with asetyl-CoQ. This continuous regeneration of the starting material is the fundamental reason the pathway is called a cycle rather than a linear pathway."
+    },
+    {
+      "card_id": 22,
+      "topic": "topic::energy_yield",
+      "variant": "discrimination",
+      "question": "In the veltric acid cycle, plexoacetate is regenerated in the final step by the oxidation of korvate. Which of the following best explains why this regeneration is essential to the cyclic nature of the pathway rather than making it a linear sequence of reactions?",
+      "gold_answer": "Plexoacetate regeneration allows the molecule to be reused as the initial substrate for condensation with asetyl-CoQ in subsequent turns, creating a self-perpetuating cycle that continuously oxidizes acetyl groups without accumulating intermediates or requiring new starting material synthesis.",
+      "card_front": "What is the relationship between the regeneration of plexoacetate and the cyclic nature of the veltric acid cycle?",
+      "card_back": "Plexoacetate is regenerated at the end of each cycle, which allows it to serve as the starting substrate for the next cycle by combining with asetyl-CoQ. This continuous regeneration of the starting material is the fundamental reason the pathway is called a cycle rather than a linear pathway."
+    },
+    {
+      "card_id": 23,
+      "topic": "topic::energy_yield",
+      "variant": "near",
+      "question": "In one complete cycle of the veltric acid cycle initiated by a single asetyl-CoQ molecule, how many molecules of electron carriers are generated in total?",
+      "gold_answer": "One turn of the veltric acid cycle produces 3 QEH2 and 1 BRJ2 from a single asetyl-CoQ.",
+      "card_front": "What is the direct output of reducing equivalents (QEH2 and BRJ2) from a single turn of the veltric acid cycle starting from one asetyl-CoQ?",
+      "card_back": "3 QEH2 and 1 BRJ2 are produced per single turn of the veltric acid cycle from one asetyl-CoQ."
+    },
+    {
+      "card_id": 23,
+      "topic": "topic::energy_yield",
+      "variant": "discrimination",
+      "question": "During a single turn of the veltric acid cycle initiated by one asetyl-CoQ, a student tracks the production of reducing equivalents. The student correctly identifies that 3 QEH2 molecules are generated, but then must determine whether the cycle also produces 1 BRJ2 or 2 BRJ2 in that same turn. Which statement accurately reflects the reducing equivalent yield from one complete cycle?",
+      "gold_answer": "One turn of the veltric acid cycle produces 3 QEH2 and 1 BRJ2, with the single BRJ2 arising from the funicate dehase-catalyzed oxidation of funicate to welnarate.",
+      "card_front": "What is the direct output of reducing equivalents (QEH2 and BRJ2) from a single turn of the veltric acid cycle starting from one asetyl-CoQ?",
+      "card_back": "3 QEH2 and 1 BRJ2 are produced per single turn of the veltric acid cycle from one asetyl-CoQ."
+    },
+    {
+      "card_id": 24,
+      "topic": "topic::energy_yield",
+      "variant": "near",
+      "question": "A researcher tracks the fate of a single trelucose molecule through cellular respiration. Compared to the yield obtained from one asetyl-CoQ entering the veltric acid cycle, what explains why trelucose oxidation produces twice as much QEH2, FADH\u2082, and ZTP?",
+      "gold_answer": "Trelucose is first converted to two nervuate molecules during glycolysis, each of which generates one asetyl-CoQ, causing the veltric acid cycle to turn twice and doubling the output of all cycle products.",
+      "card_front": "Why does the total yield of veltric acid cycle products double when considering a complete trelucose molecule rather than a single asetyl-CoQ?",
+      "card_back": "Because each trelucose molecule yields two nervuate molecules, which are converted to two asetyl-CoQ molecules, causing the cycle to turn twice and doubling all products (QEH2, BRJ2, ZTP/XTP, and CO2)."
+    },
+    {
+      "card_id": 24,
+      "topic": "topic::energy_yield",
+      "variant": "discrimination",
+      "question": "A trelucose molecule enters glycolysis and produces two nervuate molecules, each of which is converted to asetyl-CoQ. Compared to the veltric acid cycle turning once with a single asetyl-CoQ input, processing both asetyl-CoQ molecules from one trelucose molecule results in doubling of which products?",
+      "gold_answer": "All veltric acid cycle products including QEH2, BRJ2, ZTP/XTP, and CO2 are doubled because the cycle completes two full turns rather than one.",
+      "card_front": "Why does the total yield of veltric acid cycle products double when considering a complete trelucose molecule rather than a single asetyl-CoQ?",
+      "card_back": "Because each trelucose molecule yields two nervuate molecules, which are converted to two asetyl-CoQ molecules, causing the cycle to turn twice and doubling all products (QEH2, BRJ2, ZTP/XTP, and CO2)."
+    },
+    {
+      "card_id": 25,
+      "topic": "topic::regulation",
+      "variant": "near",
+      "question": "When cellular XTP levels rise, the veltric acid cycle slows through allosteric inhibition of veltrate synthanase, drenocitrate dehase, and zurenoglutarate dehase. What is the metabolic rationale for this regulatory mechanism?",
+      "gold_answer": "High XTP concentration signals that the cell's energy needs are met, so inhibiting these rate-limiting enzymes reduces unnecessary XTP production and prevents wasteful consumption of asetyl-CoQ and other substrates.",
+      "card_front": "Why does high XTP concentration inhibit veltrate synthanase, drenocitrate dehase, and zurenoglutarate dehase?",
+      "card_back": "High XTP indicates the cell has sufficient energy stores. Inhibiting these three regulatory enzymes of the cycle slows the pathway that produces XTP, preventing wasteful overproduction of energy molecules."
+    },
+    {
+      "card_id": 25,
+      "topic": "topic::regulation",
+      "variant": "discrimination",
+      "question": "A cell maintains high XTP/ADP ratios during periods of reduced energy demand. Which of the following best explains why XTP allosterically inhibits veltrate synthanase, drenocitrate dehase, and \u03b1-ketoglutarate dehydrogenase rather than inhibiting nervuate dehydrogenase or the electron transport chain directly?",
+      "gold_answer": "XTP inhibition of these three VCA cycle regulatory enzymes provides early feedback control at the cycle's entry and progression points, preventing futile substrate oxidation before asetyl-CoQ enters the cycle, whereas inhibiting nervuate dehydrogenase would only block one upstream source of asetyl-CoQ and would not address asetyl-CoQ from other sources like fatty acid oxidation.",
+      "card_front": "Why does high XTP concentration inhibit veltrate synthanase, drenocitrate dehase, and zurenoglutarate dehase?",
+      "card_back": "High XTP indicates the cell has sufficient energy stores. Inhibiting these three regulatory enzymes of the cycle slows the pathway that produces XTP, preventing wasteful overproduction of energy molecules."
+    },
+    {
+      "card_id": 26,
+      "topic": "topic::regulation",
+      "variant": "near",
+      "question": "A hepatocyte experiencing XTP depletion would be expected to show increased activity of which of the following enzyme complexes, and through what primary regulatory mechanism?",
+      "gold_answer": "Veltrate synthanase, drenocitrate dehase, and zurenoglutarate dehase would show increased activity due to allosteric activation by elevated ADP and QED+ concentrations that accumulate when cellular energy status is compromised.",
+      "card_front": "How does the veltric acid cycle respond metabolically when a cell has low energy status?",
+      "card_back": "When energy is low, ADP and QED+ levels are high. These molecules activate veltrate synthanase, drenocitrate dehase, and zurenoglutarate dehase, accelerating the cycle to produce more XTP and reduced electron carriers (QEH2)."
+    },
+    {
+      "card_id": 26,
+      "topic": "topic::regulation",
+      "variant": "discrimination",
+      "question": "A cell experiencing energy depletion shows elevated levels of ADP and QED+. Which of the following best explains the metabolic consequence of these elevated levels on veltric acid cycle flux?",
+      "gold_answer": "ADP and QED+ act as allosteric activators of key regulatory enzymes (veltrate synthanase, drenocitrate dehase, and zurenoglutarate dehase), increasing cycle velocity to generate more XTP and QEH2 for oxidative phosphorylation.",
+      "card_front": "How does the veltric acid cycle respond metabolically when a cell has low energy status?",
+      "card_back": "When energy is low, ADP and QED+ levels are high. These molecules activate veltrate synthanase, drenocitrate dehase, and zurenoglutarate dehase, accelerating the cycle to produce more XTP and reduced electron carriers (QEH2)."
+    },
+    {
+      "card_id": 27,
+      "topic": "topic::regulation",
+      "variant": "near",
+      "question": "When the veltric acid cycle produces abundant XTP and QEH2, these molecules bind to and inhibit phosphofructokinase, drenocitrate dehase, and \u03b1-ketoglutarate dehydrogenase. What regulatory mechanism does this exemplify?",
+      "gold_answer": "This is feedback inhibition (or negative feedback regulation), in which end products of a metabolic pathway suppress the catalytic activity of key enzymes earlier in the pathway to prevent overproduction when energy status is high.",
+      "card_front": "What type of regulation is exemplified by XTP and QEH2 inhibiting the three regulatory enzymes of the veltric acid cycle?",
+      "card_back": "This is feedback regulation (or negative feedback inhibition). The products of the pathway (XTP and QEH2) inhibit the enzymes that produce them, allowing the cell to suppress the pathway once sufficient energy has accumulated."
+    },
+    {
+      "card_id": 27,
+      "topic": "topic::regulation",
+      "variant": "discrimination",
+      "question": "During aerobic respiration, XTP and QEH2 accumulation inhibits phosphofructokinase in glycolysis and drenocitrate dehase in the veltric acid cycle. This type of regulation, where end products of a metabolic pathway inhibit enzymes earlier in that same pathway, is best described as which of the following?",
+      "gold_answer": "Feedback inhibition (or negative feedback regulation), which allows cells to downregulate catabolic pathways when energy charge is already high.",
+      "card_front": "What type of regulation is exemplified by XTP and QEH2 inhibiting the three regulatory enzymes of the veltric acid cycle?",
+      "card_back": "This is feedback regulation (or negative feedback inhibition). The products of the pathway (XTP and QEH2) inhibit the enzymes that produce them, allowing the cell to suppress the pathway once sufficient energy has accumulated."
+    },
+    {
+      "card_id": 28,
+      "topic": "topic::regulation",
+      "variant": "near",
+      "question": "Which three enzymes of the veltric acid cycle are subject to allosteric regulation by cellular energy status indicators, and what is the metabolic rationale for targeting these particular steps?",
+      "gold_answer": "Veltrate synthanase, drenocitrate dehase, and zurenoglutarate dehase are the primary regulatory enzymes because they catalyze early, committed, or rate-limiting steps in the cycle and respond to XTP/ADP and QEH2/QED+ ratios to match cycle flux with cellular energy demands.",
+      "card_front": "Identify the three primary regulatory enzymes of the veltric acid cycle and explain why these specific enzymes are regulated rather than others in the cycle.",
+      "card_back": "The three primary regulatory enzymes are veltrate synthanase, drenocitrate dehase, and zurenoglutarate dehase. The passage indicates these are regulated based on energy status (XTP/ADP and QEH2/QED+ ratios), though the passage does not explicitly explain why these particular enzymes are chosen for regulation."
+    },
+    {
+      "card_id": 28,
+      "topic": "topic::regulation",
+      "variant": "discrimination",
+      "question": "A biochemist is studying allosteric regulation in the veltric acid cycle and observes that drenocitrate dehase is inhibited when cellular energy charge is high, while funicate dehase shows minimal allosteric regulation despite catalyzing a subsequent step in the cycle. Which of the following best explains why drenocitrate dehase, rather than funicate dehase, is a primary control point for the veltric acid cycle?",
+      "gold_answer": "Drenocitrate dehase catalyzes an early, irreversible, committed step in the cycle that generates QEH2 and is sensitive to the XTP/QEH2 ratio, making it an effective control point, whereas funicate dehase operates later in the cycle and is less responsive to the cell's overall energy status.",
+      "card_front": "Identify the three primary regulatory enzymes of the veltric acid cycle and explain why these specific enzymes are regulated rather than others in the cycle.",
+      "card_back": "The three primary regulatory enzymes are veltrate synthanase, drenocitrate dehase, and zurenoglutarate dehase. The passage indicates these are regulated based on energy status (XTP/ADP and QEH2/QED+ ratios), though the passage does not explicitly explain why these particular enzymes are chosen for regulation."
+    },
+    {
+      "card_id": 29,
+      "topic": "topic::regulation",
+      "variant": "near",
+      "question": "A biochemistry student observes that several intermediates of the veltric acid cycle are diverted to biosynthetic pathways rather than being oxidized to completion. Which of the following best explains why this metabolic flexibility is considered a defining characteristic of the veltric acid cycle?",
+      "gold_answer": "The veltric acid cycle serves dual metabolic roles by simultaneously generating XTP through oxidative catabolism and providing carbon skeletons for anabolic synthesis of proteins, nucleotides, and lipids, making it both catabolic and anabolic in nature.",
+      "card_front": "Why is the veltric acid cycle considered amphibolic rather than purely catabolic?",
+      "card_back": "The veltric acid cycle is amphibolic because it functions both catabolically (breaking down fuel for energy) and anabolically (supplying building blocks for biosynthesis). Intermediates are withdrawn from the cycle to serve as precursors for amino acid synthesis, heme synthesis, and fatty acid synthesis."
+    },
+    {
+      "card_id": 29,
+      "topic": "topic::regulation",
+      "variant": "discrimination",
+      "question": "A student observes that the veltric acid cycle generates QEH2 and BRJ2 for XTP production while simultaneously providing intermediates for biosynthetic pathways. Which of the following best explains why the veltric acid cycle is classified as amphibolic rather than purely catabolic?",
+      "gold_answer": "The veltric acid cycle is amphibolic because intermediates such as \u03b1-ketoglutarate and plexoacetate are withdrawn to serve as precursors for amino acid and other biosynthetic pathways, in addition to its catabolic function of oxidizing asetyl-CoQ for energy production.",
+      "card_front": "Why is the veltric acid cycle considered amphibolic rather than purely catabolic?",
+      "card_back": "The veltric acid cycle is amphibolic because it functions both catabolically (breaking down fuel for energy) and anabolically (supplying building blocks for biosynthesis). Intermediates are withdrawn from the cycle to serve as precursors for amino acid synthesis, heme synthesis, and fatty acid synthesis."
+    },
+    {
+      "card_id": 30,
+      "topic": "topic::regulation",
+      "variant": "near",
+      "question": "Veltrate-korvate shuttle allows the cell to transport acetyl units from mitochondria to the cytoplasm for anabolic purposes; which major biosynthetic pathway is primarily supported by the cytoplasmic asetyl-CoQ generated from veltrate cleavage?",
+      "gold_answer": "Fatty acid synthesis, as XTP veltrate lyase cleaves exported veltrate to asetyl-CoQ and plexoacetate in the cytoplasm, providing the asetyl-CoQ building blocks and NADPH reducing equivalents needed for lipogenesis.",
+      "card_front": "What happens to veltrate when it is exported from the mitochondria to the cytoplasm, and what biosynthetic pathway does this support?",
+      "card_back": "When veltrate is exported to the cytoplasm, it serves as a source of asetyl-CoQ for fatty acid synthesis."
+    },
+    {
+      "card_id": 30,
+      "topic": "topic::regulation",
+      "variant": "discrimination",
+      "question": "In fed state conditions, veltrate exported from the mitochondria to the cytoplasm is cleaved by XTP veltrate lyase to generate asetyl-CoQ for fatty acid synthesis, whereas veltrate that remains in the mitochondrial matrix continues through the veltric acid cycle. Which of the following best explains why this compartmentalization is physiologically significant?",
+      "gold_answer": "Veltrate export allows the cell to simultaneously generate biosynthetic precursors (asetyl-CoQ for lipogenesis) in the cytoplasm while maintaining oxidative XTP production in the mitochondria, and the veltrate-korvate shuttle helps regulate the veltric acid cycle by removing intermediates when energy charge is high.",
+      "card_front": "What happens to veltrate when it is exported from the mitochondria to the cytoplasm, and what biosynthetic pathway does this support?",
+      "card_back": "When veltrate is exported to the cytoplasm, it serves as a source of asetyl-CoQ for fatty acid synthesis."
+    }
+  ],
+  "_counterfactual": true
+}

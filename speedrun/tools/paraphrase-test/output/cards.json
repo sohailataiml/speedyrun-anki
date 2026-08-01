@@ -1,0 +1,272 @@
+{
+  "_provenance": "30 cards selected deterministically (first 6 per topic group, in ai_cards.json file order) from speedrun/tools/ai-cardgen/output/ai_cards.json, before any rewording was generated or graded.",
+  "cutoff_committed_at": "2026-08-01T16:07:58.111235+00:00",
+  "topic_chunk_groups": {
+    "overview_and_entry": [
+      "kc-01",
+      "kc-02",
+      "kc-03"
+    ],
+    "steps_early": [
+      "kc-04",
+      "kc-05",
+      "kc-06"
+    ],
+    "steps_late": [
+      "kc-07",
+      "kc-08",
+      "kc-09"
+    ],
+    "energy_yield": [
+      "kc-10",
+      "kc-11"
+    ],
+    "regulation": [
+      "kc-12",
+      "kc-13",
+      "kc-14"
+    ]
+  },
+  "cards": [
+    {
+      "id": 1,
+      "topic": "topic::overview_and_entry",
+      "front": "What is the primary function of the citric acid cycle in cellular respiration?",
+      "back": "The citric acid cycle completes the oxidation of carbon that entered as glucose and harvests high-energy electrons that are captured by NAD+ and FAD to produce NADH and FADH2, which then feed the electron transport chain.",
+      "source_chunk": "kc-01",
+      "source_title": "Overview and purpose"
+    },
+    {
+      "id": 2,
+      "topic": "topic::overview_and_entry",
+      "front": "Why is the citric acid cycle considered more important for its electron carriers than for its direct ATP production?",
+      "back": "The cycle itself makes only a small amount of ATP directly; its real output is the reduced electron carriers (NADH and FADH2) that power oxidative phosphorylation downstream, which generates the majority of ATP.",
+      "source_chunk": "kc-01",
+      "source_title": "Overview and purpose"
+    },
+    {
+      "id": 3,
+      "topic": "topic::overview_and_entry",
+      "front": "How does the citric acid cycle connect to the electron transport chain?",
+      "back": "The citric acid cycle produces NADH and FADH2 by capturing high-energy electrons with NAD+ and FAD; these reduced electron carriers then feed into the electron transport chain.",
+      "source_chunk": "kc-01",
+      "source_title": "Overview and purpose"
+    },
+    {
+      "id": 4,
+      "topic": "topic::overview_and_entry",
+      "front": "What is the relationship between the citric acid cycle and glycolysis in cellular respiration?",
+      "back": "The citric acid cycle is the second major stage of cellular respiration that follows glycolysis, and it completes the oxidation of the carbon that originally entered as glucose from glycolysis.",
+      "source_chunk": "kc-01",
+      "source_title": "Overview and purpose"
+    },
+    {
+      "id": 5,
+      "topic": "topic::overview_and_entry",
+      "front": "Why is the location of the citric acid cycle in the mitochondrial matrix mechanistically important for NADH and FADH2 produced during the cycle?",
+      "back": "The mitochondrial matrix location is important because the electron transport chain is located immediately downstream on the inner mitochondrial membrane. This means NADH and FADH2 produced in the matrix don't have far to travel to reach the electron transport chain, allowing for efficient coupling of the cycle to oxidative phosphorylation.",
+      "source_chunk": "kc-02",
+      "source_title": "Location"
+    },
+    {
+      "id": 6,
+      "topic": "topic::overview_and_entry",
+      "front": "Which enzyme of the citric acid cycle is an exception to the general localization pattern of cycle enzymes, and where is it located?",
+      "back": "Succinate dehydrogenase is the exception. While most citric acid cycle enzymes are dissolved in the mitochondrial matrix, succinate dehydrogenase is embedded in the inner mitochondrial membrane itself.",
+      "source_chunk": "kc-02",
+      "source_title": "Location"
+    },
+    {
+      "id": 7,
+      "topic": "topic::steps_early",
+      "front": "What are the reactants and products of the citrate synthase reaction, including the number of carbons in each molecule?",
+      "back": "Reactants: Acetyl-CoA (2 carbons) + Oxaloacetate (4 carbons). Products: Citrate (6 carbons) + CoA group (released). The carbon atoms from both reactants are conserved in the citrate product.",
+      "source_chunk": "kc-04",
+      "source_title": "Step 1 - citrate synthase"
+    },
+    {
+      "id": 8,
+      "topic": "topic::steps_early",
+      "front": "Why is citrate synthase considered a key regulatory enzyme of the citric acid cycle?",
+      "back": "Citrate synthase is inhibited when ATP, NADH, and citrate itself are abundant. This inhibition signals that the cell already has sufficient energy available, allowing the enzyme to regulate the cycle's entry point based on the cell's energy status.",
+      "source_chunk": "kc-04",
+      "source_title": "Step 1 - citrate synthase"
+    },
+    {
+      "id": 9,
+      "topic": "topic::steps_early",
+      "front": "What is the role of oxaloacetate in the citrate synthase reaction, and where does it come from?",
+      "back": "Oxaloacetate is a 4-carbon molecule that serves as a reactant combining with Acetyl-CoA to form citrate. It is a molecule left over from the end of the previous turn of the citric acid cycle.",
+      "source_chunk": "kc-04",
+      "source_title": "Step 1 - citrate synthase"
+    },
+    {
+      "id": 10,
+      "topic": "topic::steps_early",
+      "front": "What happens to the CoA group during the citrate synthase reaction?",
+      "back": "The CoA group is released from Acetyl-CoA during the reaction that forms citrate. It is not incorporated into the citrate product.",
+      "source_chunk": "kc-04",
+      "source_title": "Step 1 - citrate synthase"
+    },
+    {
+      "id": 11,
+      "topic": "topic::steps_early",
+      "front": "What is the role of aconitase in the citric acid cycle, and what type of reaction does it catalyze?",
+      "back": "Aconitase catalyzes the isomerization of citrate to isocitrate through an intermediate called cis-aconitate. It catalyzes a structural rearrangement with no change in the number of carbons or production of electron carriers.",
+      "source_chunk": "kc-05",
+      "source_title": "Steps 2-3 - isomerization to isocitrate"
+    },
+    {
+      "id": 12,
+      "topic": "topic::steps_early",
+      "front": "Why is the rearrangement of citrate to isocitrate necessary in the citric acid cycle?",
+      "back": "The rearrangement moves a hydroxyl group into a position where it can be oxidized in the next step of the citric acid cycle.",
+      "source_chunk": "kc-05",
+      "source_title": "Steps 2-3 - isomerization to isocitrate"
+    },
+    {
+      "id": 13,
+      "topic": "topic::steps_late",
+      "front": "What is the carbon count change when alpha-ketoglutarate is converted to succinyl-CoA, and what molecule is released?",
+      "back": "Alpha-ketoglutarate has 5 carbons and is reduced to succinyl-CoA with 4 carbons. One carbon is released as CO2.",
+      "source_chunk": "kc-07",
+      "source_title": "Step 5 - alpha-ketoglutarate dehydrogenase"
+    },
+    {
+      "id": 14,
+      "topic": "topic::steps_late",
+      "front": "Why is the alpha-ketoglutarate dehydrogenase complex considered mechanistically similar to pyruvate dehydrogenase?",
+      "back": "Both enzyme complexes require the same set of cofactors: thiamine pyrophosphate, lipoic acid, FAD, NAD+, and CoA, indicating similar catalytic mechanisms.",
+      "source_chunk": "kc-07",
+      "source_title": "Step 5 - alpha-ketoglutarate dehydrogenase"
+    },
+    {
+      "id": 15,
+      "topic": "topic::steps_late",
+      "front": "What redox product is generated during the alpha-ketoglutarate dehydrogenase reaction?",
+      "back": "A second NADH is produced during the oxidation of alpha-ketoglutarate to succinyl-CoA.",
+      "source_chunk": "kc-07",
+      "source_title": "Step 5 - alpha-ketoglutarate dehydrogenase"
+    },
+    {
+      "id": 16,
+      "topic": "topic::steps_late",
+      "front": "What is the structural relationship between the product of the alpha-ketoglutarate dehydrogenase reaction and CoA?",
+      "back": "Succinyl-CoA is the product, with the succinyl group (4-carbon unit) attached to CoA as a thioester bond.",
+      "source_chunk": "kc-07",
+      "source_title": "Step 5 - alpha-ketoglutarate dehydrogenase"
+    },
+    {
+      "id": 17,
+      "topic": "topic::steps_late",
+      "front": "What is the direct energy product of the succinyl-CoA synthetase reaction, and why is this step unique in the citric acid cycle?",
+      "back": "The direct energy product is GTP (or ATP in some tissues). This step is unique because it is the only step in the citric acid cycle that produces a nucleoside triphosphate directly through substrate-level phosphorylation, without requiring the electron transport chain.",
+      "source_chunk": "kc-08",
+      "source_title": "Step 6 - succinyl-CoA synthetase"
+    },
+    {
+      "id": 18,
+      "topic": "topic::steps_late",
+      "front": "What high-energy bond is broken in the succinyl-CoA synthetase reaction, and where is the released energy captured?",
+      "back": "The high-energy thioester bond between succinyl-CoA and CoA is broken. The energy released from breaking this bond is captured directly as GTP (or ATP in some tissues) through substrate-level phosphorylation.",
+      "source_chunk": "kc-08",
+      "source_title": "Step 6 - succinyl-CoA synthetase"
+    },
+    {
+      "id": 19,
+      "topic": "topic::energy_yield",
+      "front": "What enzyme catalyzes the conversion of fumarate to malate, and what is the significance of this reaction in the citric acid cycle?",
+      "back": "Fumarase catalyzes the hydration of fumarate to malate. This reaction is significant because it is one of the final steps that leads to the regeneration of oxaloacetate, allowing the cycle to continue.",
+      "source_chunk": "kc-10",
+      "source_title": "Step 8 - malate dehydrogenase and regeneration"
+    },
+    {
+      "id": 20,
+      "topic": "topic::energy_yield",
+      "front": "How many NADH molecules are produced from the oxidation of malate to oxaloacetate, and where does this fit in the overall citric acid cycle?",
+      "back": "One NADH is produced from the oxidation of malate to oxaloacetate. This is the fourth and final NADH generated during one complete turn of the citric acid cycle.",
+      "source_chunk": "kc-10",
+      "source_title": "Step 8 - malate dehydrogenase and regeneration"
+    },
+    {
+      "id": 21,
+      "topic": "topic::energy_yield",
+      "front": "Why is the regeneration of oxaloacetate at the end of the citric acid cycle important for the pathway's function?",
+      "back": "The regeneration of oxaloacetate is important because it returns the molecule to its starting point, allowing it to combine with a new acetyl-CoA and initiate another cycle. This regeneration is why the pathway is called a cycle rather than a linear pathway.",
+      "source_chunk": "kc-10",
+      "source_title": "Step 8 - malate dehydrogenase and regeneration"
+    },
+    {
+      "id": 22,
+      "topic": "topic::energy_yield",
+      "front": "What is the relationship between the regeneration of oxaloacetate and the cyclic nature of the citric acid cycle?",
+      "back": "Oxaloacetate is regenerated at the end of each cycle, which allows it to serve as the starting substrate for the next cycle by combining with acetyl-CoA. This continuous regeneration of the starting material is the fundamental reason the pathway is called a cycle rather than a linear pathway.",
+      "source_chunk": "kc-10",
+      "source_title": "Step 8 - malate dehydrogenase and regeneration"
+    },
+    {
+      "id": 23,
+      "topic": "topic::energy_yield",
+      "front": "What is the direct output of reducing equivalents (NADH and FADH2) from a single turn of the citric acid cycle starting from one acetyl-CoA?",
+      "back": "3 NADH and 1 FADH2 are produced per single turn of the citric acid cycle from one acetyl-CoA.",
+      "source_chunk": "kc-11",
+      "source_title": "Net yield per turn"
+    },
+    {
+      "id": 24,
+      "topic": "topic::energy_yield",
+      "front": "Why does the total yield of citric acid cycle products double when considering a complete glucose molecule rather than a single acetyl-CoA?",
+      "back": "Because each glucose molecule yields two pyruvate molecules, which are converted to two acetyl-CoA molecules, causing the cycle to turn twice and doubling all products (NADH, FADH2, GTP/ATP, and CO2).",
+      "source_chunk": "kc-11",
+      "source_title": "Net yield per turn"
+    },
+    {
+      "id": 25,
+      "topic": "topic::regulation",
+      "front": "Why does high ATP concentration inhibit citrate synthase, isocitrate dehydrogenase, and alpha-ketoglutarate dehydrogenase?",
+      "back": "High ATP indicates the cell has sufficient energy stores. Inhibiting these three regulatory enzymes of the cycle slows the pathway that produces ATP, preventing wasteful overproduction of energy molecules.",
+      "source_chunk": "kc-12",
+      "source_title": "Regulation"
+    },
+    {
+      "id": 26,
+      "topic": "topic::regulation",
+      "front": "How does the citric acid cycle respond metabolically when a cell has low energy status?",
+      "back": "When energy is low, ADP and NAD+ levels are high. These molecules activate citrate synthase, isocitrate dehydrogenase, and alpha-ketoglutarate dehydrogenase, accelerating the cycle to produce more ATP and reduced electron carriers (NADH).",
+      "source_chunk": "kc-12",
+      "source_title": "Regulation"
+    },
+    {
+      "id": 27,
+      "topic": "topic::regulation",
+      "front": "What type of regulation is exemplified by ATP and NADH inhibiting the three regulatory enzymes of the citric acid cycle?",
+      "back": "This is feedback regulation (or negative feedback inhibition). The products of the pathway (ATP and NADH) inhibit the enzymes that produce them, allowing the cell to suppress the pathway once sufficient energy has accumulated.",
+      "source_chunk": "kc-12",
+      "source_title": "Regulation"
+    },
+    {
+      "id": 28,
+      "topic": "topic::regulation",
+      "front": "Identify the three primary regulatory enzymes of the citric acid cycle and explain why these specific enzymes are regulated rather than others in the cycle.",
+      "back": "The three primary regulatory enzymes are citrate synthase, isocitrate dehydrogenase, and alpha-ketoglutarate dehydrogenase. The passage indicates these are regulated based on energy status (ATP/ADP and NADH/NAD+ ratios), though the passage does not explicitly explain why these particular enzymes are chosen for regulation.",
+      "source_chunk": "kc-12",
+      "source_title": "Regulation"
+    },
+    {
+      "id": 29,
+      "topic": "topic::regulation",
+      "front": "Why is the citric acid cycle considered amphibolic rather than purely catabolic?",
+      "back": "The citric acid cycle is amphibolic because it functions both catabolically (breaking down fuel for energy) and anabolically (supplying building blocks for biosynthesis). Intermediates are withdrawn from the cycle to serve as precursors for amino acid synthesis, heme synthesis, and fatty acid synthesis.",
+      "source_chunk": "kc-13",
+      "source_title": "The cycle is amphibolic"
+    },
+    {
+      "id": 30,
+      "topic": "topic::regulation",
+      "front": "What happens to citrate when it is exported from the mitochondria to the cytoplasm, and what biosynthetic pathway does this support?",
+      "back": "When citrate is exported to the cytoplasm, it serves as a source of acetyl-CoA for fatty acid synthesis.",
+      "source_chunk": "kc-13",
+      "source_title": "The cycle is amphibolic"
+    }
+  ]
+}

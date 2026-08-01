@@ -6,6 +6,7 @@ mod gathering;
 pub(crate) mod intersperser;
 pub(crate) mod sized_chain;
 mod sorting;
+mod topic_order;
 
 use std::collections::HashMap;
 use std::collections::VecDeque;
@@ -291,6 +292,7 @@ impl Collection {
             .update_active_decks(&queues.context.root_deck)?;
 
         queues.gather_cards(self)?;
+        queues.apply_topic_order(self)?;
 
         let queues = queues.build(self.learn_ahead_secs() as i64);
 
@@ -547,5 +549,71 @@ mod test {
         CardAdder::new().deck(child.id).add(&mut col);
         col.set_current_deck(child.id).unwrap();
         assert_eq!(col.card_queue_len(), 0);
+    }
+
+    impl Collection {
+        /// Queue order as the topic each card's note belongs to, via the
+        /// `Basic` notetype's single `topic::<x>` tag - the shape the §9
+        /// ablation actually needs to observe, unlike
+        /// `queue_as_deck_and_template` which is blind to notes/tags.
+        fn queue_as_topics(&mut self, deck_id: DeckId) -> Vec<String> {
+            self.build_queues(deck_id)
+                .unwrap()
+                .iter()
+                .map(|entry| {
+                    let card = self.storage.get_card(entry.card_id()).unwrap().unwrap();
+                    let note = self.storage.get_note(card.note_id).unwrap().unwrap();
+                    note.tags
+                        .iter()
+                        .find(|t| t.starts_with("topic::"))
+                        .cloned()
+                        .unwrap_or_default()
+                })
+                .collect()
+        }
+    }
+
+    /// Speedrun addition: the §9 ablation's "build 3 is genuinely
+    /// unmodified" and "count is invariant" guarantees, end to end
+    /// through the real queue builder rather than just the pure
+    /// `reorder_by_topic` unit tests.
+    #[test]
+    fn speedrun_topic_order_changes_queue_order_but_not_counts() -> Result<()> {
+        let mut col = Collection::new();
+        let nt = col.get_notetype_by_name("Basic")?.unwrap();
+        // 2 topics, 2 notes each, added in an already-interleaved order so
+        // "blocked" and "interleaved" produce visibly different orders
+        // from both each other and from insertion order.
+        for topic in ["a", "a", "b", "b"] {
+            let mut note = nt.new_note();
+            note.set_field(0, "front")?;
+            note.tags.push(format!("topic::{topic}"));
+            col.add_note(&mut note, DeckId(1))?;
+        }
+
+        let default_order = col.queue_as_topics(DeckId(1));
+        assert_eq!(default_order.len(), 4);
+
+        col.set_config("speedrunTopicOrder", &"blocked").unwrap();
+        col.clear_study_queues();
+        let blocked_order = col.queue_as_topics(DeckId(1));
+        assert_eq!(blocked_order, vec!["topic::a", "topic::a", "topic::b", "topic::b"]);
+
+        col.set_config("speedrunTopicOrder", &"interleaved").unwrap();
+        col.clear_study_queues();
+        let interleaved_order = col.queue_as_topics(DeckId(1));
+        assert_eq!(interleaved_order, vec!["topic::a", "topic::b", "topic::a", "topic::b"]);
+
+        // Counts are invariant: reordering must never gain or lose cards.
+        assert_eq!(blocked_order.len(), 4);
+        assert_eq!(interleaved_order.len(), 4);
+
+        // Removing the key restores the exact unmodified-Anki order - the
+        // "build 3" guarantee the ablation depends on.
+        col.remove_config("speedrunTopicOrder").unwrap();
+        col.clear_study_queues();
+        assert_eq!(col.queue_as_topics(DeckId(1)), default_order);
+
+        Ok(())
     }
 }

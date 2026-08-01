@@ -1,6 +1,6 @@
 # Speedrun — Architecture
 
-Status: Brainlift v1 complete, both decisions locked (§9 — exam: MCAT, Rust feature: mastery query). Core Engine, Android build, sync, and desktop installer are implemented and verified (see status notes in §3, §4, §5, §10). The full Scoring Service — give-up gate, Performance model, and Readiness mapper — is implemented (§6, Performance's training data is synthetic), both the desktop and Android three-score dashboards show all three scores live, and the AI Subsystem (§7) is implemented and run for real — generation, provenance, leakage check, and gold-set eval all verified, AI beats its baseline 98% to 0%. Still not built: real held-back training data for the Performance model, the paraphrase test, and the §9 thesis ablation.
+Status: Brainlift v1 complete, both decisions locked (§9 — exam: MCAT, Rust feature: mastery query). Core Engine, Android build, sync, and desktop installer are implemented and verified (see status notes in §3, §4, §5, §10). The full Scoring Service — give-up gate, Performance model, and Readiness mapper — is implemented (§6, Performance's training data is synthetic), both the desktop and Android three-score dashboards show all three scores live, and the AI Subsystem (§7) is implemented and run for real — generation, provenance, leakage check, and gold-set eval all verified, AI beats its baseline 98% to 0%. The §9 thesis ablation and paraphrase test are implemented and run for real: a second Rust feature (`speedrunTopicOrder`, a real queue-order toggle) drives a genuine three-way comparison, and both the item-side sufficiency test and the ablation produced real, non-fabricated results — see [speedrun/docs/paraphrase-test.md](speedrun/docs/paraphrase-test.md) and Brainlift §7. Still not built: real held-back training data for the Performance model, and the `crash-test`/`bench` tooling.
 
 ## 1. Mission → system shape
 
@@ -146,9 +146,9 @@ This service can run as a local process embedded in the desktop/mobile app (no n
 See [speedrun/docs/brainlift.md](speedrun/docs/brainlift.md) for the full research and reasoning behind these.
 
 - **Target exam: MCAT.** Readiness is a scaled score (472–528) with a range, not a pass probability — the branch this would have taken for USMLE doesn't apply. The exam outline mapping (§8) is AAMC's official four-section content list.
-- **Rust feature: mastery query** (§3), confirmed rather than overridden — the Brainlift's thesis (POV 1, below) is about *measuring* the recall/transfer gap, not about reordering the review queue, so the lowest-risk, additive option is also the one the thesis actually needs.
-- **Thesis feature for Section 9's ablation:** POV 1 — "past a range of card-retention levels, further gains come from transfer training, not more review reps, because isolated flashcard review never trains the discrimination skill exam items require." The three-way build is: (1) full app with a topic-interleaved review mode, (2) same app with that mode off (plain topic-blocked review), (3) unmodified Anki. The paraphrase test (30 cards × 2 rewordings) is the shared measurement across all three, and it's also what POV 1 predicts should show a gap between card-recall accuracy and reworded-question accuracy.
-- **Feature flags this implies:** the Core Engine needs the interleaving/blocking toggle on the review queue; the Scoring Service needs to keep the Performance model computable identically regardless of which of the three builds produced the review history feeding it, so the comparison is apples-to-apples.
+- **Rust feature: mastery query** (§3), confirmed rather than overridden — the Brainlift's thesis (POV 1, below) is about *measuring* the recall/transfer gap, not primarily about reordering the review queue, so the lowest-risk, additive option is also the one the thesis actually needs as its *required* PRD Rust feature. A second, smaller Rust feature was still needed to actually run the ablation (below) — the PRD's one required feature and the ablation's own feature flag turned out not to be the same thing, and both got built.
+- **Thesis feature for Section 9's ablation — implemented and run.** POV 1: "past a range of card-retention levels, further gains come from transfer training, not more review reps, because isolated flashcard review never trains the discrimination skill exam items require." The three-way build: (1) full app with a topic-interleaved review mode, (2) same app with that mode off (plain topic-blocked review), (3) unmodified Anki. **Status: all three builds exist and were run for real**, via `speedrunTopicOrder` (`rslib/src/scheduler/queue/builder/topic_order.rs` — see [rust-change-note.md](speedrun/docs/rust-change-note.md)), a config-key toggle rather than a new RPC (no proto regen, no Android AAR rebuild needed). The paraphrase test (30 cards × 2 rewordings) is the shared measurement across all three — see [speedrun/docs/paraphrase-test.md](speedrun/docs/paraphrase-test.md) for the full results: a real 16-point interleaved-vs-blocked gap at a 10-card study budget, closing by a 20-card budget as topic coverage converges. Brainlift §7 has the summary and verdict on POV 1.
+- **Feature flags this implied:** the Core Engine needed the interleaving/blocking toggle on the review queue (built — see above); the Scoring Service keeping the Performance model computable identically regardless of which build produced the review history was addressed by having the ablation drive real review history through the same `Collection`/RPC surface for all three builds, rather than a separate code path per build.
 
 ## 10. Testing & benchmark surface (Section 8/10 requirements → where they live)
 
@@ -169,10 +169,10 @@ Every row must be reported as p50 / p95 / worst-case on the shared 50k-card deck
 
 | Requirement | Lives in |
 |---|---|
-| 3 Rust unit tests + 1 Python test for the Rust change | `core/rslib/src/<module>/tests.rs`, `core/pylib/tests/` |
+| 3 Rust unit tests + 1 Python test for the Rust change | `core/rslib/src/<module>/tests.rs`, `core/pylib/tests/` — satisfied twice over: `mastery.rs`/`give_up_gate.rs`/etc. for the primary Rust change, and `topic_order.rs` (4 unit tests + 1 integration test) + `test_speedrun_topic_order.py` for the ablation's queue-order toggle |
 | Sync test (20 cards, offline/reconnect, conflict rule) | `speedrun/tools/sync-test/` driving two headless client instances against the sync server |
 | Coverage map | Derived at runtime from §8's outline mapping; surfaced on dashboard |
-| Paraphrase test | `speedrun/tools/paraphrase-test/` — compares recall accuracy vs. reworded-question accuracy |
+| Paraphrase test | `speedrun/tools/paraphrase-test/` — **implemented and run for real.** Item-side sufficiency (93% near-transfer vs. 73% discrimination, real Claude API calls) plus the full three-way ablation (real Rust queue output, counterfactual-content student simulation, 0% no-study control confirming no contamination). See [speedrun/docs/paraphrase-test.md](speedrun/docs/paraphrase-test.md). |
 | Leakage check | `speedrun/tools/leakage-check/` — implemented, passes. See [speedrun/docs/ai-subsystem.md](speedrun/docs/ai-subsystem.md) |
 | AI card check (gold set) | `speedrun/tools/ai-cardgen/eval.py` — implemented, run for real. AI 98% correct-and-useful vs baseline 0%. See [speedrun/docs/ai-subsystem.md](speedrun/docs/ai-subsystem.md) |
 | Crash/offline test (20x kill mid-review) | `speedrun/tools/crash-test/` — scripted kill against both clients, asserts zero corrupted collections |
@@ -220,7 +220,7 @@ The phone companion is **not** inside this repo — it's two separate public for
 points at this repo, not upstream Anki). `speedrun/docs/rust-change-note.md` documents
 exactly how they're wired together.
 
-Not yet built, so not yet real directories: the Performance model's train-time consumer of real held-back questions (currently synthetic — see `speedrun/tools/scoring-train/`), and the `paraphrase-test`/`crash-test`/`bench` tools listed in §10's table.
+Not yet built, so not yet real directories: the Performance model's train-time consumer of real held-back questions (currently synthetic — see `speedrun/tools/scoring-train/`), and the `crash-test`/`bench` tools listed in §10's table. `paraphrase-test` is now real — see above.
 
 ## 12. Non-negotiables → architecture mapping
 

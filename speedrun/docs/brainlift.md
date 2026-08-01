@@ -203,12 +203,70 @@ Every row points at a real component (performance model, dashboard, latency capt
 
 ## 7. By Sunday — what changed
 
-Placeholder for the final submission: after the ablation and calibration numbers come in, this section reports which POV survived contact with real held-back data and which didn't, with the evidence either way. Per the honesty rule, "POV 1 held on the mechanism but the specific threshold was wrong, here's the corrected shape" scores better than declaring victory.
+The ablation and paraphrase-test numbers came in. Full methodology, all
+results, and the reproduction commands are in
+[paraphrase-test.md](paraphrase-test.md) — this section is the summary.
+
+**POV 1 (thesis) — partial support, with the shape corrected from what v1 assumed.**
+
+Two independent measurements, both real (real Claude API calls against a
+pre-committed 30-card set, real Rust queue output driving the ablation,
+zero fabricated data):
+
+1. **Item-side sufficiency test:** rewording a card's question while
+   keeping it a "near-transfer" item (same fact, different wording) stays
+   93% answerable from the card alone. Rewording it into a
+   "discrimination" item (requires ruling out a plausible neighboring
+   fact) drops to 73% — a real 20-point gap, not noise. Recall and
+   discrimination are measurably separable skills, which is POV 1's
+   underlying premise.
+2. **Three-way ablation** (topic-interleaved review vs. blocked vs.
+   unmodified Anki, using this fork's new `speedrunTopicOrder` Rust
+   feature to drive genuinely different — not simulated — review queues):
+   interleaved review beats blocked by **+16 points at a 10-card study
+   budget** (43% vs. 28% correct on reworded/discrimination items), but
+   that gap **closes entirely by a 20-card budget** (47% vs. 48%) once
+   blocked review has caught up to most topics anyway.
+
+**What v1 assumed that turned out wrong:** v1's framing implied
+interleaving should help however deep or shallow the review session is.
+It doesn't — it's a **front-loaded, low-coverage-budget effect**. Once a
+student has reviewed enough cards to have touched most topics regardless
+of ordering, the interleaved/blocked distinction stops mattering. That's
+a materially different, and more useful, claim than "always interleave":
+it says interleaving matters most early in a study session or for
+students who study in short bursts, not as a blanket policy.
+
+**What would have falsified this, and didn't happen:** a no-study control
+(same 90 questions, nothing studied) scored 0/90 — confirming the
+measurement isn't contaminated by the model's own prior biochemistry
+knowledge (all cycle-specific terms were counterfactually renamed
+specifically to force this test). If that control had scored high, none
+of the numbers above would mean anything.
+
+**Honest limitations, not hidden:** the "student" is an LLM reading cards
+from a context window once, not a human undergoing repeated spaced
+practice — so this measures topic-coverage breadth, a real and
+mechanically-grounded proxy, rather than Rohrer & Taylor's
+discrimination-training mechanism directly. Sample size (n=90/condition)
+gives ~±10-point confidence intervals — enough to see the budget-10 gap
+and the budget-20 convergence clearly, not enough to call either result
+bulletproof in isolation. Full limitations list in paraphrase-test.md.
+
+**POV 2 and POV 3** were not re-tested this cycle — the ablation and
+paraphrase-test infrastructure built for POV 1 doesn't directly carry
+over to testing "does a blended score misdirect study time" (POV 2) or
+"do fast grades hide poor retention" (POV 3), and building separate
+measurement harnesses for those wasn't achievable alongside POV 1's given
+the Sunday deadline. They remain open, stated plainly rather than
+implicitly declared settled by POV 1's result.
 
 ---
 
 ## Open items carried into build
 
-- Rust feature choice (mastery query vs. topic-aware scheduling vs. points-at-stake queue) — [ARCHITECTURE.md §3](../../ARCHITECTURE.md) recommends the mastery query by default; POV 1 being the thesis strengthens that pick, since the ablation needs per-topic mastery/coverage regardless of which scheduling approach ships.
-- Re-run §5's AI consensus check independently before calling this Brainlift final.
-- If time allows before Friday, replace desk research in §1 with real hands-on notes from at least one of the three tools (per the "you do the hands-on part" option, if that gets picked up later).
+- ~~Rust feature choice~~ — resolved: mastery query shipped as the primary Rust feature (§3), and the ablation's own Rust feature (`speedrunTopicOrder`, a queue-order toggle) shipped alongside it once §9 needed something to actually ablate. See [rust-change-note.md](rust-change-note.md).
+- ~~§9 ablation and paraphrase test~~ — resolved, see §7 above and [paraphrase-test.md](paraphrase-test.md).
+- Re-run §5's AI consensus check independently before calling this Brainlift final. **Not done** — deprioritized under the Sunday deadline in favor of actually running §9's ablation rather than re-validating §5's reasoning a second time.
+- POV 2 and POV 3 remain untested — no ablation or measurement harness was built for either this cycle. Stated in §7 rather than left implicit.
+- If time allows before Friday, replace desk research in §1 with real hands-on notes from at least one of the three tools (per the "you do the hands-on part" option, if that gets picked up later). **Not done.**

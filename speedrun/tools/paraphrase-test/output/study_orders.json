@@ -1,0 +1,397 @@
+{
+  "_provenance": "Real queue order from the Rust backend (build_queues/apply_topic_order), one build per key, extracted via study_order.py against a fixture collection built from the 30 counterfactual cards. Not invented - this is what the real app would queue in each mode.",
+  "coverage_budgets": [
+    10,
+    20,
+    30
+  ],
+  "builds": {
+    "interleaved": {
+      "order": [
+        {
+          "card_id": 19,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 1,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 25,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 7,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 13,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 20,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 2,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 26,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 8,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 14,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 21,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 3,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 27,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 9,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 15,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 22,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 4,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 28,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 10,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 16,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 23,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 5,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 29,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 11,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 17,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 24,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 6,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 30,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 12,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 18,
+          "topic": "topic::steps_late"
+        }
+      ],
+      "topics_covered_at_budget": {
+        "10": 5,
+        "20": 5,
+        "30": 5
+      }
+    },
+    "blocked": {
+      "order": [
+        {
+          "card_id": 19,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 20,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 21,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 22,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 23,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 24,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 1,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 2,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 3,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 4,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 5,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 6,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 25,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 26,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 27,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 28,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 29,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 30,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 7,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 8,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 9,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 10,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 11,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 12,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 13,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 14,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 15,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 16,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 17,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 18,
+          "topic": "topic::steps_late"
+        }
+      ],
+      "topics_covered_at_budget": {
+        "10": 2,
+        "20": 4,
+        "30": 5
+      }
+    },
+    "ankiDefault": {
+      "order": [
+        {
+          "card_id": 1,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 2,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 3,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 4,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 5,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 6,
+          "topic": "topic::overview_and_entry"
+        },
+        {
+          "card_id": 7,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 8,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 9,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 10,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 11,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 12,
+          "topic": "topic::steps_early"
+        },
+        {
+          "card_id": 13,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 14,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 15,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 16,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 17,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 18,
+          "topic": "topic::steps_late"
+        },
+        {
+          "card_id": 19,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 20,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 21,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 22,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 23,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 24,
+          "topic": "topic::energy_yield"
+        },
+        {
+          "card_id": 25,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 26,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 27,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 28,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 29,
+          "topic": "topic::regulation"
+        },
+        {
+          "card_id": 30,
+          "topic": "topic::regulation"
+        }
+      ],
+      "topics_covered_at_budget": {
+        "10": 2,
+        "20": 4,
+        "30": 5
+      }
+    }
+  }
+}

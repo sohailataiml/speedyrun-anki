@@ -144,3 +144,97 @@ Verified: `GeneratedBackend.kt` now exposes
 the APK builds and installs, and the app runs with no crashes both on an
 x86_64 emulator and, after the `ALL_ARCHS` fix above, on a real arm64-v8a
 phone.
+
+# The second Rust change: topic-interleaved review ordering
+
+## What it is
+
+An optional reorder of the review/new queue, driven by a plain config key
+(`speedrunTopicOrder`, values `"blocked"` / `"interleaved"` / unset) rather
+than a new RPC or deck-config field — see
+`rslib/src/scheduler/queue/builder/topic_order.rs`. This is the Brainlift §9
+thesis feature: the three-way ablation build is (1) `interleaved` — cards
+round-robin across `topic::<name>` tags rather than gathering in whatever
+order the deck naturally produces, (2) `blocked` — all of one topic, then
+the next, and (3) unset — byte-identical to unmodified Anki.
+
+## Why a config key instead of a new RPC
+
+Every other Speedrun RPC (`mastery_query`, `give_up_gate`, etc.) required a
+proto regeneration and, on Android, a full NDK cross-compile of the AAR
+against this fork's `Anki-Android-Backend` sibling repo — documented above
+as an hours-not-minutes cost. A plain config key needs none of that: it
+reads via the existing `Collection::get_config_optional`, writes via
+`set_config` (already exposed to both Python and Kotlin), and rides Anki's
+existing config sync with zero new sync code. For a toggle this narrow —
+three string values, no structured data — that's the whole tradeoff, and
+it wins outright.
+
+## Where it hooks in, and what it deliberately doesn't touch
+
+`Collection::build_queues` (`builder/mod.rs`) calls `apply_topic_order`
+between `gather_cards` and `build()` — after gathering respects existing
+deck limits and burying, before the learning/day-learning/new/review
+streams get merged and their positions become load-bearing for the
+returned `CardQueues`. It reorders `review` and `new` only; `learning` and
+`day_learning` are untouched, since those are due-time-ordered by
+`sort_learning` for correct intraday scheduling and reordering them would
+serve no thesis purpose. Reordering is a pure permutation — `Counts` comes
+from vector lengths, which a permutation preserves — so no card is gained,
+lost, or double-counted under any of the three modes.
+
+## Undo safety
+
+Same shape as `mastery_query`'s argument for read-only safety, mirrored
+for a queue-order change: `QueueUpdate` (`queue/undo.rs`) restores by
+*entry*, never by absolute position, and queues are always rebuilt from
+scratch whenever the collection is next accessed after invalidation. There
+is no persisted "queue order" to corrupt — the config key is the only
+state, and it round-trips through undo like any other config write.
+
+## A real gotcha this surfaced: config changes don't auto-invalidate the queue
+
+`Collection::maybe_clear_study_queues_after_op` only clears the cached
+queue for a narrow allow-list of ops (`rslib/src/ops.rs`,
+`requires_study_queue_rebuild`) — plain `Op::UpdateConfig` (what
+`set_config` uses) is deliberately **not** on that list, because most
+config keys have nothing to do with the queue and rebuilding on every
+config write would be wasteful. That means flipping
+`speedrunTopicOrder` via `set_config` alone has no visible effect until
+some other queue-rebuilding op runs afterward — in the real desktop/Android
+apps this happens naturally (opening/re-entering a deck calls
+`set_current_deck`, which *is* on the allow-list), but a script or test
+driving `set_config` directly needs to trigger that explicitly. Also
+non-obvious: `set_current_deck` only clears the queue if the id **actually
+changes** — `set_current_deck_inner` checks `set_config`'s "value differed"
+return before clearing, so re-setting the same current deck id is a silent
+no-op. `pylib/tests/test_speedrun_topic_order.py` bounces through a
+scratch deck and back specifically because of this; the paraphrase-test
+harness (`speedrun/tools/paraphrase-test/study_order.py`) has to do the
+same when switching between the three ablation builds in one process.
+
+## What would prove this design wrong
+
+If topic-interleaved review order turns out **not** to change which
+topics get studied at a given card budget (e.g. because deck/limit
+interactions upstream of this hook dominate), the ablation has nothing to
+measure — the Rust-side test
+(`speedrun_topic_order_changes_queue_order_but_not_counts`) exists
+specifically to catch that regression before it reaches the ablation
+harness, not just to check the reordering logic in isolation.
+
+## Tests
+
+- `rslib/src/scheduler/queue/builder/topic_order.rs`: 4 unit tests on the
+  pure `reorder_by_topic` function (Anki-default passthrough, blocked
+  grouping preserves within-topic order, interleaved round-robins without
+  early repeats, untagged items sort last).
+- `rslib/src/scheduler/queue/builder/mod.rs`:
+  `speedrun_topic_order_changes_queue_order_but_not_counts` — end-to-end
+  through the real `Collection`/`build_queues` path, asserting blocked and
+  interleaved orders, invariant counts, and that removing the config key
+  restores the exact unmodified-Anki order.
+- `pylib/tests/test_speedrun_topic_order.py` — the same property through
+  the Python surface the desktop app and any harness scripts actually use.
+
+All pass; full `cargo test -p anki --lib` (557 tests) has zero regressions.
