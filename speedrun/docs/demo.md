@@ -16,10 +16,18 @@ What you can actually demo today:
   output instead.
 - ✅ Sync, both directions, including the same-card-conflict case
   ([sync-test-results.md](sync-test-results.md)).
-- ❌ **No dashboard on Android yet.** Desktop's dashboard is a native PyQt
-  screen that doesn't port to AnkiDroid's Kotlin/Compose UI automatically —
-  Android still needs its own dashboard screen, or its scores shown via the
-  console pattern in the Android section below.
+- ⚠️ **Android now has its own dashboard screen, built and verified by build
+  — not yet verified by a live screenshot.** Reachable from the deck
+  picker's overflow menu ("Speedrun dashboard"), it's a native
+  View/Fragment `AnkiActivity` (AnkiDroid's real UI pattern — the app
+  depends on Compose but doesn't use it for actual screens) showing the
+  same Memory/Performance/Readiness layout as desktop. It compiled and
+  built clean, and calls the same backend RPCs confirmed live in
+  `GeneratedBackend.kt`, but the dev emulator used to build this couldn't
+  hold a stable session long enough to confirm the on-screen render — see
+  the "Gotcha" note in [rust-change-note.md](rust-change-note.md). Confirm
+  on a real device or a healthier emulator before claiming this checkbox
+  done in the submission video.
 - ✅ **The AI subsystem is real and run, but it's a terminal demo, not a
   screen.** `speedrun/tools/ai-cardgen/` generates real cards from a
   source document via Claude, traces each to its source chunk, and beats
@@ -29,10 +37,11 @@ What you can actually demo today:
   demoing it means running the scripts and showing the output, not
   clicking through the app.
 
-If you're recording the actual submission video, an Android dashboard is
-the main piece still worth finishing — or the video should honestly
-narrate what's console/terminal-only vs on-screen, matching the project's
-own honesty rule rather than hiding the gap.
+If you're recording the actual submission video, confirming the Android
+dashboard renders on a real screen is the main piece still worth
+finishing — or the video should honestly narrate what's console/terminal-only
+vs on-screen, matching the project's own honesty rule rather than hiding
+the gap.
 
 ## Desktop
 
@@ -129,14 +138,20 @@ adb shell am start -n com.ichi2.anki.debug/com.ichi2.anki.IntentHandler
 
 **Show a review session:** same as desktop — tap a due card, grade it.
 
-**Show the Rust change live:** AnkiDroid doesn't ship an equivalent of
-Anki desktop's Debug Console. The practical option for a demo is `adb shell`
-into the app's data and drive it the same way the sync test does — see
-[sync-test-results.md](sync-test-results.md) and
-`speedrun/tools/sync-test/` for the actual pattern used to exercise this
-fork's Rust calls against a live AnkiDroid instance. There is currently no
-on-device UI surfacing `mastery_query`/`give_up_gate`/`performance_query`
-results directly (same dashboard gap as desktop).
+**Show the three-score dashboard:** open the deck picker's overflow menu
+(⋮) and tap "Speedrun dashboard" — same Memory/Performance/Readiness
+layout as desktop's `Ctrl+Shift+D`, backed by the same
+`mastery_query`/`give_up_gate`/`performance_query`/`readiness_query` RPCs.
+Built and compiles clean; not yet confirmed with a live screenshot (see
+the honest-scope note above) — check it renders before using it in the
+submission video.
+
+**Fallback if the dashboard screen doesn't render on your setup:**
+AnkiDroid doesn't ship an equivalent of Anki desktop's Debug Console, so
+the next-best option is `adb shell` into the app's data and drive it the
+same way the sync test does — see [sync-test-results.md](sync-test-results.md)
+and `speedrun/tools/sync-test/` for the actual pattern used to exercise
+this fork's Rust calls against a live AnkiDroid instance.
 
 ## Cross-app sync
 
@@ -167,5 +182,12 @@ Mapped to what PRD §12 actually asks for, against what exists today:
    provenance, beating the baseline 98% to 0%. Narrate that this is a
    terminal/report demo, not an in-app button, since there's no
    "generate cards" UI yet.
-6. **Not yet available:** an Android dashboard. State this plainly rather
-   than hiding it.
+6. The Android dashboard, opened from the deck picker's overflow menu
+   ("Speedrun dashboard") — **confirm it actually renders on the device or
+   emulator you're recording with before this shot goes in the video.** It
+   builds and ships, but as of this writing it's only been verified by
+   build success and API-surface inspection, not by a live screenshot (dev
+   emulator was too unstable to hold a session — see the "Gotcha" note in
+   [rust-change-note.md](rust-change-note.md)). If it doesn't render
+   cleanly on your recording setup, narrate that plainly rather than
+   hiding it.
