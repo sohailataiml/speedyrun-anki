@@ -23,9 +23,9 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 from agent import AgentState, BridgeContent, check_grounded_node, check_leak_node, run_agent
-from cards import CARDS, TestCard
+from cards import CARDS, OUT_OF_CORPUS_CARDS, TestCard
 from corpus import load_chunks
-from retrieval import retrieve
+from retrieval import retrieve_for_grounding
 
 OUTPUT_DIR = Path(__file__).parent / "output"
 
@@ -86,9 +86,11 @@ def run_adversarial_checks(chunks, api_key: str) -> list[dict]:
     # plausible-sounding but fabricated fact not in the retrieved
     # source_material.md passages (a fictional "step 9" and a made-up
     # enzyme name).
-    ungrounded_card = TestCard(902, "dummy front", "dummy back", "kc-01")
+    ungrounded_card = TestCard(903, "citric acid cycle overview", "the cycle oxidizes acetyl-CoA", "kc-01")
     ungrounded_state = AgentState(card=ungrounded_card)
-    ungrounded_state.retrieved = retrieve("citric acid cycle overview", chunks, top_k=2)
+    ungrounded_state.retrieved, ungrounded_state.gate_score = retrieve_for_grounding(
+        ungrounded_card.front, ungrounded_card.back, chunks, top_k=2
+    )
     ungrounded_state.bridge = BridgeContent(
         bridge_question="What happens in step 9 of the cycle?",
         bridge_answer=(
@@ -118,24 +120,32 @@ def main() -> None:
     chunks = load_chunks()
     print(f"Loaded {len(chunks)} source chunks.\n")
 
+    all_cards = [(c, True) for c in CARDS] + [(c, False) for c in OUT_OF_CORPUS_CARDS]
     card_results = []
-    for i, card in enumerate(CARDS, 1):
-        print(f"[{i}/{len(CARDS)}] running agent for card {card.card_id}: {card.front!r}")
+    for i, (card, in_corpus) in enumerate(all_cards, 1):
+        tag = "IN " if in_corpus else "OUT"
+        print(f"[{i}/{len(all_cards)}] {tag} card {card.card_id}: {card.front!r}")
         state = run_agent(card, chunks, api_key)
         for line in state.trace:
             print(f"    {line}")
         card_results.append(
             {
                 "card_id": card.card_id,
+                "in_corpus": in_corpus,
                 "front": card.front,
                 "back": card.back,
                 "expected_source_chunk": card.source_chunk_id,
+                "gate_score": round(state.gate_score, 4),
+                "grounding_was_checked": state.grounded is not None,
                 "retrieved_chunks": [r.chunk.chunk_id for r in state.retrieved],
-                "retrieved_expected_chunk": card.source_chunk_id
-                in [r.chunk.chunk_id for r in state.retrieved],
+                "retrieved_expected_chunk": (
+                    card.source_chunk_id in [r.chunk.chunk_id for r in state.retrieved]
+                    if card.source_chunk_id
+                    else None
+                ),
                 "bridge": asdict(state.bridge),
-                "grounded": state.grounded.grounded,
-                "grounded_reasoning": state.grounded.reasoning,
+                "grounded": state.grounded.grounded if state.grounded else None,
+                "grounded_reasoning": state.grounded.reasoning if state.grounded else "",
                 "leaked": state.leak.leaked,
                 "leaked_phrases": state.leak.leaked_phrases,
             }
@@ -147,15 +157,39 @@ def main() -> None:
     for r in adversarial_results:
         print(f"  {r['case']}: {'PASS' if r['pass'] else 'FAIL'}")
 
-    n_grounded = sum(1 for r in card_results if r["grounded"])
-    n_leaked = sum(1 for r in card_results if r["leaked"])
-    n_retrieved_correct = sum(1 for r in card_results if r["retrieved_expected_chunk"])
+    in_rows = [r for r in card_results if r["in_corpus"]]
+    out_rows = [r for r in card_results if not r["in_corpus"]]
+
+    # The gate must fire on in-corpus cards and decline on out-of-corpus
+    # ones. An over-permissive gate is the dangerous failure: it produces
+    # a confident "verified" badge backed by a corpus that never covered
+    # the topic.
+    gate_correct = all(r["grounding_was_checked"] for r in in_rows) and all(
+        not r["grounding_was_checked"] for r in out_rows
+    )
 
     summary = {
         "n_cards": len(card_results),
-        "n_grounded": n_grounded,
-        "n_leaked": n_leaked,
-        "n_retrieval_hit_expected_chunk": n_retrieved_correct,
+        "n_in_corpus": len(in_rows),
+        "n_out_of_corpus": len(out_rows),
+        "in_corpus_grounding_checked": sum(1 for r in in_rows if r["grounding_was_checked"]),
+        "in_corpus_grounded": sum(1 for r in in_rows if r["grounded"]),
+        "out_of_corpus_correctly_skipped": sum(
+            1 for r in out_rows if not r["grounding_was_checked"]
+        ),
+        "gate_discrimination_correct": gate_correct,
+        "gate_score_range_in_corpus": [
+            round(min(r["gate_score"] for r in in_rows), 4),
+            round(max(r["gate_score"] for r in in_rows), 4),
+        ],
+        "gate_score_range_out_of_corpus": [
+            round(min(r["gate_score"] for r in out_rows), 4),
+            round(max(r["gate_score"] for r in out_rows), 4),
+        ],
+        "n_leaked": sum(1 for r in card_results if r["leaked"]),
+        "n_retrieval_hit_expected_chunk": sum(
+            1 for r in in_rows if r["retrieved_expected_chunk"]
+        ),
         "adversarial_checks_all_passed": all(r["pass"] for r in adversarial_results),
     }
 
@@ -167,9 +201,12 @@ def main() -> None:
                     "Real Claude API calls for bridge generation and "
                     "groundedness judging, against 10 real Krebs-cycle "
                     "cards traced to speedrun/ai/source_material.md "
-                    "chunks. Leak check is local n-gram overlap, no API "
-                    "call. Adversarial cases are hand-crafted, not from "
-                    "the live model, to prove the checkers discriminate."
+                    "chunks, plus 5 real MCAT cards on topics the corpus "
+                    "does NOT cover (to check the retrieval gate declines "
+                    "to judge rather than guessing). Leak check and "
+                    "retrieval gate are local, no API call. Adversarial "
+                    "cases are hand-crafted, not from the live model, to "
+                    "prove the checkers discriminate."
                 ),
                 "summary": summary,
                 "cards": card_results,
@@ -180,12 +217,19 @@ def main() -> None:
         encoding="utf-8",
     )
 
-    print(f"\n{n_grounded}/{len(card_results)} bridges judged grounded in the retrieved source.")
-    print(f"{n_leaked}/{len(card_results)} bridges leaked gold-answer phrasing.")
-    print(
-        f"{n_retrieved_correct}/{len(card_results)} retrievals hit the card's actual source chunk."
-    )
-    print(f"Adversarial checks all passed: {summary['adversarial_checks_all_passed']}")
+    s = summary
+    print()
+    print(f"Retrieval gate: in-corpus scores {s['gate_score_range_in_corpus']}, "
+          f"out-of-corpus {s['gate_score_range_out_of_corpus']}")
+    print(f"  {s['in_corpus_grounding_checked']}/{s['n_in_corpus']} in-corpus cards checked "
+          f"(gate fired), {s['in_corpus_grounded']} judged grounded")
+    print(f"  {s['out_of_corpus_correctly_skipped']}/{s['n_out_of_corpus']} out-of-corpus cards "
+          "correctly declined (gate withheld a verdict)")
+    print(f"  gate discrimination correct: {s['gate_discrimination_correct']}")
+    print(f"{s['n_leaked']}/{s['n_cards']} bridges leaked gold-answer phrasing.")
+    print(f"{s['n_retrieval_hit_expected_chunk']}/{s['n_in_corpus']} retrievals hit the card's "
+          "actual source chunk.")
+    print(f"Adversarial checks all passed: {s['adversarial_checks_all_passed']}")
     print(f"\nWrote {OUTPUT_DIR / 'results.json'}")
 
 

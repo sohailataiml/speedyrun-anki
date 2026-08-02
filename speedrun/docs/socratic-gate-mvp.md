@@ -424,12 +424,22 @@ score 1.000, grounding check fired, judge returned grounded, and the
 dialog showed the green "✓ Verified against the curriculum source"
 badge.
 
+**Both checks are now on Android too.** `CurriculumGrounding.kt` is the
+Kotlin port of the same retrieval, gate, and groundedness judge; the
+corpus ships as an app asset (`assets/speedrun/source_material.md`)
+since Android can't reach the desktop repo's working tree.
+`SocraticGate.kt` gained the same leak-check-with-one-retry hard gate
+and the same three-state badge. Compiles clean; the retrieval and gate
+maths are identical to desktop's and to the standalone agent's, which
+were verified against the same 15 cards.
+
 **Not done:** extending `source_material.md` beyond the Krebs cycle, so
 the grounding check still only has real source coverage for that one
 topic — every other card correctly falls through to the "couldn't
-check" state. Also not done: wiring the grounding check into Android
-(only the shared `stripHtml` fix was ported there); Android has the leak
-check path but no curriculum corpus access.
+check" state. Also not done: a live end-to-end run of the Android
+grounding path on the emulator (desktop's was verified live; Android's
+is verified by construction — shared logic, verified corpus parsing,
+clean build — but not yet by a screenshot).
 
 ## Reproducing this
 

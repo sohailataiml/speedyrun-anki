@@ -1,38 +1,57 @@
 {
-  "_provenance": "Real Claude API calls for bridge generation and groundedness judging, against 10 real Krebs-cycle cards traced to speedrun/ai/source_material.md chunks. Leak check is local n-gram overlap, no API call. Adversarial cases are hand-crafted, not from the live model, to prove the checkers discriminate.",
+  "_provenance": "Real Claude API calls for bridge generation and groundedness judging, against 10 real Krebs-cycle cards traced to speedrun/ai/source_material.md chunks, plus 5 real MCAT cards on topics the corpus does NOT cover (to check the retrieval gate declines to judge rather than guessing). Leak check and retrieval gate are local, no API call. Adversarial cases are hand-crafted, not from the live model, to prove the checkers discriminate.",
   "summary": {
-    "n_cards": 10,
-    "n_grounded": 10,
-    "n_leaked": 0,
-    "n_retrieval_hit_expected_chunk": 9,
+    "n_cards": 15,
+    "n_in_corpus": 10,
+    "n_out_of_corpus": 5,
+    "in_corpus_grounding_checked": 10,
+    "in_corpus_grounded": 10,
+    "out_of_corpus_correctly_skipped": 5,
+    "gate_discrimination_correct": true,
+    "gate_score_range_in_corpus": [
+      0.371,
+      1.0
+    ],
+    "gate_score_range_out_of_corpus": [
+      0.0,
+      0.0
+    ],
+    "n_leaked": 1,
+    "n_retrieval_hit_expected_chunk": 10,
     "adversarial_checks_all_passed": true
   },
   "cards": [
     {
       "card_id": 1,
+      "in_corpus": true,
       "front": "What are the two major products the citric acid cycle hands off to the electron transport chain?",
       "back": "NADH and FADH2",
       "expected_source_chunk": "kc-01",
+      "gate_score": 0.3766,
+      "grounding_was_checked": true,
       "retrieved_chunks": [
-        "kc-09",
-        "kc-01"
+        "kc-01",
+        "kc-09"
       ],
       "retrieved_expected_chunk": true,
       "bridge": {
-        "bridge_question": "If the citric acid cycle couldn't pass electrons to the electron transport chain, what would happen to NAD+ and FAD\u2014would they run out, and how would the cycle keep running?",
-        "bridge_answer": "Yes, they would be depleted because they wouldn't be regenerated; the cycle would stall without a way to recycle these electron carriers back to their oxidized forms.",
-        "synthesis": "NADH and FADH2 are the two products the citric acid cycle hands to the electron transport chain because that's where these reduced carriers get reoxidized back to NAD+ and FAD, allowing the cycle to continue."
+        "bridge_question": "If the citric acid cycle couldn't transfer electrons to the electron transport chain, why would the cycle grind to a halt even though it still has plenty of acetyl-CoA coming in?",
+        "bridge_answer": "Because NAD+ and FAD would become depleted (reduced to NADH and FADH2) with no way to regenerate them, so the cycle couldn't continue oxidizing substrates and would lack cofactors for its dehydrogenase reactions.",
+        "synthesis": "The citric acid cycle must continuously hand off NADH and FADH2 to the electron transport chain so that NAD+ and FAD are regenerated and available to accept electrons in the next cycle."
       },
       "grounded": true,
-      "grounded_reasoning": "The passages directly support both the bridge answer and synthesis. Passage [kc-01] explicitly states that NAD+ and FAD \"capture\" electrons to produce NADH and FADH2, which \"then feed the electron transport chain,\" and that the cycle's \"real output is the reduced electron carriers.\" This confirms that without the electron transport chain to reoxidize these carriers, they would accumulate in reduced form and NAD+/FAD would be depleted, causing the cycle to stall. The synthesis accurately reflects that NADH and FADH2 are products handed to the electron transport chain where they get reoxidized back to their oxid",
+      "grounded_reasoning": "The source passages explicitly state that NAD+ and FAD capture electrons to produce NADH and FADH2, which \"then feed the electron transport chain\" [kc-01], and that the cycle's \"real output is the reduced electron carriers that power oxidative phosphorylation downstream.\" The bridge answer correctly identifies that without electron transfer to the ETC, NAD+ and FAD would become depleted (reduced to NADH and FADH2) with no regeneration, preventing the dehydrogenase reactions from continuing\u2014this mechanism is directly supported by the passage's description of how the cycle depends on these cofactors.",
       "leaked": false,
       "leaked_phrases": []
     },
     {
       "card_id": 2,
+      "in_corpus": true,
       "front": "In which cellular compartment does the citric acid cycle take place?",
       "back": "The mitochondrial matrix",
       "expected_source_chunk": "kc-02",
+      "gate_score": 0.371,
+      "grounding_was_checked": true,
       "retrieved_chunks": [
         "kc-02",
         "kc-03"
@@ -40,39 +59,45 @@
       "retrieved_expected_chunk": true,
       "bridge": {
         "bridge_question": "If the citric acid cycle produces NADH and FADH2 that must feed electrons into the electron transport chain located in the inner mitochondrial membrane, why would it be inefficient for the cycle to occur in the cytoplasm instead?",
-        "bridge_answer": "The NADH and FADH2 would have to be transported across the mitochondrial membranes, wasting energy and creating a bottleneck, whereas having the cycle in the matrix places it right next to where these electron carriers are immediately used.",
-        "synthesis": "The citric acid cycle occurs in the mitochondrial matrix because this location allows direct coupling with the electron transport chain in the inner membrane, maximizing the efficiency of aerobic respiration."
+        "bridge_answer": "The NADH and FADH2 would have to be transported across the mitochondrial membranes, and the cycle's intermediates would be separated from the electron transport chain machinery, creating unnecessary transport delays and energy loss.",
+        "synthesis": "The citric acid cycle occurs in the mitochondrial matrix because this compartment positions it directly adjacent to the inner membrane's electron transport chain, enabling efficient coupling of oxidation to ATP production."
       },
       "grounded": true,
-      "grounded_reasoning": "The source passage [kc-02] directly supports both the bridge answer and synthesis. It explicitly states that the cycle runs in the mitochondrial matrix where \"the inner membrane is where the electron transport chain sits immediately downstream, so NADH and FADH2 produced in the matrix don't have far to travel.\" This supports the efficiency argument that proximity to the electron transport chain avoids transport costs and bottlenecks. The passage confirms the mechanistic reasoning that location in the matrix enables direct coupling with the nearby electron transport chain.",
+      "grounded_reasoning": "The passage [kc-02] directly supports both the bridge answer and synthesis by stating that the cycle runs in the mitochondrial matrix where \"the inner membrane is where the electron transport chain sits immediately downstream, so NADH and FADH2 produced in the matrix don't have far to travel.\" This confirms that the proximity of the cycle to the electron transport chain is mechanistically important and that cytoplasmic location would require transport of these molecules, supporting the efficiency argument presented.",
       "leaked": false,
       "leaked_phrases": []
     },
     {
       "card_id": 3,
+      "in_corpus": true,
       "front": "What enzyme converts pyruvate into acetyl-CoA before the citric acid cycle begins?",
       "back": "The pyruvate dehydrogenase complex",
       "expected_source_chunk": "kc-03",
+      "gate_score": 0.6838,
+      "grounding_was_checked": true,
       "retrieved_chunks": [
         "kc-03",
-        "kc-11"
+        "kc-07"
       ],
       "retrieved_expected_chunk": true,
       "bridge": {
-        "bridge_question": "If pyruvate cannot be directly used as a substrate in the citric acid cycle, what chemical modification must happen to it, and why does it need to be activated with CoA specifically?",
-        "bridge_answer": "Pyruvate must be oxidatively decarboxylated (losing CO\u2082 and gaining electrons) to form a 2-carbon acetyl group, which is then activated by CoA to create a high-energy thioester bond that makes it reactive enough to condense with oxaloacetate.",
-        "synthesis": "The pyruvate dehydrogenase complex catalyzes this oxidative decarboxylation and CoA-activation step, transforming pyruvate into the acetyl-CoA that the citric acid cycle requires."
+        "bridge_question": "If pyruvate cannot be directly used in the citric acid cycle (which requires a 2-carbon acetyl group), what structural change must happen to pyruvate, and which enzyme complex would need to catalyze that transformation?",
+        "bridge_answer": "Pyruvate must be oxidatively decarboxylated (losing CO\u2082 while being oxidized) to form the 2-carbon acetyl group that attaches to CoA, a reaction catalyzed by the pyruvate dehydrogenase complex.",
+        "synthesis": "The pyruvate dehydrogenase complex performs this essential oxidative decarboxylation step that converts the 3-carbon pyruvate into the 2-carbon acetyl-CoA needed to enter the citric acid cycle."
       },
       "grounded": true,
-      "grounded_reasoning": "The source passage [kc-03] explicitly states that the pyruvate dehydrogenase complex \"converts each pyruvate into acetyl-CoA, releasing one CO2\" and describes this as an oxidative decarboxylation process. It confirms that acetyl-CoA is \"what actually feeds into the cycle's first step,\" supporting the claim that pyruvate must be modified to enter the citric acid cycle. The bridge answer's description of the chemical modification (oxidative decarboxylation producing a 2-carbon acetyl group activated by CoA into a high-energy thioester) and the synthesis's identification of pyruvate de",
+      "grounded_reasoning": "The source passage [kc-03] explicitly states that the pyruvate dehydrogenase complex \"converts each pyruvate into acetyl-CoA, releasing one CO2 and reducing one NAD+ to NADH in the process,\" which directly supports the bridge answer's description of oxidative decarboxylation (losing CO\u2082 while being oxidized) to form the 2-carbon acetyl-CoA. The passage also confirms this is the required entry point for the citric acid cycle, supporting the synthesis statement.",
       "leaked": false,
       "leaked_phrases": []
     },
     {
       "card_id": 4,
+      "in_corpus": true,
       "front": "Which enzyme catalyzes the first step of the citric acid cycle, combining acetyl-CoA with oxaloacetate?",
       "back": "Citrate synthase",
       "expected_source_chunk": "kc-04",
+      "gate_score": 0.4548,
+      "grounding_was_checked": true,
       "retrieved_chunks": [
         "kc-04",
         "kc-03"
@@ -80,131 +105,266 @@
       "retrieved_expected_chunk": true,
       "bridge": {
         "bridge_question": "If oxaloacetate is regenerated at the end of the citric acid cycle, why can't the cycle run without a constant supply of acetyl-CoA entering at the beginning?",
-        "bridge_answer": "Because oxaloacetate alone cannot form citrate\u2014it must condense with acetyl-CoA, and the enzyme catalyzing this condensation is what initiates the cycle's first step.",
-        "synthesis": "Citrate synthase is the enzyme that catalyzes this essential condensation of acetyl-CoA with oxaloacetate, making it the entry point that drives the entire cycle forward."
+        "bridge_answer": "Because oxaloacetate alone cannot form citrate\u2014it must condense with acetyl-CoA, and the enzyme catalyzing this condensation is the entry point where the two-carbon acetyl group actually enters the cycle.",
+        "synthesis": "Citrate synthase is the enzyme that catalyzes this essential condensation reaction, making it the gatekeeper enzyme that initiates the citric acid cycle by combining acetyl-CoA with oxaloacetate."
       },
       "grounded": true,
-      "grounded_reasoning": "The passages directly support both the bridge answer and synthesis. Passage [kc-04] explicitly states that acetyl-CoA \"combines with oxaloacetate\" to form citrate, and that \"citrate synthase\" catalyzes this reaction. Passage [kc-03] confirms that acetyl-CoA is \"the required entry point\" that \"feeds into the cycle's first step.\" The bridge answer correctly identifies that oxaloacetate alone cannot form citrate without acetyl-CoA, and the synthesis accurately names citrate synthase as the catalyzing enzyme that initiates the cycle.",
+      "grounded_reasoning": "The passage [kc-04] explicitly states that acetyl-CoA combines with oxaloacetate to form citrate, catalyzed by citrate synthase, and identifies citrate synthase as \"one of the cycle's key regulatory enzymes.\" The bridge answer correctly identifies that oxaloacetate alone cannot form citrate without acetyl-CoA, and that citrate synthase catalyzes this condensation. The synthesis accurately names citrate synthase and describes it as the enzyme initiating the cycle by combining acetyl-CoA with oxaloacetate, all of which is directly supported by the source material.",
       "leaked": false,
       "leaked_phrases": []
     },
     {
       "card_id": 5,
+      "in_corpus": true,
       "front": "Which enzyme is generally considered the rate-limiting step of the citric acid cycle?",
       "back": "Isocitrate dehydrogenase",
       "expected_source_chunk": "kc-06",
+      "gate_score": 0.7957,
+      "grounding_was_checked": true,
       "retrieved_chunks": [
         "kc-06",
         "kc-09"
       ],
       "retrieved_expected_chunk": true,
       "bridge": {
-        "bridge_question": "If the citric acid cycle needs to slow down when the cell has plenty of ATP and NADH already, which enzyme would be the most strategic target for allosteric inhibition to shut down the entire cycle early on?",
-        "bridge_answer": "Isocitrate dehydrogenase, because it catalyzes an early committed step in the cycle and is heavily inhibited by ATP and NADH, making it the control point.",
-        "synthesis": "Isocitrate dehydrogenase is the rate-limiting step precisely because it is the primary regulatory enzyme where the cell controls whether the cycle proceeds based on energy status."
+        "bridge_question": "If the citric acid cycle needs to slow down when the cell has plenty of ATP and NADH already, which enzyme would be the most strategic one to inhibit\u2014one early in the cycle that processes the first major substrate, or one later that's already committed many intermediates?",
+        "bridge_answer": "An early enzyme that processes a major substrate (isocitrate dehydrogenase, which converts isocitrate to \u03b1-ketoglutarate early in the cycle), because inhibiting it prevents wasteful cycling of intermediates before they accumulate.",
+        "synthesis": "Isocitrate dehydrogenase is the rate-limiting step because it is heavily regulated by ATP and NADH feedback inhibition, making it the strategic control point where the cell throttles the entire cycle's flux."
       },
       "grounded": true,
-      "grounded_reasoning": "The source passage [kc-06] directly supports both claims: it explicitly states that isocitrate dehydrogenase is \"generally considered the rate-limiting enzyme of the cycle\" and confirms it is \"allosterically activated by ADP and calcium, and inhibited by ATP and NADH\" - making it \"the cycle's main throttle.\" This matches the bridge answer's identification of isocitrate dehydrogenase as the strategic target and the synthesis's characterization of it as the primary regulatory enzyme controlled by energy status.",
+      "grounded_reasoning": "The source passage [kc-06] explicitly states that \"Isocitrate dehydrogenase is generally considered the rate-limiting enzyme of the cycle\" and confirms it \"is allosterically activated by ADP and calcium, and inhibited by ATP and NADH - it's the cycle's main throttle.\" This directly supports both the bridge answer's identification of isocitrate dehydrogenase as the strategic control point and the synthesis's claim that it is regulated by ATP and NADH feedback inhibition and serves as the rate-limiting step where the cell controls cycle flux.",
       "leaked": false,
       "leaked_phrases": []
     },
     {
       "card_id": 6,
+      "in_corpus": true,
       "front": "Which step of the citric acid cycle produces GTP or ATP directly via substrate-level phosphorylation?",
       "back": "Succinyl-CoA synthetase (succinyl-CoA to succinate)",
       "expected_source_chunk": "kc-08",
+      "gate_score": 0.5692,
+      "grounding_was_checked": true,
       "retrieved_chunks": [
         "kc-08",
-        "kc-11"
+        "kc-14"
       ],
       "retrieved_expected_chunk": true,
       "bridge": {
-        "bridge_question": "If the citric acid cycle needs to generate energy currency molecules quickly without relying on the electron transport chain, which step involves a high-energy thioester bond being broken to directly transfer a phosphate group to GDP or ADP?",
-        "bridge_answer": "The conversion of succinyl-CoA to succinate by succinyl-CoA synthetase, where the high-energy thioester bond in succinyl-CoA is cleaved and its energy is used to phosphorylate GDP (or ADP) directly.",
-        "synthesis": "This is the only citric acid cycle step that performs substrate-level phosphorylation because succinyl-CoA's thioester bond contains enough energy to directly phosphorylate a nucleotide without needing the electron transport chain."
+        "bridge_question": "Why is the succinyl-CoA \u2192 succinate step unique compared to other oxidation steps in the citric acid cycle that release energy?",
+        "bridge_answer": "Because the energy released from breaking the high-energy thioester bond in succinyl-CoA is large enough to directly phosphorylate GDP (or ADP) to GTP (or ATP) in one step, rather than being captured indirectly through an electron carrier like NAD+ or FAD.",
+        "synthesis": "This direct coupling of bond cleavage to phosphorylation is why succinyl-CoA synthetase is the only citric acid cycle enzyme that performs substrate-level phosphorylation."
       },
       "grounded": true,
-      "grounded_reasoning": "The source passage [kc-08] directly supports both the bridge answer and synthesis by confirming that succinyl-CoA to succinate conversion involves breaking a high-energy thioester bond to directly phosphorylate GTP (or ATP) via substrate-level phosphorylation, and explicitly states this is \"the only step in the cycle that produces a nucleoside triphosphate directly, without going through the electron transport chain.\" The bridge answer correctly identifies the enzyme (succinyl-CoA synthetase) and mechanism, and the synthesis accurately reflects that this is the sole citric acid cycle step performing substrate-level phosphorylation.",
+      "grounded_reasoning": "The source passage [kc-08] directly supports both the bridge answer and synthesis. It confirms that the energy from breaking the high-energy thioester bond in succinyl-CoA is captured directly as GTP (or ATP) via substrate-level phosphorylation, and explicitly states this is \"the only step in the cycle that produces a nucleoside triphosphate directly, without going through the electron transport chain.\" This supports the claim that succinyl-CoA synthetase is the only citric acid cycle enzyme performing substrate-level phosphorylation, distinguishing it from other oxidation steps that use electron carriers.",
       "leaked": false,
       "leaked_phrases": []
     },
     {
       "card_id": 7,
+      "in_corpus": true,
       "front": "Which citric acid cycle enzyme is also Complex II of the electron transport chain?",
       "back": "Succinate dehydrogenase",
       "expected_source_chunk": "kc-09",
+      "gate_score": 1.0,
+      "grounding_was_checked": true,
       "retrieved_chunks": [
         "kc-09",
         "kc-14"
       ],
       "retrieved_expected_chunk": true,
       "bridge": {
-        "bridge_question": "If an enzyme can oxidize succinate to fumarate while simultaneously transferring electrons directly to ubiquinone in the inner mitochondrial membrane, what does that tell you about its dual role in both the citric acid cycle and electron transport?",
-        "bridge_answer": "It must be the enzyme that catalyzes the succinate-to-fumarate step in the cycle while also serving as an electron transport chain complex, making it the only cycle enzyme with direct membrane integration and electron carrier involvement.",
-        "synthesis": "This dual function\u2014oxidizing a citric acid cycle substrate while feeding electrons into the ETC\u2014is the defining characteristic of succinate dehydrogenase, which is why it is both a cycle enzyme and Complex II."
+        "bridge_question": "If an enzyme catalyzes the conversion of succinate to fumarate in the citric acid cycle, how would it need to be positioned or structured to also directly transfer electrons to ubiquinone in the electron transport chain?",
+        "bridge_answer": "It would need to be embedded in the inner mitochondrial membrane with cofactors (FAD and iron-sulfur clusters) capable of accepting electrons from its substrate and passing them directly to ubiquinone, making it a membrane-bound enzyme that couples substrate oxidation to electron transfer.",
+        "synthesis": "Succinate dehydrogenase's unique membrane-bound structure and ability to oxidize succinate while simultaneously donating electrons to ubiquinone is what makes it the only citric acid cycle enzyme that also functions as Complex II of the electron transport chain."
       },
       "grounded": true,
-      "grounded_reasoning": "The source passage [kc-09] directly supports all key claims: succinate dehydrogenase oxidizes succinate to fumarate, reduces FAD to FADH2, is embedded in the inner mitochondrial membrane, and is Complex II of the electron transport chain\u2014making it the one enzyme that is part of both the citric acid cycle and the ETC. The synthesis accurately reflects these facts from the passage.",
+      "grounded_reasoning": "The passage [kc-09] directly supports all key claims: it confirms succinate dehydrogenase is embedded in the inner mitochondrial membrane, contains FAD cofactors that accept electrons (reducing to FADH2), functions as Complex II of the electron transport chain, and is \"the one enzyme that is physically part of both the citric acid cycle and the electron transport chain.\" The bridge answer's description of membrane-bound positioning with FAD and electron transfer capability, and the synthesis's characterization of succinate dehydrogenase as the only citric acid cycle enzyme functioning as Complex II, are all explicitly supported by the source material.",
       "leaked": false,
       "leaked_phrases": []
     },
     {
       "card_id": 8,
+      "in_corpus": true,
       "front": "How many NADH, FADH2, and GTP/ATP does one turn of the citric acid cycle produce?",
       "back": "3 NADH, 1 FADH2, 1 GTP (or ATP)",
       "expected_source_chunk": "kc-11",
+      "gate_score": 0.5991,
+      "grounding_was_checked": true,
       "retrieved_chunks": [
         "kc-11",
-        "kc-09"
+        "kc-01"
       ],
       "retrieved_expected_chunk": true,
       "bridge": {
-        "bridge_question": "If the citric acid cycle only produced 1 NADH per turn, why wouldn't that be enough to power the electron transport chain efficiently, and what does that tell you about how many oxidation steps must occur in the cycle?",
-        "bridge_answer": "One NADH wouldn't generate enough ATP through oxidative phosphorylation to meet the cell's energy demands; the cycle must have multiple oxidation steps (at least 3) to produce enough reducing equivalents, which means at least 3 NADH per turn.",
-        "synthesis": "The citric acid cycle contains three separate oxidation reactions that each produce NADH (isocitrate \u2192 \u03b1-ketoglutarate, \u03b1-ketoglutarate \u2192 succinyl-CoA, and malate \u2192 oxaloacetate), yielding the 3 NADH per cycle turn needed for efficient ATP generation."
+        "bridge_question": "If the citric acid cycle is supposed to completely oxidize the acetyl group from acetyl-CoA, why would we expect multiple NADH molecules rather than just one, and what does that tell you about how many oxidation steps must occur?",
+        "bridge_answer": "Complete oxidation requires multiple oxidation steps (the acetyl carbons are oxidized to CO2), and each oxidation step transfers electrons to NAD+, producing NADH\u2014so there must be at least 2\u20133 NADH molecules produced per turn.",
+        "synthesis": "The three NADH molecules produced per cycle reflect the three distinct oxidation steps (isocitrate \u2192 \u03b1-ketoglutarate, \u03b1-ketoglutarate \u2192 succinyl-CoA, and malate \u2192 oxaloacetate) needed to fully oxidize acetyl-CoA."
       },
       "grounded": true,
-      "grounded_reasoning": "The source passage [kc-11] explicitly states that each turn of the citric acid cycle produces 3 NADH, confirming the synthesis's claim about 3 NADH per cycle turn. The synthesis correctly identifies three oxidation steps producing NADH (isocitrate \u2192 \u03b1-ketoglutarate, \u03b1-ketoglutarate \u2192 succinyl-CoA, and malate \u2192 oxaloacetate), which aligns with the passage's statement of 3 NADH production per turn. The bridge answer's reasoning about needing multiple oxidation steps to generate sufficient reducing equivalents for efficient ATP generation is supported by the",
+      "grounded_reasoning": "The passage [kc-11] explicitly states that each turn of the citric acid cycle produces 3 NADH, and passage [kc-01] confirms that electrons are captured by NAD+ to produce NADH during oxidation steps. The synthesis correctly identifies the three NADH-producing oxidation steps (isocitrate \u2192 \u03b1-ketoglutarate, \u03b1-ketoglutarate \u2192 succinyl-CoA, and malate \u2192 oxaloacetate), which are the standard steps where NAD+ is reduced in the cycle, and these are supported by the claim that multiple oxidation steps are needed to fully oxidize the",
       "leaked": false,
       "leaked_phrases": []
     },
     {
       "card_id": 9,
+      "in_corpus": true,
       "front": "What does it mean that the citric acid cycle is amphibolic?",
       "back": "It runs both catabolically (breaking down fuel for energy) and anabolically (supplying biosynthesis precursors)",
       "expected_source_chunk": "kc-13",
+      "gate_score": 0.6389,
+      "grounding_was_checked": true,
       "retrieved_chunks": [
         "kc-13",
         "kc-08"
       ],
       "retrieved_expected_chunk": true,
       "bridge": {
-        "bridge_question": "If a cell needs to synthesize new amino acids but also needs ATP right now, why can't it just run the citric acid cycle in one direction to do both things simultaneously?",
-        "bridge_answer": "It can\u2014the cycle's intermediates (like \u03b1-ketoglutarate and oxaloacetate) can be withdrawn for biosynthesis while the cycle continues to oxidize acetyl-CoA for energy, so it serves both catabolic and anabolic roles at the same time.",
-        "synthesis": "This dual capacity\u2014simultaneously extracting energy and building blocks from the same pathway\u2014is exactly what \"amphibolic\" means."
+        "bridge_question": "If a cell needs to synthesize new amino acids but also needs ATP, why can't it simply run the citric acid cycle only in the direction that makes ATP?",
+        "bridge_answer": "Because the citric acid cycle intermediates (like \u03b1-ketoglutarate and oxaloacetate) are the actual building blocks for amino acid synthesis, so the cycle must continue operating to replenish these precursors even while generating energy.",
+        "synthesis": "This dual requirement\u2014simultaneously extracting energy and withdrawing intermediates for biosynthesis\u2014is exactly what \"amphibolic\" means: the cycle serves both catabolic and anabolic functions at the same time."
       },
       "grounded": true,
-      "grounded_reasoning": "The source passage [kc-13] explicitly defines the citric acid cycle as \"amphibolic,\" meaning it runs both catabolically and anabolically, and directly states that intermediates like \u03b1-ketoglutarate and oxaloacetate are precursors for amino acid synthesis while the cycle continues to oxidize fuel for energy. The bridge answer and synthesis accurately reflect this definition and mechanism as presented in the passage.",
+      "grounded_reasoning": "The source passage [kc-13] explicitly states that the citric acid cycle is \"amphibolic,\" meaning it runs both catabolically (for energy) and anabolically (for biosynthesis), and directly confirms that intermediates like \u03b1-ketoglutarate and oxaloacetate are precursors for amino acid synthesis. The passage also notes that withdrawing these intermediates requires anaplerotic reactions to replenish them, which supports the bridge answer's explanation of why the cycle must continue operating. The synthesis sentence accurately defines \"amphibolic\" using the exact definition and examples provided in the source.",
       "leaked": false,
       "leaked_phrases": []
     },
     {
       "card_id": 10,
+      "in_corpus": true,
       "front": "How many times does the citric acid cycle turn per glucose molecule, and why?",
       "back": "Twice - because one glucose yields two pyruvate, and therefore two acetyl-CoA",
       "expected_source_chunk": "kc-14",
+      "gate_score": 0.4852,
+      "grounding_was_checked": true,
       "retrieved_chunks": [
         "kc-11",
-        "kc-03"
+        "kc-14"
       ],
-      "retrieved_expected_chunk": false,
+      "retrieved_expected_chunk": true,
       "bridge": {
-        "bridge_question": "If the citric acid cycle can only accept a 2-carbon acetyl group at a time, but glucose breaks down into a 3-carbon molecule first, how many times must that 3-carbon molecule be converted to acetyl-CoA before all of glucose's carbons enter the cycle?",
-        "bridge_answer": "Twice - because glucose produces two pyruvate molecules (each 3-carbon), and each pyruvate is converted to one acetyl-CoA, so two acetyl-CoA molecules must enter the cycle to process all six carbons from one glucose.",
-        "synthesis": "Since one glucose molecule generates two pyruvate molecules that each become one acetyl-CoA, the citric acid cycle must turn twice to fully oxidize all the carbons from a single glucose."
+        "bridge_question": "If the citric acid cycle can only accept a 2-carbon acetyl group at a time, but glucose breaks down into a 3-carbon molecule first, how many times must that 3-carbon molecule be converted to acetyl-CoA before all of glucose's carbons can enter the cycle?",
+        "bridge_answer": "Twice - glucose is split into two 3-carbon pyruvate molecules during glycolysis, and each pyruvate is converted to one acetyl-CoA, so the cycle must turn twice to process both.",
+        "synthesis": "Since one glucose molecule produces two pyruvate molecules, and each pyruvate generates one acetyl-CoA that feeds one turn of the citric acid cycle, the cycle must turn twice per glucose."
       },
       "grounded": true,
-      "grounded_reasoning": "The passages directly support both the bridge answer and synthesis. Passage [kc-11] explicitly states \"each glucose molecule yields two pyruvate (and therefore two acetyl-CoA)\" and \"a full glucose molecule drives the cycle twice.\" Passage [kc-03] confirms that each pyruvate is converted to one acetyl-CoA by the pyruvate dehydrogenase complex. These statements together support the claim that glucose produces two pyruvate molecules, each converted to one acetyl-CoA, requiring the cycle to turn twice.",
+      "grounded_reasoning": "The source passages directly support both the bridge answer and synthesis. Passage [kc-11] explicitly states \"each glucose molecule yields two pyruvate (and therefore two acetyl-CoA), a full glucose molecule drives the cycle twice,\" and passage [kc-14] reinforces this by noting \"the cycle turns twice per glucose, not once.\" The answer correctly identifies that glucose produces two 3-carbon pyruvate molecules during glycolysis, each converts to one acetyl-CoA, requiring two turns of the citric acid cycle.",
+      "leaked": false,
+      "leaked_phrases": []
+    },
+    {
+      "card_id": 101,
+      "in_corpus": false,
+      "front": "Cell organelle responsible for protein synthesis",
+      "back": "Ribosome",
+      "expected_source_chunk": null,
+      "gate_score": 0.0,
+      "grounding_was_checked": false,
+      "retrieved_chunks": [
+        "kc-13",
+        "kc-04"
+      ],
+      "retrieved_expected_chunk": null,
+      "bridge": {
+        "bridge_question": "If a cell needs to make a specific protein from an mRNA template, what structure must read the mRNA's codons and assemble amino acids in the correct order?",
+        "bridge_answer": "The ribosome, which decodes mRNA and catalyzes peptide bond formation between amino acids.",
+        "synthesis": "The ribosome's core function of translating genetic code into protein chains is exactly why it is the organelle responsible for protein synthesis."
+      },
+      "grounded": null,
+      "grounded_reasoning": "",
+      "leaked": false,
+      "leaked_phrases": []
+    },
+    {
+      "card_id": 102,
+      "in_corpus": false,
+      "front": "Primary neurotransmitter released at the neuromuscular junction",
+      "back": "Acetylcholine",
+      "expected_source_chunk": null,
+      "gate_score": 0.0,
+      "grounding_was_checked": false,
+      "retrieved_chunks": [
+        "kc-08",
+        "kc-01"
+      ],
+      "retrieved_expected_chunk": null,
+      "bridge": {
+        "bridge_question": "If a toxin blocked the breakdown of acetylcholine at the neuromuscular junction, what would happen to muscle contraction\u2014would it stop or become uncontrolled?",
+        "bridge_answer": "Muscle contraction would become uncontrolled and sustained (as seen with organophosphate poisoning), because acetylcholine would accumulate and keep activating the muscle continuously.",
+        "synthesis": "This uncontrolled effect only occurs because acetylcholine is the primary transmitter there\u2014if a different neurotransmitter were used, blocking its breakdown would have different consequences."
+      },
+      "grounded": null,
+      "grounded_reasoning": "",
+      "leaked": true,
+      "leaked_phrases": [
+        "acetylcholine"
+      ]
+    },
+    {
+      "card_id": 103,
+      "in_corpus": false,
+      "front": "Gas law relating pressure and volume at constant temperature",
+      "back": "Boyle's Law (P1V1 = P2V2)",
+      "expected_source_chunk": null,
+      "gate_score": 0.0,
+      "grounding_was_checked": false,
+      "retrieved_chunks": [
+        "kc-01",
+        "kc-02"
+      ],
+      "retrieved_expected_chunk": null,
+      "bridge": {
+        "bridge_question": "If you squeeze a syringe plunger to half the volume of air inside, what has to happen to the pressure of that trapped air to keep the number of gas molecules and temperature the same?",
+        "bridge_answer": "The pressure must double, because the same number of molecules are now colliding with half the surface area.",
+        "synthesis": "This inverse relationship between pressure and volume\u2014where halving volume doubles pressure\u2014is exactly what Boyle's Law (P1V1 = P2V2) expresses mathematically."
+      },
+      "grounded": null,
+      "grounded_reasoning": "",
+      "leaked": false,
+      "leaked_phrases": []
+    },
+    {
+      "card_id": 104,
+      "in_corpus": false,
+      "front": "Enzyme that catalyzes the rate-limiting step of glycolysis",
+      "back": "Phosphofructokinase-1 (PFK-1)",
+      "expected_source_chunk": null,
+      "gate_score": 0.0,
+      "grounding_was_checked": false,
+      "retrieved_chunks": [
+        "kc-06",
+        "kc-03"
+      ],
+      "retrieved_expected_chunk": null,
+      "bridge": {
+        "bridge_question": "If a cell needs to slow down energy production when ATP levels are already high, which glycolytic enzyme would be the most efficient target for allosteric inhibition\u2014one early in the pathway or one late in the pathway?",
+        "bridge_answer": "An enzyme early in the pathway, because inhibiting it prevents wasteful processing of glucose through all subsequent steps, whereas inhibiting a late enzyme would still consume resources on earlier reactions.",
+        "synthesis": "PFK-1 catalyzes the rate-limiting step early in glycolysis (the third reaction), making it the ideal control point where ATP and other allosteric regulators can efficiently gate the entire pathway's flux."
+      },
+      "grounded": null,
+      "grounded_reasoning": "",
+      "leaked": false,
+      "leaked_phrases": []
+    },
+    {
+      "card_id": 105,
+      "in_corpus": false,
+      "front": "Hormone secreted by pancreatic beta cells that lowers blood glucose",
+      "back": "Insulin",
+      "expected_source_chunk": null,
+      "gate_score": 0.0,
+      "grounding_was_checked": false,
+      "retrieved_chunks": [
+        "kc-01",
+        "kc-11"
+      ],
+      "retrieved_expected_chunk": null,
+      "bridge": {
+        "bridge_question": "If a cell needs to take up glucose from the blood, what signal must the pancreas send to make that happen, and why would the pancreas send it specifically when blood glucose is high?",
+        "bridge_answer": "The pancreas secretes insulin when blood glucose is high, because insulin acts as a signal that tells cells to absorb glucose and store it, thereby lowering the blood glucose level back down.",
+        "synthesis": "Insulin is the hormone that accomplishes this glucose-lowering effect because it directly signals cells to take up and use glucose when blood levels are elevated."
+      },
+      "grounded": null,
+      "grounded_reasoning": "",
       "leaked": false,
       "leaked_phrases": []
     }
@@ -230,7 +390,7 @@
       "case": "adversarial_fabricated_step_9",
       "expected": "grounded=False",
       "actual_grounded": false,
-      "reasoning": "The source passages describe the citric acid cycle's actual steps and functions but contain no mention of a \"step 9,\" \"fumarate reductase-beta,\" or any enzyme that converts citrate directly to glucose. The passages confirm the cycle has standard steps (alpha-ketoglutarate, oxaloacetate, succinyl-CoA, citrate) and note that citrate is exported for fatty acid synthesis, not glucose synthesis. The claim about direct glucose regeneration is not supported by these passages.",
+      "reasoning": "The source passages describe the citric acid cycle and its products (NADH, FADH2, GTP, CO2) but contain no mention of a \"step 9,\" \"fumarate reductase-beta,\" or any mechanism by which citrate is converted directly to glucose. The passages do not support the existence of this fictional step or enzyme.",
       "pass": true
     }
   ]

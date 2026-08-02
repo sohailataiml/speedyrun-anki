@@ -28,7 +28,11 @@ from dataclasses import dataclass, field
 
 from cards import TestCard
 from corpus import Chunk, load_chunks
-from retrieval import RetrievalResult, retrieve
+from retrieval import (
+    GROUNDING_COVERAGE_THRESHOLD,
+    RetrievalResult,
+    retrieve_for_grounding,
+)
 
 MODEL = "claude-haiku-4-5-20251001"
 API_URL = "https://api.anthropic.com/v1/messages"
@@ -100,7 +104,11 @@ class LeakResult:
 class AgentState:
     card: TestCard
     retrieved: list[RetrievalResult] = field(default_factory=list)
+    gate_score: float = 0.0
     bridge: BridgeContent | None = None
+    # None means the grounding check deliberately did not run: retrieval
+    # said the corpus doesn't cover this card's topic well enough for a
+    # verdict to mean anything. Distinct from a False verdict.
     grounded: GroundednessResult | None = None
     leak: LeakResult | None = None
     trace: list[str] = field(default_factory=list)
@@ -136,10 +144,14 @@ def _call_claude(api_key: str, system_prompt: str, user_prompt: str, max_tokens:
 
 
 def retrieve_node(state: AgentState, chunks: list[Chunk], **_) -> AgentState:
-    query = f"{state.card.front} {state.card.back}"
-    state.retrieved = retrieve(query, chunks, top_k=2)
+    state.retrieved, state.gate_score = retrieve_for_grounding(
+        state.card.front, state.card.back, chunks, top_k=2
+    )
+    covers = state.gate_score >= GROUNDING_COVERAGE_THRESHOLD
     state.trace.append(
-        "retrieve: top chunks = "
+        f"retrieve: gate={state.gate_score:.3f} "
+        f"({'corpus covers this topic' if covers else 'corpus does NOT cover this topic'}) "
+        "top chunks = "
         + ", ".join(f"{r.chunk.chunk_id} ({r.score:.3f})" for r in state.retrieved)
     )
     return state
@@ -162,6 +174,13 @@ def generate_node(state: AgentState, api_key: str, **_) -> AgentState:
 
 def check_grounded_node(state: AgentState, api_key: str, **_) -> AgentState:
     assert state.bridge is not None
+    if not state.retrieved or state.gate_score < GROUNDING_COVERAGE_THRESHOLD:
+        # Refuse to render a verdict the corpus can't support. Leaving
+        # `grounded` as None is the honest outcome - same give-up-gate
+        # discipline as give_up_gate.rs declining to emit a readiness
+        # score without enough data.
+        state.trace.append("check_grounded: skipped - corpus doesn't cover this topic")
+        return state
     passages = "\n\n".join(f"[{r.chunk.chunk_id}] {r.chunk.text}" for r in state.retrieved)
     user_prompt = (
         f"Bridge question: {state.bridge.bridge_question}\n"
