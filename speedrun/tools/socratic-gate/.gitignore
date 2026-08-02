@@ -1,0 +1,3 @@
+# Pure API-response cache keyed by prompt hash, redundant with
+# validation_results.json - not worth committing.
+output/run_cache.json

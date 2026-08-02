@@ -8,10 +8,16 @@ are still true and still worth having. But the spiky POV driving this
 project going forward has changed, to something sharper and more
 mechanism-specific. This document explains the new POV, what evidence
 backs it, and — stated plainly, per this project's own honesty rule —
-**what is and isn't empirically tested yet.** Short version: the new POV
-has a concrete design and real literature behind it, but it has not been
-run through its own Section 9 ablation the way v1's POV was. That's a
-real gap, named here rather than blurred.
+**what is and isn't empirically tested yet.**
+
+**Update:** an MVP of the new POV has since been built and given a first
+real validation — see [socratic-gate-mvp.md](socratic-gate-mvp.md) and
+§7 below. Short version: the mechanism is real (a tested Rust decision
+function, real AI-generated Socratic bridges), but the first result is
+an honest statistical tie (bridge 67% vs. plain 63%, n=30, overlapping
+confidence intervals) — real progress on the thesis, not a confirmed
+win. That distinction is the point of this whole document, so it's
+stated up front rather than buried.
 
 **What did not change:** the exam (MCAT), the three-score architecture
 (Memory/Performance/Readiness, never blended), the give-up gate, and
@@ -369,36 +375,59 @@ not left as a loose end.
 and [brainlift-v1.md §7](brainlift-v1.md). That work stands regardless of
 this pivot.
 
-**Not yet empirically tested:** the new POV 1 (Socratic Gatekeeper) above.
-This document gives it real literature support and a self-administered
-adversarial pass, but — unlike prior POV 1 — **no ablation has been run
-for it.** Stated directly rather than implied by omission.
+**MVP built and given a first real validation:** the new POV 1 (Socratic
+Gatekeeper). Full writeup: [socratic-gate-mvp.md](socratic-gate-mvp.md) —
+this is the summary.
 
-**What that ablation would need to look like, if built:** the same
-three-arm structure that worked for prior POV 1 — (a) the full Gatekeeper
-with conditional intervention, (b) unconditional Socratic prompting on
-every card, (c) plain immediate-flip review — run through the same kind
-of counterfactual-content, no-study-control-verified measurement
-methodology already proven out in `speedrun/tools/paraphrase-test/`
-(that pipeline's `run.py`/`report.py` machinery is largely reusable; what's
-new is the *stimulus*: cards would need to carry a scaffolded hint field,
-and the "student" simulation would need to model a confidence report,
-which has no existing analog in the current harness and would need real
-design work, not just a parameter change).
+- **A real, tested Rust decision function** (`rslib/src/stats/socratic_gate.rs`,
+  6 passing unit tests) implements the core gating logic — latency +
+  correctness → one of four branches (Automated Mastery / Dangerous
+  Error / Productive Struggle / Lucky Guess) — using `RevlogEntry`'s
+  already-captured `taken_millis`, no new capture engineering needed.
+  **MVP simplification, stated honestly:** the confidence signal from
+  the full design was dropped for this MVP (latency stands in as a
+  proxy) — §5's own consensus check flagged "ask confidence every card"
+  as an unresolved friction cost, so building that UI wasn't the right
+  first move.
+- **Real Socratic bridge questions**, generated via real Claude API
+  calls for 30 cards, following the source POV's own worked example
+  (a bridging question, not a restated answer).
+- **A real, if small (n=30), ablation:** does a Socratic bridge beat a
+  plain answer reveal on a follow-up discrimination-style question,
+  after a wrong answer? Result: **bridge 67% vs. plain 63%, both far
+  above the 0% no-correction floor, but the bridge-vs-plain gap is one
+  card out of thirty with heavily overlapping 95% confidence intervals.**
 
-**Given the deadline, this ablation was not attempted.** Building it
-properly — including resolving objection (2) from §5's consensus check
-(distinguishing productive struggle from mere latency) — is real,
-unscoped design work, not a quick rerun of the existing pipeline. Listed
-in "Open items" below as the top priority for whoever picks this up
-next, rather than rushed into an unreliable result under time pressure.
+**The honest read, per this project's own rule: this is a statistical
+tie, not a confirmed win.** What it does support clearly: any correction
+after a wrong answer matters enormously (63-67% vs. 0%), consistent with
+the testing-effect literature in §2. What it doesn't yet support: that
+the *Socratic* framing specifically is what's doing the work, as opposed
+to any plain correction. At n=30 this MVP cannot distinguish a real
+5-10 point effect from noise — full limitations list in
+[socratic-gate-mvp.md](socratic-gate-mvp.md).
+
+**What's still not attempted:** the full three-arm ablation sketched in
+the previous version of this section — (a) the full Gatekeeper with
+conditional intervention, (b) unconditional Socratic prompting on every
+card, (c) plain immediate-flip review — run at the same scale as prior
+POV 1's ablation (n=90/condition). That, plus resolving the
+latency-vs-confidence proxy gap and the "is this really a dangerous
+error or just a misread question" objection from §5, remain real,
+unscoped design work for whoever picks this up next.
 
 ---
 
 ## Open items carried into build
 
-- **New, highest priority:** design and run a Section 9-style ablation
-  for the new POV 1 (Socratic Gatekeeper), per §7 above. Not started.
+- ~~Build an MVP of the new POV 1 and get a first real validation~~ —
+  **done**, see §7 above and [socratic-gate-mvp.md](socratic-gate-mvp.md).
+  Result was an honest tie (bridge 67% vs. plain 63%, n=30), not a
+  confirmed win.
+- **New, highest priority:** the full Section 9-style ablation for the
+  new POV 1 — the three-arm structure at n=90/condition, matching prior
+  POV 1's rigor, plus resolving the latency-as-confidence-proxy gap.
+  Not started; the MVP above is a smaller first step, not a substitute.
 - **New:** resolve the friction-cost objection from §5's consensus pass —
   should confidence be asked every card, sampled, or optional? No
   evidence gathered here answers this; needs either new literature or a

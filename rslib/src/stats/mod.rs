@@ -8,6 +8,7 @@ mod mastery;
 mod performance_model;
 mod readiness_mapper;
 mod service;
+mod socratic_gate;
 mod today;
 
 pub use today::studied_today;
