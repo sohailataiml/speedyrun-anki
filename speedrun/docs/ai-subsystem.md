@@ -77,7 +77,11 @@ check" is supposed to produce.
 
 **Result: passes.** All prompt-log overlap with the gold set is fully
 explained by shared source material; zero gold-set-specific content
-reached the generator.
+reached the generator. Saved, checkable output (not just this prose
+claim): [`speedrun/tools/leakage-check/output/leakage_check_results.txt`](../tools/leakage-check/output/leakage_check_results.txt) —
+19 gold pair/field overlaps found, all fully explained by shared source
+content, 0 real leaks, exit code 0. Rerunnable:
+`python speedrun/tools/leakage-check/check.py`.
 
 ## Eval: does the AI beat the baseline?
 

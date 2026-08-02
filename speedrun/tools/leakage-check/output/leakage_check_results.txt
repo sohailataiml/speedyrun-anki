@@ -1,0 +1,6 @@
+Loaded 50 gold-set pairs.
+
+19 gold pair/field overlaps with the prompt log were fully explained by shared source_material.md content (expected, not leakage).
+
+PRIMARY CHECK PASSED: every gold pair/field that overlaps with the prompt log is fully explained by shared source material - no gold-set-specific content reached the generator.
+exit code: 0
