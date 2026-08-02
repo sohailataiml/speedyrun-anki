@@ -424,22 +424,38 @@ score 1.000, grounding check fired, judge returned grounded, and the
 dialog showed the green "✓ Verified against the curriculum source"
 badge.
 
-**Both checks are now on Android too.** `CurriculumGrounding.kt` is the
-Kotlin port of the same retrieval, gate, and groundedness judge; the
-corpus ships as an app asset (`assets/speedrun/source_material.md`)
-since Android can't reach the desktop repo's working tree.
-`SocraticGate.kt` gained the same leak-check-with-one-retry hard gate
-and the same three-state badge. Compiles clean; the retrieval and gate
-maths are identical to desktop's and to the standalone agent's, which
-were verified against the same 15 cards.
+**Both checks are now on Android too, confirmed live.**
+`CurriculumGrounding.kt` is the Kotlin port of the same retrieval, gate,
+and groundedness judge; the corpus ships as an app asset
+(`assets/speedrun/source_material.md`) since Android can't reach the
+desktop repo's working tree. `SocraticGate.kt` gained the same
+leak-check-with-one-retry hard gate and the same three-state badge.
+
+Verified end to end on the emulator, **both** sides of the gate — which
+matters more than confirming only the happy path, because the dangerous
+failure is a confident badge on a topic the corpus never covered:
+
+- **In-corpus card** ("Which enzyme is the rate-limiting step of the
+  citric acid cycle?" → "Isocitrate dehydrogenase"): slow response →
+  confidence tap → answer withheld → real generated bridge (*"Why would
+  the citric acid cycle need its rate-limiting enzyme to be positioned
+  early in the cycle rather than late…"*) shown **with the green "✓
+  Verified against the curriculum source." badge**. Reveal named the
+  fact; closing the bridge finally revealed "Isocitrate dehydrogenase"
+  with the grading buttons.
+- **Out-of-corpus card** ("Cell organelle responsible for protein
+  synthesis" → "Ribosome"): identical flow, real bridge generated
+  (*"…what structure must it use to link amino acids together in the
+  correct order?"*), and **no badge at all** — the gate correctly
+  declined to render a verdict the Krebs-cycle corpus can't support,
+  rather than guessing.
+
+`logcat` clean throughout, app process alive after both.
 
 **Not done:** extending `source_material.md` beyond the Krebs cycle, so
 the grounding check still only has real source coverage for that one
 topic — every other card correctly falls through to the "couldn't
-check" state. Also not done: a live end-to-end run of the Android
-grounding path on the emulator (desktop's was verified live; Android's
-is verified by construction — shared logic, verified corpus parsing,
-clean build — but not yet by a screenshot).
+check" state, as the ribosome card above demonstrates.
 
 ## Reproducing this
 
