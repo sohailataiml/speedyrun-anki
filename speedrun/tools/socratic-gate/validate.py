@@ -1,17 +1,23 @@
 #!/usr/bin/env python3
-"""The core MVP ablation for Brainlift v2's Socratic Gatekeeper thesis:
+"""The full-scale ablation for Brainlift v2's Socratic Gatekeeper thesis:
 does seeing a Socratic bridge after a wrong answer produce better
 understanding than seeing the plain correct answer, measured on a
-follow-up reworded (discrimination-style) question testing the same
-fact?
+follow-up question testing the same fact?
 
-Three conditions per card, all against the same 30 counterfactual cards
-and the same follow-up probe question (the "discrimination" reworded
-variant already generated and audited by paraphrase-test/):
+n=90 per condition (30 cards x 3 follow-up item types: verbatim front,
+near-transfer reworded, discrimination reworded) - the same scale and
+item-type structure as prior POV 1's own ablation
+(paraphrase-test/ablation_results.json), so the two are directly
+comparable in statistical power. This supersedes the MVP run
+(n=30, discrimination-only) documented in socratic-gate-mvp.md; both
+results are kept on record.
+
+Three conditions per card x item-type, all against the same 30
+counterfactual cards:
 
   - "no_correction": nothing shown at all after the (assumed) wrong
     answer, straight to the follow-up question. REUSED from
-    paraphrase-test's ablation_results.json no_study_control - same
+    paraphrase-test's ablation_results.json no_study_control - same 90
     items, same methodology, no new API calls needed for this arm. This
     is the floor: how much does ANY correction help.
   - "plain": the card's plain back is shown as the correction ("the
@@ -22,16 +28,15 @@ variant already generated and audited by paraphrase-test/):
     answer, then the follow-up question. This is the Gatekeeper's
     proposed intervention.
 
-If "bridge" beats "plain" beats "no_correction" on the follow-up, that's
-real, if small-n, support for the new POV's core claim: a Socratic
-bridge fixes a wrong answer better than just re-stating the right one.
-
-MVP scope, stated honestly: n=30 (one follow-up item per card, the
-discrimination variant only - not also near-transfer, to keep this
-achievable before the deadline). This is smaller than
-paraphrase-test's own ablation and should be read as a first, real,
-non-fabricated signal - not a definitive result. See
-speedrun/docs/socratic-gate-mvp.md for the full limitations list.
+Scope note carried over from the MVP, stated honestly: this tests
+CORRECTION TYPE (bridge vs. plain) given an assumed-wrong original
+answer - it does not test the full three-arm APP-POLICY comparison
+sketched in brainlift.md §7 (conditional gatekeeper vs. unconditional
+Socratic-on-every-card vs. plain Anki), which would require simulating
+whole review sessions under each policy, including correctly-answered
+cards. That remains a separate, larger, unattempted experiment - see
+brainlift.md §7's "what's still not attempted" for why n=90 at the
+correction-type level was chosen as the achievable next step instead.
 """
 
 from __future__ import annotations
@@ -50,6 +55,7 @@ PARAPHRASE_OUTPUT = Path(__file__).parent.parent / "paraphrase-test" / "output"
 BRIDGES_PATH = SOCRATIC_OUTPUT / "bridges.json"
 ABLATION_RESULTS_PATH = PARAPHRASE_OUTPUT / "ablation_results.json"
 REWORDINGS_CF_PATH = PARAPHRASE_OUTPUT / "rewordings_counterfactual.json"
+CARDS_CF_PATH = PARAPHRASE_OUTPUT / "cards_counterfactual.json"
 CACHE_PATH = SOCRATIC_OUTPUT / "run_cache.json"
 RESULTS_PATH = SOCRATIC_OUTPUT / "validation_results.json"
 
@@ -198,32 +204,49 @@ def main() -> None:
 
     bridges = {b["card_id"]: b for b in json.loads(BRIDGES_PATH.read_text(encoding="utf-8"))["bridges"]}
     rewordings = json.loads(REWORDINGS_CF_PATH.read_text(encoding="utf-8"))["rewordings"]
+    near_by_card = {r["card_id"]: r for r in rewordings if r["variant"] == "near"}
     disc_by_card = {r["card_id"]: r for r in rewordings if r["variant"] == "discrimination"}
+    cards_cf = {c["id"]: c for c in json.loads(CARDS_CF_PATH.read_text(encoding="utf-8"))["cards"]}
 
     ablation_data = json.loads(ABLATION_RESULTS_PATH.read_text(encoding="utf-8"))
-    no_correction_items = [i for i in ablation_data["no_study_control"] if i["kind"] == "discrimination"]
+    # All 90 items (30 verbatim + 30 near + 30 discrimination) - same
+    # items prior POV 1's ablation used for its own no-study control.
+    no_correction_items = list(ablation_data["no_study_control"])
 
     cache = load_cache()
 
+    def follow_up_items() -> list[tuple[int, str, str, str]]:
+        """(card_id, kind, question, gold_answer) for all 3 item types."""
+        out = []
+        for card_id, card in cards_cf.items():
+            out.append((card_id, "verbatim", card["front"], card["back"]))
+        for card_id, r in near_by_card.items():
+            out.append((card_id, "near", r["question"], r["gold_answer"]))
+        for card_id, r in disc_by_card.items():
+            out.append((card_id, "discrimination", r["question"], r["gold_answer"]))
+        return out
+
     plain_items = []
     bridge_items = []
-    for card_id, bridge in bridges.items():
-        reword = disc_by_card.get(card_id)
-        if not reword:
+    for card_id, kind, question, gold_answer in follow_up_items():
+        bridge = bridges.get(card_id)
+        if not bridge:
             continue
         plain_items.append(
             {
                 "card_id": card_id,
-                "question": reword["question"],
-                "gold_answer": reword["gold_answer"],
+                "kind": kind,
+                "question": question,
+                "gold_answer": gold_answer,
                 "correction_text": f"The correct answer is: {bridge['card_back']}",
             }
         )
         bridge_items.append(
             {
                 "card_id": card_id,
-                "question": reword["question"],
-                "gold_answer": reword["gold_answer"],
+                "kind": kind,
+                "question": question,
+                "gold_answer": gold_answer,
                 "correction_text": (
                     f"Bridge question: {bridge['bridge_question']}\n"
                     f"Bridge answer: {bridge['bridge_answer']}\n"
@@ -231,6 +254,9 @@ def main() -> None:
                 ),
             }
         )
+
+    assert len(plain_items) == 90, f"expected 90 plain items, got {len(plain_items)}"
+    assert len(bridge_items) == 90, f"expected 90 bridge items, got {len(bridge_items)}"
 
     print(f"=== plain (n={len(plain_items)}) ===")
     plain_results = run_condition(api_key, cache, "plain", plain_items)
@@ -248,23 +274,39 @@ def main() -> None:
     print(f"plain:         {plain_summary}")
     print(f"bridge:        {bridge_summary}")
 
+    by_kind = {}
+    for kind in ("verbatim", "near", "discrimination"):
+        by_kind[kind] = {
+            "no_correction": summarize([i for i in no_correction_items if i["kind"] == kind]),
+            "plain": summarize([i for i in plain_results if i["kind"] == kind]),
+            "bridge": summarize([i for i in bridge_results if i["kind"] == kind]),
+        }
+        print(
+            f"  [{kind}] no_correction={by_kind[kind]['no_correction']['rate']:.0%} "
+            f"plain={by_kind[kind]['plain']['rate']:.0%} "
+            f"bridge={by_kind[kind]['bridge']['rate']:.0%}"
+        )
+
     RESULTS_PATH.write_text(
         json.dumps(
             {
                 "_method": (
-                    "MVP validation of Brainlift v2's Socratic Gatekeeper: "
-                    "does a Socratic bridge after a wrong answer beat a "
-                    "plain answer reveal on a follow-up discrimination-"
-                    "style question? n=30 per condition. no_correction "
-                    "reused from paraphrase-test's ablation_results.json "
-                    "no_study_control (same items, same methodology, no "
-                    "new API calls)."
+                    "Full-scale ablation of Brainlift v2's Socratic "
+                    "Gatekeeper: does a Socratic bridge after a wrong "
+                    "answer beat a plain answer reveal on a follow-up "
+                    "question? n=90 per condition (30 cards x 3 item "
+                    "types: verbatim/near/discrimination), matching prior "
+                    "POV 1's ablation scale. no_correction reused from "
+                    "paraphrase-test's ablation_results.json "
+                    "no_study_control (same 90 items, same methodology, "
+                    "no new API calls)."
                 ),
                 "summary": {
                     "no_correction": no_correction_summary,
                     "plain": plain_summary,
                     "bridge": bridge_summary,
                 },
+                "by_kind": by_kind,
                 "no_correction_items": no_correction_items,
                 "plain_items": plain_results,
                 "bridge_items": bridge_results,

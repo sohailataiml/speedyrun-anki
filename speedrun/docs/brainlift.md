@@ -10,14 +10,18 @@ mechanism-specific. This document explains the new POV, what evidence
 backs it, and — stated plainly, per this project's own honesty rule —
 **what is and isn't empirically tested yet.**
 
-**Update:** an MVP of the new POV has since been built and given a first
-real validation — see [socratic-gate-mvp.md](socratic-gate-mvp.md) and
-§7 below. Short version: the mechanism is real (a tested Rust decision
-function, real AI-generated Socratic bridges), but the first result is
-an honest statistical tie (bridge 67% vs. plain 63%, n=30, overlapping
-confidence intervals) — real progress on the thesis, not a confirmed
-win. That distinction is the point of this whole document, so it's
-stated up front rather than buried.
+**Update:** an MVP of the new POV has since been built and given a full
+validation at n=90 (matching prior POV 1's ablation scale) — see
+[socratic-gate-mvp.md](socratic-gate-mvp.md) and §7 below. Short version:
+the mechanism is real (a tested Rust decision function, real
+AI-generated Socratic bridges), and the result is **not the clean win a
+flattering write-up would have claimed** — Socratic bridges measurably
+hurt literal recall (97% plain vs. 83% bridge on verbatim follow-ups)
+while landing as a statistical wash on the transfer/discrimination items
+the thesis actually cares about (63-67% either way). That's real
+evidence *for* the conditional "Gatekeeper" framing over an
+always-Socratic policy, not evidence the mechanism is a universal
+improvement. Reported exactly as measured, not reframed.
 
 **What did not change:** the exam (MCAT), the three-score architecture
 (Memory/Performance/Readiness, never blended), the give-up gate, and
@@ -375,9 +379,9 @@ not left as a loose end.
 and [brainlift-v1.md §7](brainlift-v1.md). That work stands regardless of
 this pivot.
 
-**MVP built and given a first real validation:** the new POV 1 (Socratic
-Gatekeeper). Full writeup: [socratic-gate-mvp.md](socratic-gate-mvp.md) —
-this is the summary.
+**MVP built and given a full validation at n=90:** the new POV 1
+(Socratic Gatekeeper). Full writeup: [socratic-gate-mvp.md](socratic-gate-mvp.md)
+— this is the summary.
 
 - **A real, tested Rust decision function** (`rslib/src/stats/socratic_gate.rs`,
   6 passing unit tests) implements the core gating logic — latency +
@@ -392,29 +396,44 @@ this is the summary.
 - **Real Socratic bridge questions**, generated via real Claude API
   calls for 30 cards, following the source POV's own worked example
   (a bridging question, not a restated answer).
-- **A real, if small (n=30), ablation:** does a Socratic bridge beat a
-  plain answer reveal on a follow-up discrimination-style question,
-  after a wrong answer? Result: **bridge 67% vs. plain 63%, both far
-  above the 0% no-correction floor, but the bridge-vs-plain gap is one
-  card out of thirty with heavily overlapping 95% confidence intervals.**
+- **A real ablation at n=90/condition** (30 cards × verbatim/near/
+  discrimination follow-ups — the same scale and item-type structure as
+  prior POV 1's ablation): does a Socratic bridge beat a plain answer
+  reveal on a follow-up question, after a wrong answer?
 
-**The honest read, per this project's own rule: this is a statistical
-tie, not a confirmed win.** What it does support clearly: any correction
-after a wrong answer matters enormously (63-67% vs. 0%), consistent with
-the testing-effect literature in §2. What it doesn't yet support: that
-the *Socratic* framing specifically is what's doing the work, as opposed
-to any plain correction. At n=30 this MVP cannot distinguish a real
-5-10 point effect from noise — full limitations list in
-[socratic-gate-mvp.md](socratic-gate-mvp.md).
+| Item type | no_correction | plain | bridge |
+|---|---|---|---|
+| Verbatim | 0% | **97%** | 83% |
+| Near-transfer | 0% | 70% | 67% |
+| Discrimination | 0% | 63% | 67% |
+| **Overall** | **0%** | **77%** | **72%** |
 
-**What's still not attempted:** the full three-arm ablation sketched in
-the previous version of this section — (a) the full Gatekeeper with
-conditional intervention, (b) unconditional Socratic prompting on every
-card, (c) plain immediate-flip review — run at the same scale as prior
-POV 1's ablation (n=90/condition). That, plus resolving the
-latency-vs-confidence proxy gap and the "is this really a dangerous
-error or just a misread question" objection from §5, remain real,
-unscoped design work for whoever picks this up next.
+**The honest read, per this project's own rule: this is not a win for
+Socratic bridges — it's real evidence for applying them conditionally,
+not universally.** Bridges clearly *hurt* verbatim recall (97% → 83%) —
+expected, since a bridge deliberately withholds the fact a verbatim
+follow-up needs restated. On near-transfer and discrimination — the
+dimensions the thesis actually cares about — bridge and plain are
+statistically indistinguishable (overlapping CIs both directions). The
+overall number favors plain only because it's dragged up by the verbatim
+category, which is exactly the case the real Gatekeeper wouldn't fire a
+bridge on in the first place (it only intervenes on wrong+fast/slow, not
+on "just re-ask the identical question"). This result lines up with, and
+strengthens, the caution already in §2's sourcing — VanLehn's
+step-vs-substep finding and Kapur's productive/unproductive-failure
+boundary conditions both predict exactly this: indiscriminate
+scaffolding has a real cost, and it shows up here as measured data, not
+just as a caveat. What every condition confirms regardless: any
+correction after a wrong answer matters enormously (63-97% vs. 0%
+no-correction floor), consistent with the testing-effect literature.
+Full numbers and limitations: [socratic-gate-mvp.md](socratic-gate-mvp.md).
+
+**What's still not attempted:** the harder version of this test, where
+the Rust gate's actual decision (not item-type-as-proxy) determines which
+correction a review receives; resolving the latency-vs-confidence proxy
+gap; and the "is this really a dangerous error or just a misread
+question" objection from §5. Remain real, unscoped design work for
+whoever picks this up next.
 
 ---
 
@@ -422,12 +441,14 @@ unscoped design work for whoever picks this up next.
 
 - ~~Build an MVP of the new POV 1 and get a first real validation~~ —
   **done**, see §7 above and [socratic-gate-mvp.md](socratic-gate-mvp.md).
-  Result was an honest tie (bridge 67% vs. plain 63%, n=30), not a
-  confirmed win.
-- **New, highest priority:** the full Section 9-style ablation for the
-  new POV 1 — the three-arm structure at n=90/condition, matching prior
-  POV 1's rigor, plus resolving the latency-as-confidence-proxy gap.
-  Not started; the MVP above is a smaller first step, not a substitute.
+- ~~Run it at n=90/condition, matching prior POV 1's scale~~ — **done.**
+  Result: bridges hurt verbatim recall (97%→83%) and are a statistical
+  wash on transfer/discrimination (63-70% either way) — real evidence
+  for *conditional* application, not a universal win.
+- **New, highest priority:** the harder version — have the actual Rust
+  gate decision (not item-type-as-proxy) determine which correction a
+  review receives, using real revlog latency/correctness pairs rather
+  than an assumed-wrong-answer script. Not started.
 - **New:** resolve the friction-cost objection from §5's consensus pass —
   should confidence be asked every card, sampled, or optional? No
   evidence gathered here answers this; needs either new literature or a

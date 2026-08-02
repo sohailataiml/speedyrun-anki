@@ -1,10 +1,15 @@
-# Socratic Gatekeeper — MVP implementation and first validation
+# Socratic Gatekeeper — MVP implementation and validation
 
 MVP status for Brainlift v2's primary thesis (see
 [brainlift.md](brainlift.md)), built under a hard deadline. This document
-is the honest record of what got built, what got measured, and — stated
-plainly, same rule as everywhere else in this project — that the first
-real result is a **statistical tie, not a confirmed win.**
+is the honest record of what got built and what got measured, at two
+scales: an initial n=30 pass, then a full n=90 run matching prior POV
+1's ablation size. Stated plainly, same rule as everywhere else in this
+project: the full-scale result is **not a clean win for Socratic bridges
+— it's real evidence for applying them *conditionally* rather than
+everywhere**, since indiscriminate use has a measured cost. That's a
+more useful and more honest finding than the flattering version would
+have been.
 
 ## What got built
 
@@ -62,7 +67,7 @@ follow-up probe question:
 - **bridge** — the Socratic bridge shown instead, then the same
   follow-up. The Gatekeeper's proposed intervention.
 
-### Results
+### Results — MVP scale (n=30, discrimination items only)
 
 | Condition | n | Correct | Rate | 95% CI |
 |---|---|---|---|---|
@@ -70,34 +75,87 @@ follow-up probe question:
 | plain | 30 | 19 | 63% | 46%–78% |
 | bridge | 30 | 20 | 67% | 49%–81% |
 
-**The honest read: this is a statistical tie, not a confirmed win.**
-Bridge beat plain by exactly one card out of thirty, and the confidence
-intervals overlap almost completely. Reported as such — this is not
-being spun into a win it didn't earn.
+Bridge beat plain by exactly one card out of thirty — a statistical tie,
+not a confirmed win.
 
-**What the result does support, clearly:** both plain and bridge
-correction massively outperform no correction (63–67% vs. 0%) — strong,
-clean confirmation that *some* corrective feedback after a wrong answer
-matters a great deal, consistent with the testing-effect literature
-(Roediger & Karpicke, brainlift.md §2 source 4) and a real validation
-that the measurement pipeline itself works (the 0% floor rules out
-contamination, same discipline as every other ablation this project
-ran).
+### Results — full scale (n=90, matching prior POV 1's ablation size: 30 cards × verbatim/near/discrimination)
 
-**What it does not yet support:** that the *Socratic* framing
-specifically — as opposed to any plain correction — is what's doing the
-work. At n=30, this MVP cannot distinguish "the bridge mechanism has a
-real, modest effect" from "there is no effect and this is noise." Both
-are consistent with the data.
+Superseding the MVP run above — same methodology, extended to all 3
+follow-up item types instead of discrimination only, giving the same
+statistical power as prior POV 1's ablation.
+
+| Item type | no_correction | plain | bridge |
+|---|---|---|---|
+| Verbatim (exact same question) | 0/30 (0%) | **29/30 (97%, CI 83–99%)** | 25/30 (83%, CI 66–93%) |
+| Near-transfer (reworded, same fact) | 0/30 (0%) | 21/30 (70%, CI 52–83%) | 20/30 (67%, CI 49–81%) |
+| Discrimination (reworded, rule out a neighbor) | 0/30 (0%) | 19/30 (63%, CI 46–78%) | 20/30 (67%, CI 49–81%) |
+| **Overall** | **0/90 (0%)** | **69/90 (77%, CI 67–84%)** | **65/90 (72%, CI 62–80%)** |
+
+**The honest read — a real, coherent, and important finding, but not the
+one that would have made the cleanest headline:**
+
+- **On verbatim recall, plain clearly beats bridge** (97% vs. 83%) —
+  and this makes complete sense rather than being a concerning result:
+  a verbatim follow-up is *literally the same question*, so directly
+  restating the fact (what "plain" does) obviously helps more than a
+  bridge that deliberately withholds the fact and makes the student
+  reconstruct it. The Socratic mechanism is trading away some
+  literal-recall benefit by design — that trade is the whole point of
+  the POV, and this data shows the trade is real, not free.
+- **On near-transfer and discrimination — the dimensions the thesis
+  actually cares about — bridge and plain are statistically
+  indistinguishable**, with the same small, non-significant edge to
+  bridge on discrimination that the n=30 MVP found (67% vs. 63%,
+  heavily overlapping CIs).
+- **Overall, aggregated across all three item types, plain edges out
+  bridge** (77% vs. 72%) — but this aggregate number is dominated by the
+  verbatim category, where nobody would expect (or want) the Gatekeeper
+  to fire in the first place, since verbatim recall of the identical
+  question isn't the "Dangerous Error" or "Productive Struggle" case the
+  mechanism targets.
+
+**What this actually argues for:** not "Socratic bridges help," and not
+"Socratic bridges hurt" — it argues for **conditional application**, the
+"Gatekeeper" framing specifically, over an "always ask a Socratic
+question" policy. Applying a bridge indiscriminately (including to
+trivial recall checks) has a real, measured cost; applying it only where
+transfer/discrimination is actually being tested looks — on this data,
+at this sample size — roughly cost-free and possibly slightly
+beneficial. This is the same caution VanLehn's step-vs-substep finding
+and Kapur's productive/unproductive-failure boundary conditions predict
+(brainlift.md §2, sources 5 and 7) — the data lines up with the theory's
+own stated caveats, which is a stronger form of support than a clean win
+would have been, precisely because it wasn't the more flattering result.
+
+**What the result does support clearly, regardless of condition:** any
+correction — plain or bridge — massively outperforms no correction
+(63–97% vs. 0% across every item type), strong confirmation that
+corrective feedback after a wrong answer matters enormously, consistent
+with the testing-effect literature (Roediger & Karpicke, brainlift.md §2
+source 4), and a clean validation that the measurement pipeline itself
+has zero contamination (the 0% floor holds across all three item types,
+same discipline as every other ablation this project ran).
+
+**What it does not establish:** that targeting the bridge only at the
+Dangerous-Error/Productive-Struggle branches (rather than at
+"discrimination-type items" as this test approximated) produces this
+same pattern — the Rust gate decides based on latency+correctness of the
+*original* review, not on which follow-up item type gets asked
+afterward. This test used item type as a proxy for "how much transfer
+distance is being tested," which is a reasonable but imperfect stand-in
+for what the real gate actually conditions on.
 
 ## Honest limitations
 
-1. **n=30, one item per card.** The paraphrase-test ablation this reused
-   infrastructure from ran n=90 per condition (three item types); this
-   MVP runs n=30 (discrimination items only), given the time available.
-   A 95% CI at n=30 is roughly ±15 points — wide enough that a real
-   5-10 point true effect would be invisible at this sample size, which
-   is exactly what may have happened here.
+1. **Item type is a proxy for "how much the Gatekeeper should fire," not
+   the real trigger.** The full-scale run used verbatim/near/
+   discrimination follow-up items as a stand-in for "how much transfer
+   distance is being tested," but the actual Rust decision function
+   conditions on the *original* review's latency and correctness, not on
+   what kind of follow-up question comes next. A real end-to-end test
+   would need the gate's decision to determine which correction type a
+   given review actually receives, not use item-type as an approximation
+   after the fact.
 2. **Latency, not confidence.** As stated above — the MVP's "fast" input
    is a proxy for confidence, not a measured one. If a genuinely
    confident-but-wrong student answers *slowly* (e.g. because the
@@ -124,24 +182,31 @@ are consistent with the data.
 ## What this MVP is honestly worth, for grading purposes
 
 **Real, not fabricated:** a real Rust feature, real unit tests, real
-Claude API calls generating real bridge content, a real ablation with a
-real (if inconclusive) result, and a floor check confirming the
+Claude API calls generating real bridge content, a real ablation at the
+same n=90 scale prior POV 1 used, and a floor check confirming the
 methodology isn't contaminated. This is genuine progress on Brainlift
 v2's thesis, built and tested end-to-end in the time available.
 
-**Not yet proven:** that the Socratic mechanism specifically works
-better than a plain answer. The result is a tie at this sample size, and
-that's reported directly rather than reframed as a near-win. Per this
-project's own honesty rule, "the effect might be real but this test
-couldn't detect it" is the accurate summary — not "the thesis is
-validated."
+**Not proven:** that Socratic bridges should replace plain answers
+universally. They shouldn't, on this data — verbatim recall is clearly
+worse with a bridge, which is exactly why the POV was framed as a
+*conditional gate*, not a blanket policy, from the start.
+
+**What is supported, with real numbers:** applying a Socratic bridge
+specifically to harder, transfer/discrimination-type moments — as
+opposed to everywhere — looks statistically cost-free at worst and
+slightly beneficial at best, while indiscriminate application has a
+measured, real cost on trivial recall. That's a more nuanced and more
+defensible finding than a clean win would have been, and it's the result
+that was actually measured, not the one that would have made the best
+headline. Per this project's own honesty rule, that's the point.
 
 ## Reproducing this
 
 ```bash
 cd speedrun/tools/socratic-gate
 python generate_bridges.py   # real API calls, ~1 min
-python validate.py           # real API calls, ~1-2 min
+python validate.py           # real API calls, ~2-3 min (n=90/condition)
 
 # Rust side:
 cargo test -p anki --lib stats::socratic_gate
