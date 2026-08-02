@@ -343,18 +343,37 @@ compared to showing it and correcting after. That would need a new
 ablation built around the withhold-before-reveal flow specifically,
 which hasn't been run.
 
-## Phase 2/3 (designed, not built)
+## Phase 2/3 — now a standalone validated check, not wired live
 
-See the bottom of `qt/aqt/speedrun_socratic_gate.py` for the design
-notes on both:
-- **Curriculum RAG grounding** — ground the bridge in retrieved
-  curriculum chunks, not just the card's own front/back, so a bridge can
-  reference related concepts. Needs a real retrieval index that doesn't
-  exist yet.
-- **Leak check** — verify a generated bridge doesn't accidentally
-  restate the gold answer verbatim/near-verbatim before showing it,
-  same n-gram-overlap discipline as `speedrun/tools/leakage-check/`.
-  Currently trusts the model's instruction-following, unverified.
+Originally scoped here as "designed, not built." Both now exist as a
+standalone agent workflow, `speedrun/tools/socratic-agent/` — see
+[socratic-agent.md](socratic-agent.md) for the full writeup, real
+numbers, and two real bugs the agent's own adversarial tests caught
+(a leak checker that couldn't fire on short flashcard answers, then one
+that was checking the wrong fields and flagging the synthesis for doing
+its job correctly).
+
+- **Curriculum RAG grounding**, reframed from "inject retrieved chunks
+  into generation" to "retrieve, then verify the generated bridge is
+  grounded in what was retrieved" — a distinct, arguably more useful
+  check, since it validates against the actual PRD §3 non-negotiable
+  ("every AI output traces to a named source, passes an eval"), which
+  the live bridge generator has never had. TF-IDF retrieval over
+  `speedrun/ai/source_material.md`, no vector DB. **Result: 10/10 test
+  bridges (real Krebs-cycle cards) judged grounded by an LLM-as-judge
+  check against the retrieved passages.**
+- **Leak check** — verifies the bridge *question* (not the
+  answer/synthesis, which are supposed to name the fact once revealed)
+  never gives away the gold answer before the student has a chance to
+  reason. **Result: 0/10 real bridges leaked, 3/3 adversarial
+  checker-validation cases passed** (including a case proving the
+  checker doesn't just rubber-stamp everything as fine).
+
+**Not done:** wiring either check into the live desktop/Android review
+flow — this is a standalone offline validation harness, same pattern as
+every other `speedrun/tools/` script, deliberately not live-wired yet.
+Also not done: extending `source_material.md` beyond the Krebs cycle, so
+the check currently only has real source coverage for that one topic.
 
 ## Reproducing this
 

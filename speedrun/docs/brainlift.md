@@ -477,10 +477,19 @@ whoever picks this up next.
   bridge shown in its place, confirmed live on both platforms. The
   n=90 ablation's numbers predate this change and don't directly
   measure it — see that section's honesty note.
-- **New:** Phase 2 (curriculum RAG grounding for the bridge content) and
-  Phase 3 (a leak check verifying the bridge doesn't restate the gold
-  answer) are both designed but not built — see the design notes at the
-  bottom of `qt/aqt/speedrun_socratic_gate.py`.
+- ~~Phase 2 (curriculum RAG grounding) and Phase 3 (a leak check)~~ —
+  **done as a standalone validated agent**, `speedrun/tools/socratic-agent/`
+  (a small graph: retrieve -> generate -> check_grounded -> check_leak,
+  TF-IDF retrieval, no vector DB). 10/10 real Krebs-cycle bridges judged
+  grounded, 0/10 leaked, 3/3 adversarial checker-validation cases
+  passed — including two real bugs the adversarial tests caught in this
+  same build (a leak checker that structurally couldn't fire on short
+  flashcard answers, then one checking the wrong fields and flagging the
+  synthesis for doing its job). See [socratic-agent.md](socratic-agent.md).
+  **Not done:** wiring either check into the live review flow (this is a
+  standalone offline harness, same pattern as every other
+  `speedrun/tools/` script), and extending `source_material.md` beyond
+  the Krebs cycle for broader topic coverage.
 - **Partially resolved:** the friction-cost objection from §5's
   consensus pass (should confidence be asked every card?) now has a
   real UI to evaluate — every slow response gets the confidence tap in
