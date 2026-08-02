@@ -201,6 +201,68 @@ defensible finding than a clean win would have been, and it's the result
 that was actually measured, not the one that would have made the best
 headline. Per this project's own honesty rule, that's the point.
 
+## Phase 1: wired into the real desktop app, confirmed live
+
+Beyond the offline ablation above, the mechanism is now live in the
+actual review flow — not just a script.
+
+**`qt/aqt/speedrun_socratic_gate.py`**: a Python mirror of the Rust
+decision function (deliberately not an RPC — see the module's own doc
+comment for why: it's a stateless two-input computation with no
+collection access, so a new RPC would cost a proto regen and eventually
+an Android AAR rebuild for zero behavioral benefit over duplicating
+~10 lines of pure logic that the Rust module's 6 tests already pin down)
+plus a real Claude API call generating the bridge, plus a two-stage
+reveal `QDialog` (question first, then answer+synthesis on demand — the
+same interaction shape as the card flip itself). Registered on
+`gui_hooks.reviewer_did_answer_card` in `qt/aqt/main.py`'s
+`setupHooks()`, right after the existing hook registrations.
+
+**Confirmed live**, reviewing a real due card in the actual app: graded
+"Again" on a Krebs cycle card, and the app showed a real, freshly
+generated bridging question — *"If a cell needs to extract the maximum
+energy from one glucose molecule, why must it continue cycling
+acetyl-CoA through a series of oxidation-reduction reactions rather than
+just oxidizing it directly in one step?"* — not a restated answer,
+genuinely required reasoning back to the fact. Reveal showed the bridge
+answer and a one-sentence synthesis. App remained responsive throughout,
+no crash.
+
+**Design choices worth noting:**
+- Silently does nothing if no API key is configured, or if the gate's
+  decision doesn't call for an intervention — never blocks or degrades
+  the normal review flow on its own account.
+- Runs the API call via `QueryOp`/`.without_collection()`, the same
+  async pattern the dashboard uses, so a slow API response doesn't
+  freeze the UI.
+- HTML-stripped card content is sent to the API (`card.question()`/
+  `card.answer()`, not raw note fields), so this works across notetypes,
+  not just "Basic".
+
+**Not yet done:** Android. AnkiDroid's review flow would need an
+equivalent hook (its own `Reviewer` class, likely a different
+integration point than desktop's `gui_hooks`), a Kotlin port of the
+decision mirror, and a Kotlin dialog for the two-stage reveal. Given
+this session's own documented history with Android (multi-minute Gradle
+rebuild cycles, repeated ANR loops under host memory pressure — see the
+"Gotcha" notes in [rust-change-note.md](rust-change-note.md)), this
+carries real time risk against the deadline and was deliberately not
+attempted without first locking in the desktop win. See brainlift.md's
+open items for the honest status.
+
+## Phase 2/3 (designed, not built)
+
+See the bottom of `qt/aqt/speedrun_socratic_gate.py` for the design
+notes on both:
+- **Curriculum RAG grounding** — ground the bridge in retrieved
+  curriculum chunks, not just the card's own front/back, so a bridge can
+  reference related concepts. Needs a real retrieval index that doesn't
+  exist yet.
+- **Leak check** — verify a generated bridge doesn't accidentally
+  restate the gold answer verbatim/near-verbatim before showing it,
+  same n-gram-overlap discipline as `speedrun/tools/leakage-check/`.
+  Currently trusts the model's instruction-following, unverified.
+
 ## Reproducing this
 
 ```bash
@@ -210,6 +272,10 @@ python validate.py           # real API calls, ~2-3 min (n=90/condition)
 
 # Rust side:
 cargo test -p anki --lib stats::socratic_gate
+
+# Live in the app (desktop):
+# ANTHROPIC_API_KEY=... ./run.bat, then answer a card wrong and watch
+# for the Socratic bridge dialog.
 ```
 
 `ANTHROPIC_API_KEY` (or `SPEEDRUN_ANTHROPIC_KEY`) must be set.

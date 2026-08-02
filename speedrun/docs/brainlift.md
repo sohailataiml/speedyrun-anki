@@ -445,10 +445,20 @@ whoever picks this up next.
   Result: bridges hurt verbatim recall (97%→83%) and are a statistical
   wash on transfer/discrimination (63-70% either way) — real evidence
   for *conditional* application, not a universal win.
-- **New, highest priority:** the harder version — have the actual Rust
-  gate decision (not item-type-as-proxy) determine which correction a
-  review receives, using real revlog latency/correctness pairs rather
-  than an assumed-wrong-answer script. Not started.
+- ~~Wire the gate into the real app, not just a script~~ — **done on
+  desktop**, confirmed live: a real due card, graded wrong, triggered a
+  real Claude-generated bridge question shown in an actual dialog in the
+  running app. See [socratic-gate-mvp.md](socratic-gate-mvp.md)'s
+  "Phase 1" section. **Not done on Android** — deliberately not
+  attempted yet given this session's own documented Android time cost
+  (multi-minute rebuilds, repeated ANR loops); the actual gate decision
+  (not item-type-as-proxy) determining which correction a review
+  receives is now real on desktop, and remains the harder unattempted
+  case for Android.
+- **New:** Phase 2 (curriculum RAG grounding for the bridge content) and
+  Phase 3 (a leak check verifying the bridge doesn't restate the gold
+  answer) are both designed but not built — see the design notes at the
+  bottom of `qt/aqt/speedrun_socratic_gate.py`.
 - **New:** resolve the friction-cost objection from §5's consensus pass —
   should confidence be asked every card, sampled, or optional? No
   evidence gathered here answers this; needs either new literature or a
