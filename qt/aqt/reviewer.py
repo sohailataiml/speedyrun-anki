@@ -461,6 +461,18 @@ class Reviewer:
         if self.mw.state != "review":
             # showing resetRequired screen; ignore space
             return
+        # Speedrun addition: the Socratic Gatekeeper (Brainlift v2) may
+        # take over showing the answer - e.g. withhold it behind a
+        # confidence tap and bridge question - rather than revealing it
+        # immediately. See speedrun_socratic_gate.maybe_gate_before_answer's
+        # doc comment for the full decision logic.
+        from aqt.speedrun_socratic_gate import maybe_gate_before_answer
+
+        if maybe_gate_before_answer(self):
+            return
+        self._reveal_answer_now()
+
+    def _reveal_answer_now(self) -> None:
         self.state = "answer"
         c = self.card
         a = c.answer()

@@ -166,19 +166,15 @@ class SocraticBridgeDialog(QDialog):
 
     silentlyClose = True
 
-    def __init__(self, mw: aqt.main.AnkiQt, decision: GateDecision) -> None:
+    def __init__(self, mw: aqt.main.AnkiQt, label: str) -> None:
         super().__init__(mw, Qt.WindowType.Window)
         self.mw = mw
         self.mw.garbage_collect_on_dialog_finish(self)
-        label = (
-            "Dangerous error"
-            if decision == GateDecision.DANGEROUS_ERROR
-            else "Worth a closer look"
-        )
         self.setWindowTitle(f"Speedrun — Socratic bridge ({label})")
-        self.setMinimumSize(480, 240)
+        self.setMinimumSize(420, 200)
         disable_help_button(self)
-        restoreGeom(self, TITLE)
+        restoreGeom(self, TITLE, default_size=(420, 200))
+        _position_under_question(self, mw)
 
         self._layout = QVBoxLayout()
         self._layout.addWidget(QLabel("Generating a bridge question…"))
@@ -243,17 +239,138 @@ class SocraticBridgeDialog(QDialog):
         super().closeEvent(event)
 
 
-def maybe_show_socratic_bridge(
-    reviewer: aqt.reviewer.Reviewer, card: Card, ease: Literal[1, 2, 3, 4]
-) -> None:
-    """Registered on gui_hooks.reviewer_did_answer_card in main.py. Silently
-    does nothing if no API key is configured or the gate doesn't call for
-    an intervention - never blocks or interrupts the normal review flow
-    on its own account."""
+class ConfidenceDialog(QDialog):
+    """Shown in place of the normal answer reveal, when the gate is
+    active. Captures a self-reported confidence tap before the back is
+    shown - see brainlift.md §4's decision table, which conditions
+    the withhold-vs-reveal choice on latency and this confidence signal,
+    not just correctness (which isn't knowable pre-reveal anyway)."""
+
+    silentlyClose = True
+
+    def __init__(self, mw: aqt.main.AnkiQt) -> None:
+        super().__init__(mw, Qt.WindowType.Window)
+        self.mw = mw
+        self.mw.garbage_collect_on_dialog_finish(self)
+        self.setWindowTitle("Speedrun — before we reveal")
+        self.setMinimumSize(360, 160)
+        disable_help_button(self)
+        _position_under_question(self, mw)
+        self.confident: bool | None = None
+
+        layout = QVBoxLayout()
+        label = QLabel("How confident are you in your answer?")
+        label.setWordWrap(True)
+        layout.addWidget(label)
+
+        row = QHBoxLayout()
+        confident_btn = QPushButton("I've got it")
+        not_sure_btn = QPushButton("Not sure")
+        qconnect(confident_btn.clicked, lambda: self._choose(True))
+        qconnect(not_sure_btn.clicked, lambda: self._choose(False))
+        row.addWidget(confident_btn)
+        row.addWidget(not_sure_btn)
+        layout.addLayout(row)
+        self.setLayout(layout)
+
+    def _choose(self, confident: bool) -> None:
+        self.confident = confident
+        self.accept()
+
+
+def _position_under_question(dialog: QDialog, mw: aqt.main.AnkiQt) -> None:
+    """Shared by ConfidenceDialog and SocraticBridgeDialog: sized and
+    positioned to span most of the main window's content area, starting
+    just below where the toolbar/question typically end. Card answers
+    vary a lot in length, so a small fixed-size dialog placed at one
+    y-offset can leave a longer answer poking out below or above it -
+    this covers a wide vertical band instead of guessing one exact spot,
+    so the answer stays hidden regardless of how long it is."""
+    mw_geom = mw.geometry()
+    width = int(mw_geom.width() * 0.7)
+    height = int(mw_geom.height() * 0.55)
+    dialog.resize(max(width, dialog.minimumWidth()), max(height, dialog.minimumHeight()))
+    x = mw_geom.x() + (mw_geom.width() - dialog.width()) // 2
+    y = mw_geom.y() + int(mw_geom.height() * 0.12)
+    dialog.move(max(x, 0), max(y, 0))
+
+
+def maybe_gate_before_answer(reviewer: aqt.reviewer.Reviewer) -> bool:
+    """Called from Reviewer._showAnswer, before the back is revealed.
+    Returns True if this call takes over showing the answer - the caller
+    must NOT reveal the answer itself in that case, since
+    reviewer._reveal_answer_now() gets invoked here once the student has
+    engaged with the confidence tap (and, if triggered, the withheld-
+    answer bridge). Returns False to let the normal reveal proceed
+    immediately and synchronously (e.g. no API key configured).
+
+    A genuine "fast + confident + wrong" Dangerous Error can only be
+    caught after grading - there's no way to know the answer is wrong
+    before it's shown. That case still goes through
+    maybe_show_socratic_bridge below, unchanged, after this function
+    lets the reveal proceed normally.
+    """
     api_key = os.environ.get("ANTHROPIC_API_KEY") or os.environ.get(
         "SPEEDRUN_ANTHROPIC_KEY"
     )
     if not api_key:
+        return False
+
+    card = reviewer.card
+    taken_millis = card.time_taken(capped=False)
+
+    confidence_dialog = ConfidenceDialog(reviewer.mw)
+    confidence_dialog.exec()
+
+    fast = taken_millis <= FAST_THRESHOLD_MS
+    if fast or confidence_dialog.confident is None:
+        # Fast (Automated Mastery / Lucky Guess row), or the dialog was
+        # dismissed without a choice - fail open, reveal normally rather
+        # than getting the student stuck on an unanswered prompt.
+        reviewer._reveal_answer_now()
+        return True
+
+    # Slow, regardless of confidence (brainlift.md §4's "Slow + any
+    # confidence" row -> Productive Struggle): withhold the back, show
+    # the bridge first.
+    front = _strip_html(card.question())
+    back = _strip_html(card.answer())
+    bridge_dialog = SocraticBridgeDialog(reviewer.mw, "before revealing")
+
+    def on_success(content: BridgeContent) -> None:
+        bridge_dialog.show_bridge(content)
+
+    def on_failure(exc: Exception) -> None:
+        bridge_dialog.show_error(str(exc))
+
+    QueryOp(
+        parent=bridge_dialog,
+        op=lambda _col: _generate_bridge(api_key, front, back),
+        success=on_success,
+    ).failure(on_failure).without_collection().run_in_background()
+    bridge_dialog.exec()
+
+    # Suppress the post-grade Dangerous Error/Productive Struggle check
+    # for this same card - it already got its bridge, pre-reveal.
+    reviewer._speedrun_bridge_shown_for_card_id = card.id
+    reviewer._reveal_answer_now()
+    return True
+
+
+def maybe_show_socratic_bridge(
+    reviewer: aqt.reviewer.Reviewer, card: Card, ease: Literal[1, 2, 3, 4]
+) -> None:
+    """Registered on gui_hooks.reviewer_did_answer_card in main.py. Silently
+    does nothing if no API key is configured, the gate doesn't call for
+    an intervention, or this card already got a pre-reveal bridge via
+    maybe_gate_before_answer - never blocks or interrupts the normal
+    review flow on its own account."""
+    api_key = os.environ.get("ANTHROPIC_API_KEY") or os.environ.get(
+        "SPEEDRUN_ANTHROPIC_KEY"
+    )
+    if not api_key:
+        return
+    if getattr(reviewer, "_speedrun_bridge_shown_for_card_id", None) == card.id:
         return
 
     taken_millis = card.time_taken(capped=False)
@@ -264,8 +381,8 @@ def maybe_show_socratic_bridge(
     front = _strip_html(card.question())
     back = _strip_html(card.answer())
 
-    dialog = SocraticBridgeDialog(reviewer.mw, decision)
-    dialog.show()
+    label = "Dangerous error" if decision == GateDecision.DANGEROUS_ERROR else "Worth a closer look"
+    dialog = SocraticBridgeDialog(reviewer.mw, label)
 
     def on_success(content: BridgeContent) -> None:
         dialog.show_bridge(content)
@@ -273,11 +390,23 @@ def maybe_show_socratic_bridge(
     def on_failure(exc: Exception) -> None:
         dialog.show_error(str(exc))
 
+    # Start the (async, background-thread) API call before blocking on the
+    # modal below - QueryOp's completion signal still gets delivered by
+    # Qt's event loop while dialog.exec() runs its own nested loop.
     QueryOp(
         parent=dialog,
         op=lambda _col: _generate_bridge(api_key, front, back),
         success=on_success,
     ).failure(on_failure).without_collection().run_in_background()
+
+    # Modal, not dialog.show(): _after_answering() calls self.nextCard()
+    # right after this hook returns. A non-blocking dialog would let the
+    # reviewer flip to the *next* card seconds before the bridge content
+    # for *this* card arrives, making the bridge look like it's about the
+    # wrong question. Blocking here also matches the actual "Gatekeeper"
+    # framing - it should hold up progression, not float over whatever
+    # already replaced it on screen.
+    dialog.exec()
 
 
 # --- Phase 2/3 design notes, not built ---
