@@ -156,13 +156,17 @@ for what the real gate actually conditions on.
    would need the gate's decision to determine which correction type a
    given review actually receives, not use item-type as an approximation
    after the fact.
-2. **Latency, not confidence.** As stated above — the MVP's "fast" input
-   is a proxy for confidence, not a measured one. If a genuinely
-   confident-but-wrong student answers *slowly* (e.g. because the
-   question was long to read, not because they were unsure), this MVP
-   misclassifies them as "productive struggle" rather than "dangerous
-   error," diluting exactly the branch the calibration literature says
-   should matter most.
+2. **Latency, not confidence — in the offline ablation only.** The n=90
+   validation above still uses latency alone as a confidence proxy; that
+   part of the limitation stands for those specific numbers. The *live
+   apps* now do capture a real confidence tap (see "Phase 1.5" below),
+   but that tap gates whether the reveal is withheld, not which
+   follow-up item type the ablation script tested — so the ablation's
+   results don't change retroactively, and a genuinely
+   confident-but-slow responder (e.g. a long question to read) still
+   gets routed to "withhold + bridge" today, same misclassification risk
+   the original limitation described, just now visible as a live UX
+   choice instead of a script simplification.
 3. **One bridge style, not tuned.** VanLehn's step-vs-substep finding
    (brainlift.md §2 source 7) says hint granularity matters a lot — this
    MVP used one fixed bridge-question style for all 30 cards, with no
@@ -273,6 +277,71 @@ especially abundant or active, and why?"* — Reveal showed the real
 bridge answer and synthesis, correctly tying back to "mitochondria."
 App process stayed alive throughout (same PID before and after), and the
 Reviewer resumed normally afterward.
+
+## Phase 1.5: from post-grade-only to withhold-before-reveal
+
+Live testing surfaced a real design flaw in the Phase 1 wiring above,
+not a bug in the code: Anki's (and AnkiDroid's) review flow requires
+seeing the card's back to grade it at all — there is no way to press
+Again/Hard/Good/Easy without the correct answer already having been
+shown. Since the Phase 1 hook fired on `reviewer_did_answer_card`
+(after grading), the student had *always* already seen the plain
+answer by the time a bridge appeared. The bridge wasn't replacing "just
+being told the answer" the way the MVP write-up above describes — it
+was arriving after that had already happened, which made it feel
+redundant rather than a genuine Socratic intervention.
+
+This is exactly the gap Brainlift v2 §4's original decision table was
+designed to close, and which the MVP explicitly simplified away (see
+"MVP simplification, stated honestly" above): a **confidence tap that
+gates the reveal itself**, not just a latency proxy applied after the
+fact.
+
+**The fix, on both platforms:** `Reviewer._showAnswer()` (desktop) and
+`Reviewer.displayCardAnswer()` (Android) are now gating wrappers around
+the original reveal logic (`_reveal_answer_now()` /
+`super.displayCardAnswer()`). Before the back is shown:
+1. On a **fast** response, reveal proceeds immediately, no prompt — the
+   Automated Mastery / Lucky Guess rows don't warrant friction.
+2. On a **slow** response, a confidence dialog appears first
+   ("How confident are you in your answer?" — "I've got it" / "Not
+   sure"). Per §4's "Slow + any confidence → Productive Struggle" row,
+   the answer is withheld **regardless of which button is tapped**: a
+   real bridge question is generated and shown in the answer's place.
+   Only after engaging with it (Reveal → bridge answer + synthesis →
+   Close) does the actual card back and grading buttons finally appear.
+3. A genuine "fast + confident + wrong" Dangerous Error still can't be
+   caught this way — there's no way to know an answer is wrong before
+   it's shown. That case is unavoidably post-hoc, so the original
+   Phase 1 post-grade hook (`maybe_show_socratic_bridge` /
+   `prepareSocraticBridge`+`awaitSocraticBridge`) is kept, unchanged,
+   for exactly that branch — now suppressed for any card that already
+   got a pre-reveal bridge, via a per-reviewer
+   `_speedrun_bridge_shown_for_card_id` / `speedrunBridgeShownForCardId`
+   marker, so the same card never gets two bridges.
+
+**Confirmed live on both platforms**, same card ("Rate-limiting enzyme
+of glycolysis" → PFK-1 on Android; "Gas law relating pressure and
+volume" → Boyle's Law on desktop): slow response → confidence dialog →
+"Not sure" → back withheld → real generated bridge question in its
+place (e.g. Android: *"If a cell needs to quickly slow down glucose
+breakdown when energy is already plentiful... which early glycolytic
+enzyme would be the most efficient target for inhibition..."*) → Reveal
+→ bridge answer naming the real fact for the first time → Close → only
+then the actual card back ("PFK-1") and grading buttons. Grading
+afterward advances cleanly with no duplicate bridge.
+
+**Honest note on the n=90 validation above:** that ablation measured
+plain-vs-bridge as *corrections shown after a wrong answer*, using
+latency alone (no confidence tap) to decide which follow-up items
+counted as the gate's target. It predates this redesign and does not
+directly measure the effect of confidence-gated withholding — it's
+still the best evidence available for "does a bridge help more than a
+plain answer once someone's gotten something wrong," but it doesn't
+speak to whether *withholding the reveal itself* changes the outcome
+compared to showing it and correcting after. That would need a new
+ablation built around the withhold-before-reveal flow specifically,
+which hasn't been run.
 
 ## Phase 2/3 (designed, not built)
 

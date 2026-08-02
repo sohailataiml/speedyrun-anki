@@ -428,10 +428,20 @@ correction after a wrong answer matters enormously (63-97% vs. 0%
 no-correction floor), consistent with the testing-effect literature.
 Full numbers and limitations: [socratic-gate-mvp.md](socratic-gate-mvp.md).
 
-**What's still not attempted:** the harder version of this test, where
-the Rust gate's actual decision (not item-type-as-proxy) determines which
-correction a review receives; resolving the latency-vs-confidence proxy
-gap; and the "is this really a dangerous error or just a misread
+**Since this section was written:** the gate's actual decision (not
+item-type-as-proxy) now determines which correction a review receives,
+live on both desktop and Android — see [socratic-gate-mvp.md](socratic-gate-mvp.md)'s
+"Phase 1" sections. The latency-vs-confidence proxy gap is also
+partially closed: a real confidence tap now gates whether the answer is
+withheld in favor of a bridge, matching §4's original decision table
+instead of the MVP's latency-only simplification — see that doc's
+"Phase 1.5" section, including its honesty note that the n=90 numbers
+above predate this change and don't directly measure it.
+
+**What's still not attempted:** a new ablation built around the
+withhold-before-reveal flow itself (does withholding change the outcome
+vs. showing-then-correcting, which is what the n=90 run above actually
+measured); and the "is this really a dangerous error or just a misread
 question" objection from §5. Remain real, unscoped design work for
 whoever picks this up next.
 
@@ -456,14 +466,27 @@ whoever picks this up next.
   broke the live API call until fixed. The actual gate decision (not
   item-type-as-proxy) now determines which correction a review receives
   on both platforms, not just in an offline script.
+- ~~Restructure from post-grade-only to the §4 decision table's actual
+  design (confidence tap gating the reveal, not just a post-hoc
+  latency check)~~ — **done on both platforms**, prompted directly by
+  live dogfooding surfacing that Anki's grading model requires seeing
+  the answer before the post-grade bridge could ever fire, making it
+  arrive too late to be a genuine Socratic intervention. See
+  [socratic-gate-mvp.md](socratic-gate-mvp.md)'s "Phase 1.5" section —
+  a confidence tap now gates whether the answer is withheld and a
+  bridge shown in its place, confirmed live on both platforms. The
+  n=90 ablation's numbers predate this change and don't directly
+  measure it — see that section's honesty note.
 - **New:** Phase 2 (curriculum RAG grounding for the bridge content) and
   Phase 3 (a leak check verifying the bridge doesn't restate the gold
   answer) are both designed but not built — see the design notes at the
   bottom of `qt/aqt/speedrun_socratic_gate.py`.
-- **New:** resolve the friction-cost objection from §5's consensus pass —
-  should confidence be asked every card, sampled, or optional? No
-  evidence gathered here answers this; needs either new literature or a
-  pilot.
+- **Partially resolved:** the friction-cost objection from §5's
+  consensus pass (should confidence be asked every card?) now has a
+  real UI to evaluate — every slow response gets the confidence tap in
+  the live apps. Whether that friction is actually worth it (vs.
+  sampling or making it optional) is still not empirically answered;
+  no usage data exists yet to judge real-world tolerance.
 - Re-run §5's AI consensus check independently (both the original v1 pass
   and this document's new pass) — carried over from v1, still not done.
 - POV 2 remains untested (unchanged from v1).
