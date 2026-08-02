@@ -369,11 +369,67 @@ its job correctly).
   checker-validation cases passed** (including a case proving the
   checker doesn't just rubber-stamp everything as fine).
 
-**Not done:** wiring either check into the live desktop/Android review
-flow — this is a standalone offline validation harness, same pattern as
-every other `speedrun/tools/` script, deliberately not live-wired yet.
-Also not done: extending `source_material.md` beyond the Krebs cycle, so
-the check currently only has real source coverage for that one topic.
+## Phase 2/3 — now wired into the live desktop app
+
+Both checks now run on every generated bridge in the real desktop review
+flow (`qt/aqt/speedrun_socratic_gate.py`), not just in the offline
+harness. Two deliberate asymmetries, because they are not equally
+trustworthy:
+
+- **Leak check is a hard gate**, topic-independent (pure n-gram overlap
+  against the card's own gold answer), so it is always meaningful. A
+  leaking bridge question triggers one regeneration; if it still leaks,
+  no bridge is shown at all rather than a broken one.
+- **Grounding check is a soft signal**, because the corpus only covers
+  the Krebs cycle. Making it a hard gate would silently kill the feature
+  for every other topic. It only runs when retrieval indicates the
+  corpus actually covers the card's topic, and the dialog shows three
+  distinct states: green "✓ Verified against the curriculum source",
+  orange "⚠ Not verified…", or nothing at all when the check couldn't
+  meaningfully run. Silence deliberately does *not* mean "verified" —
+  that ambiguity was itself a UI bug, fixed by adding the green state.
+
+**Two real bugs found by wiring it in and instrumenting it live**, both
+invisible to the offline harness (which used clean plain-text cards):
+
+1. **The retrieval gate was measuring the wrong thing.** Cosine
+   similarity on short flashcard text rewarded generic vocabulary
+   overlap and penalised short queries against long chunks, so it ranked
+   an out-of-corpus ribosome card (0.27) *above* a real in-corpus
+   citric-acid-cycle card (0.14) — backwards, and it would have produced
+   a misleading badge. Replaced with IDF-weighted concept coverage
+   scored separately over the card's front and answer, taking the
+   minimum: a card's *answer* is the fact a bridge is grounded in, so if
+   the corpus has never heard of "phosphofructokinase" it cannot vouch
+   for a bridge about it no matter how much the question's framing
+   ("rate-limiting step", "enzyme") overlaps material the corpus does
+   cover. Measured separation on the same cards afterwards: in-corpus
+   0.37–1.00, out-of-corpus **exactly 0.00**, versus the old overlapping
+   ranges. All 9 test cards classify correctly.
+2. **The card text being checked was mostly CSS.** `card.question()`
+   returns the fully rendered card, which begins with the notetype's
+   `<style>` block, and the original `_strip_html` removed HTML *tags*
+   but not the *contents* of that block — so the gate, the leak check,
+   and the generation prompt were all being handed
+   `.card { font-family: arial; font-size: 20p…` as the card front. This
+   scored 0.066 on curriculum coverage (so grounding was *always*
+   skipped, on every card, including Krebs-cycle ones), and polluted the
+   leak check's notion of the gold answer with tokens like
+   "card"/"color"/"arial". Found by instrumenting the live gate rather
+   than by reasoning about it. Fixed on both platforms; the same bug was
+   present in Android's `stripHtml`.
+
+**Confirmed live** after both fixes, on a real Krebs-cycle card: gate
+score 1.000, grounding check fired, judge returned grounded, and the
+dialog showed the green "✓ Verified against the curriculum source"
+badge.
+
+**Not done:** extending `source_material.md` beyond the Krebs cycle, so
+the grounding check still only has real source coverage for that one
+topic — every other card correctly falls through to the "couldn't
+check" state. Also not done: wiring the grounding check into Android
+(only the shared `stripHtml` fix was ported there); Android has the leak
+check path but no curriculum corpus access.
 
 ## Reproducing this
 

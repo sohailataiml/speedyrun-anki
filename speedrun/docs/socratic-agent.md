@@ -10,11 +10,23 @@ front/back, with no retrieval and no post-generation verification. See
 [socratic-gate-mvp.md](socratic-gate-mvp.md)'s Phase 2/3 design notes for
 where this was originally scoped as "designed, not built."
 
-Code: `speedrun/tools/socratic-agent/`. Not wired into the live apps —
-this validates the approach standalone first, the same pattern this
-project uses everywhere else (paraphrase-test, socratic-gate's own MVP
-ablation) before considering whether to wire something into the review
-flow.
+Code: `speedrun/tools/socratic-agent/`. This validated the approach
+standalone first, the same pattern this project uses everywhere else
+(paraphrase-test, socratic-gate's own MVP ablation).
+
+**Both checks are now live in the desktop app** — see
+[socratic-gate-mvp.md](socratic-gate-mvp.md)'s "Phase 2/3 — now wired
+into the live desktop app" section. Wiring them in surfaced two real
+bugs this harness could not have caught, because it feeds clean
+plain-text cards while the live app feeds fully-rendered card HTML: the
+retrieval gate was ranking out-of-corpus cards above in-corpus ones, and
+the card text reaching all three stages was mostly the notetype's CSS
+block. The live implementation therefore diverges from this harness in
+two ways, deliberately: it scores curriculum coverage with IDF-weighted
+concept overlap (front and answer scored separately, minimum taken)
+rather than sklearn cosine similarity, and it strips `<style>`/`<script>`
+contents before doing anything else. This harness still uses cosine —
+worth porting for consistency, not yet done.
 
 ## Architecture: a small graph, not a framework
 

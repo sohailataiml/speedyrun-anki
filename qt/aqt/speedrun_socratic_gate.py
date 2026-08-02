@@ -10,10 +10,28 @@ mechanism was validated against before being wired into the live app.
 
 Phase 1 (this file): real-time UI, real Claude API calls, wired into
 the actual desktop review flow via `reviewer_did_answer_card`.
-Phase 2/3 (not built): grounding the bridge in a curriculum RAG index
-instead of just the card's own front/back, and a leak check verifying
-the bridge doesn't accidentally restate the gold answer. See this
-module's bottom-of-file note for what those would need.
+
+Phase 2/3 (this file, live): a curriculum-grounding check and a leak
+check now run on every generated bridge before it's shown, ported from
+the standalone validation agent at speedrun/tools/socratic-agent/ (see
+speedrun/docs/socratic-agent.md for the offline numbers this was proven
+against first: 10/10 grounded, 0/10 leaked, on real Krebs-cycle cards).
+Two honest asymmetries, stated here because they're load-bearing:
+- **Leak check is a hard gate.** It's topic-independent (pure n-gram
+  overlap against the card's own gold answer), so it's always
+  meaningful. If the bridge *question* leaks the answer, this retries
+  generation once; if it still leaks, no bridge is shown at all rather
+  than showing a broken one.
+- **Grounding check is a soft signal, not a gate.** The curriculum
+  corpus (speedrun/ai/source_material.md) only covers the Krebs cycle.
+  Making "grounded" a hard requirement would silently kill the bridge
+  feature for every other topic. So: only run the check when retrieval
+  confidence suggests the corpus actually covers this card's topic;
+  when it fires and says ungrounded, label the dialog rather than block
+  it. Below that confidence threshold, the check is skipped entirely -
+  same give-up-gate honesty as the rest of this project: refuse to
+  claim a verification that can't actually be made, rather than fake
+  one.
 
 The decision function below is a deliberate Python mirror of
 `rslib/src/stats/socratic_gate.rs`, not an RPC call - it's a stateless
@@ -29,10 +47,13 @@ from __future__ import annotations
 
 import enum
 import json
+import math
 import os
 import re
 import urllib.request
+from collections import Counter
 from dataclasses import dataclass
+from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
 import aqt
@@ -111,7 +132,26 @@ def requires_socratic_bridge(decision: GateDecision) -> bool:
 
 
 def _strip_html(text: str) -> str:
-    return re.sub(r"<[^<]+?>", " ", text).strip()
+    """Card text as a human would read it, for prompting and checking.
+
+    Drops <style>/<script> blocks *including their contents* before
+    stripping the remaining tags. This is not defensive tidying - it
+    fixes a real bug found by instrumenting the live gate: `card.question()`
+    returns the fully rendered card, which begins with the notetype's CSS
+    block, and a tags-only strip leaves the raw CSS rules behind as card
+    "text". The gate was being handed
+    `'.card {\\n font-family: arial; font-size: 20p...'` as the card front,
+    which (a) scored 0.066 on curriculum coverage so grounding was always
+    skipped, (b) polluted the leak check's notion of the gold answer with
+    tokens like "card"/"color"/"text"/"arial", and (c) wasted prompt
+    tokens on styling noise. Whitespace is collapsed so the model and the
+    n-gram checks see clean prose.
+    """
+    text = re.sub(
+        r"<(style|script)\b[^>]*>.*?</\1\s*>", " ", text, flags=re.DOTALL | re.IGNORECASE
+    )
+    text = re.sub(r"<[^<]+?>", " ", text)
+    return re.sub(r"\s+", " ", text).strip()
 
 
 @dataclass
@@ -155,6 +195,288 @@ def _generate_bridge(api_key: str, front: str, back: str) -> BridgeContent:
     )
 
 
+# --- Curriculum retrieval + grounding check + leak check ---
+# Ported from speedrun/tools/socratic-agent/ (agent.py/retrieval.py),
+# proven there first against 10 real Krebs-cycle cards before being
+# wired in here - see speedrun/docs/socratic-agent.md. Deliberately
+# reimplemented pure-Python (no numpy/sklearn) rather than imported: this
+# project doesn't ship either as a runtime dependency of the desktop app,
+# and adding one for a 14-chunk corpus isn't worth the packaging risk.
+
+# Minimum IDF-weighted concept coverage before the grounding check is
+# considered meaningful for a card. Empirically tuned (see this module's
+# _grounding_coverage doc comment for the measured separation): real
+# Krebs-cycle cards score 0.37-1.00, cards on topics the corpus doesn't
+# cover score exactly 0.00, so anything in between separates them. 0.25
+# sits clear of both edges.
+GROUNDING_COVERAGE_THRESHOLD = 0.25
+LEAK_NGRAM_SIZE = 6
+
+# Dropped before measuring concept coverage: these carry no information
+# about what a card is *about*, so counting them would let generic
+# phrasing overlap masquerade as topical relevance.
+STOPWORDS = frozenset(
+    """
+    a an and are as at be by for from has have how in into is it its of on or
+    that the to was were what when where which who why will with you your this
+    these those there their they them then than some such only other more most
+    can could would should may might must do does did done not no nor but if
+    while during each both few all any own same so too very just now also about
+    above below between through before after under over again further once one
+    two three four five called sometimes generally considered major primary
+    """.split()
+)
+
+GROUNDEDNESS_SYSTEM_PROMPT = (
+    "You are a fact-checker for an MCAT study app. You will be given a "
+    "generated bridge question, its answer, and a synthesis sentence, "
+    "plus one or more source passages. Your job: determine whether the "
+    "factual claims in the bridge answer and synthesis are actually "
+    "supported by the source passages - not whether they're true in "
+    "general biochemistry, specifically whether THESE passages support "
+    "them. If the bridge introduces a specific fact, number, enzyme "
+    "name, or mechanism that isn't in the provided passages, that's not "
+    "grounded, even if it happens to be correct.\n\n"
+    "Respond in exactly this format, nothing else:\n"
+    "GROUNDED: <yes or no>\n"
+    "REASONING: <one or two sentences citing what is or isn't supported>"
+)
+GROUNDEDNESS_RESPONSE_RE = re.compile(
+    r"GROUNDED:\s*(yes|no)\s*\nREASONING:\s*(.+)", re.IGNORECASE | re.DOTALL
+)
+
+_CURRICULUM_CHUNKS: list[tuple[str, str]] | None = None
+
+
+class BridgeLeakedError(Exception):
+    """Raised when a bridge question still leaks the gold answer after
+    one regeneration attempt. Caught specially by callers: this should
+    silently skip showing a bridge, not show an error dialog - the
+    student did nothing wrong, the generator just didn't produce a
+    usable bridge this time."""
+
+
+@dataclass
+class VerifiedBridge:
+    content: BridgeContent
+    grounded: bool | None  # None = not checked (low retrieval confidence)
+    grounded_reasoning: str
+    retry_count: int
+
+
+def _load_curriculum_chunks() -> list[tuple[str, str]]:
+    """Returns (chunk_id, text) pairs from speedrun/ai/source_material.md.
+    Cached after first load. Returns [] if the file can't be found (e.g.
+    a packaged build that doesn't bundle speedrun/) - the grounding check
+    degrades to "skipped" in that case, same give-up-gate philosophy as
+    the rest of this project."""
+    global _CURRICULUM_CHUNKS
+    if _CURRICULUM_CHUNKS is not None:
+        return _CURRICULUM_CHUNKS
+    path = Path(__file__).parent.parent.parent / "speedrun" / "ai" / "source_material.md"
+    if not path.exists():
+        _CURRICULUM_CHUNKS = []
+        return _CURRICULUM_CHUNKS
+    text = path.read_text(encoding="utf-8")
+    chunks = []
+    for match in re.finditer(
+        r"^## (kc-\d+): .+?\n(.*?)(?=^## |\Z)", text, re.MULTILINE | re.DOTALL
+    ):
+        chunks.append((match.group(1), match.group(2).strip()))
+    _CURRICULUM_CHUNKS = chunks
+    return _CURRICULUM_CHUNKS
+
+
+def _tokenize(text: str) -> list[str]:
+    return re.findall(r"[a-z0-9]+", text.lower())
+
+
+def _content_terms(text: str) -> set[str]:
+    """Terms that carry information about what a card or chunk is *about*.
+    Exact-token matching, no stemming - a real, stated limitation:
+    "mitochondria" and "mitochondrion" are the same concept but different
+    tokens here, so a card using one form won't match a chunk using the
+    other. Adding a stemmer means a new runtime dependency this app
+    doesn't ship; for a single-topic corpus the failure mode is
+    conservative (skip the check rather than claim a false match), which
+    is the safe direction."""
+    return {t for t in _tokenize(text) if t not in STOPWORDS and len(t) > 2}
+
+
+def _corpus_idf(chunks: list[tuple[str, str]]) -> tuple[dict[str, float], float]:
+    """IDF over the curriculum chunks, plus the weight to charge terms
+    that appear in *no* chunk. A term in every chunk carries no
+    discriminative information (IDF 0); a term in one chunk carries a
+    lot; a term the corpus has never heard of is maximally uncovered, so
+    it gets the same weight as the rarest possible in-corpus term."""
+    n_docs = len(chunks)
+    if n_docs == 0:
+        return {}, 0.0
+    doc_freq: Counter[str] = Counter()
+    for _, text in chunks:
+        doc_freq.update(_content_terms(text))
+    idf = {term: math.log(n_docs / df) for term, df in doc_freq.items()}
+    return idf, math.log(n_docs)
+
+
+def _coverage(query: str, chunk_terms: set[str], idf: dict[str, float], oov_weight: float) -> float:
+    """What fraction of a card's *information content* this chunk covers,
+    weighted by how distinctive each term is. Deliberately asymmetric -
+    unlike cosine similarity, a long chunk isn't penalised for containing
+    material beyond the card, and a two-word card isn't penalised for
+    being short. Terms absent from the whole corpus count fully against
+    the score, which is what makes an out-of-corpus card fall to ~0."""
+    terms = _content_terms(query)
+    if not terms:
+        return 0.0
+    covered = total = 0.0
+    for term in terms:
+        weight = idf.get(term, oov_weight)
+        total += weight
+        if term in chunk_terms:
+            covered += weight
+    return covered / total if total else 0.0
+
+
+def _retrieve_for_grounding(
+    front: str, back: str, chunks: list[tuple[str, str]], top_k: int = 2
+) -> tuple[list[tuple[str, str, float]], float]:
+    """Returns (top chunks to show the judge, gate score).
+
+    The gate score is `min(front coverage, back coverage)` rather than
+    coverage of the card as one blob, because the two ask different
+    questions and both must pass. A card's *answer* is the fact a bridge
+    would be grounded in: if the corpus has never heard of
+    "phosphofructokinase", it cannot vouch for a bridge about it, no
+    matter how much the *question's* framing ("rate-limiting step",
+    "enzyme") happens to overlap with material the corpus does cover.
+    That exact case - a glycolysis card scoring 0.61 on its front but
+    0.00 on its back - is what the previous cosine-similarity gate got
+    wrong, letting an out-of-corpus card through while blocking a real
+    Krebs-cycle one.
+
+    Measured separation on this corpus with this scoring: real in-corpus
+    cards 0.37-1.00, out-of-corpus cards 0.00. Cards with an empty back
+    fall back to front coverage alone.
+    """
+    if not chunks:
+        return [], 0.0
+    idf, oov_weight = _corpus_idf(chunks)
+    chunk_terms = [(cid, text, _content_terms(text)) for cid, text in chunks]
+
+    combined = f"{front} {back}".strip()
+    ranked = sorted(
+        (
+            (cid, text, _coverage(combined, terms, idf, oov_weight))
+            for cid, text, terms in chunk_terms
+        ),
+        key=lambda item: item[2],
+        reverse=True,
+    )[:top_k]
+
+    best_front = max(
+        (_coverage(front, terms, idf, oov_weight) for _, _, terms in chunk_terms), default=0.0
+    )
+    if _content_terms(back):
+        best_back = max(
+            (_coverage(back, terms, idf, oov_weight) for _, _, terms in chunk_terms), default=0.0
+        )
+        gate_score = min(best_front, best_back)
+    else:
+        gate_score = best_front
+
+    return ranked, gate_score
+
+
+def _check_grounded(
+    api_key: str, content: BridgeContent, retrieved: list[tuple[str, str, float]]
+) -> tuple[bool, str]:
+    passages = "\n\n".join(f"[{chunk_id}] {text}" for chunk_id, text, _ in retrieved)
+    user_prompt = (
+        f"Bridge question: {content.bridge_question}\n"
+        f"Bridge answer: {content.bridge_answer}\n"
+        f"Synthesis: {content.synthesis}\n\n"
+        f"Source passages:\n{passages}"
+    )
+    payload = json.dumps(
+        {
+            "model": MODEL,
+            "max_tokens": 150,
+            "system": GROUNDEDNESS_SYSTEM_PROMPT,
+            "messages": [{"role": "user", "content": user_prompt}],
+            "temperature": 0.3,
+        }
+    ).encode("utf-8")
+    request = urllib.request.Request(
+        API_URL,
+        data=payload,
+        headers={
+            "x-api-key": api_key,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=30) as response:
+        body = json.loads(response.read())
+    text = body["content"][0]["text"].strip()
+    match = GROUNDEDNESS_RESPONSE_RE.search(text)
+    if not match:
+        raise ValueError(f"no GROUNDED/REASONING in response: {text!r}")
+    return match.group(1).strip().lower() == "yes", match.group(2).strip()
+
+
+def _check_leak(bridge_question: str, gold_back: str) -> bool:
+    """Checks only the bridge *question* - not the answer/synthesis,
+    which are shown after Reveal and are supposed to name the fact (the
+    system prompt asks for a synthesis "connecting it back to the
+    card's original fact"). See speedrun/tools/socratic-agent/agent.py's
+    check_leak_node docstring for the two real bugs this exact logic
+    fixed before it was correct: a fixed 6-word n-gram can't even form
+    against most short flashcard answers ("Citrate synthase"), and
+    checking the wrong fields flagged the synthesis for doing its job."""
+    gold_words = _tokenize(gold_back)
+    bridge_words = _tokenize(bridge_question)
+    if len(gold_words) < LEAK_NGRAM_SIZE:
+        gold_phrase = tuple(gold_words)
+        return bool(gold_phrase) and any(
+            tuple(bridge_words[i : i + len(gold_phrase)]) == gold_phrase
+            for i in range(len(bridge_words) - len(gold_phrase) + 1)
+        )
+    n = LEAK_NGRAM_SIZE
+    gold_ngrams = {tuple(gold_words[i : i + n]) for i in range(len(gold_words) - n + 1)}
+    bridge_ngrams = {tuple(bridge_words[i : i + n]) for i in range(len(bridge_words) - n + 1)}
+    return bool(gold_ngrams & bridge_ngrams)
+
+
+def _generate_and_verify_bridge(api_key: str, front: str, back: str) -> VerifiedBridge:
+    """Generate -> leak-check (hard gate, one retry) -> grounding-check
+    (soft signal, only when retrieval confidence suggests the corpus
+    covers this topic). Runs entirely off the main thread via the
+    caller's QueryOp - both extra checks are cheap (leak: local, no API;
+    grounding: one more API call only when it's worth making)."""
+    content = _generate_bridge(api_key, front, back)
+    retry_count = 0
+    if _check_leak(content.bridge_question, back):
+        content = _generate_bridge(api_key, front, back)
+        retry_count = 1
+        if _check_leak(content.bridge_question, back):
+            raise BridgeLeakedError(
+                "bridge question still leaked the gold answer after one retry"
+            )
+
+    grounded: bool | None = None
+    reasoning = ""
+    chunks = _load_curriculum_chunks()
+    retrieved, gate_score = _retrieve_for_grounding(front, back, chunks, top_k=2)
+    if retrieved and gate_score >= GROUNDING_COVERAGE_THRESHOLD:
+        grounded, reasoning = _check_grounded(api_key, content, retrieved)
+
+    return VerifiedBridge(
+        content=content, grounded=grounded, grounded_reasoning=reasoning, retry_count=retry_count
+    )
+
+
 class SocraticBridgeDialog(QDialog):
     """Two-stage reveal, same interaction shape as the card flip itself:
     the bridge question first, then (on demand) the bridge answer and
@@ -185,8 +507,8 @@ class SocraticBridgeDialog(QDialog):
             if widget := item.widget():
                 widget.deleteLater()
 
-    def show_bridge(self, content: BridgeContent) -> None:
-        self._content = content
+    def show_bridge(self, verified: VerifiedBridge) -> None:
+        self._content = verified.content
         self._clear()
         intro = QLabel(
             "Before moving on — think this through, then reveal when ready."
@@ -194,12 +516,36 @@ class SocraticBridgeDialog(QDialog):
         intro.setWordWrap(True)
         self._layout.addWidget(intro)
 
-        question = QLabel(content.bridge_question)
+        question = QLabel(verified.content.bridge_question)
         question.setWordWrap(True)
         font = question.font()
         font.setBold(True)
         question.setFont(font)
         self._layout.addWidget(question)
+
+        # Three distinct states, shown distinctly - silence must not be
+        # ambiguous between "checked and passed" and "never checked."
+        # grounded is True: curriculum retrieval found a confident match
+        # for this topic and the LLM judge confirmed the bridge is
+        # supported by it. grounded is False: retrieval found a match but
+        # the judge disagreed - soft signal, not a block, since the
+        # corpus only covers the Krebs cycle (see this module's
+        # top-of-file doc comment). grounded is None: retrieval found
+        # nothing confident enough to check against - most cards outside
+        # the Krebs cycle land here, since that's the only topic the
+        # corpus covers right now.
+        if verified.grounded is True:
+            confirmed = QLabel("✓ Verified against the curriculum source.")
+            confirmed.setWordWrap(True)
+            confirmed.setStyleSheet("color: darkgreen;")
+            self._layout.addWidget(confirmed)
+        elif verified.grounded is False:
+            caveat = QLabel(
+                "⚠ Not verified against the curriculum source for this topic."
+            )
+            caveat.setWordWrap(True)
+            caveat.setStyleSheet("color: darkorange;")
+            self._layout.addWidget(caveat)
 
         reveal = QPushButton("Reveal")
         qconnect(reveal.clicked, self._reveal)
@@ -337,15 +683,22 @@ def maybe_gate_before_answer(reviewer: aqt.reviewer.Reviewer) -> bool:
     back = _strip_html(card.answer())
     bridge_dialog = SocraticBridgeDialog(reviewer.mw, "before revealing")
 
-    def on_success(content: BridgeContent) -> None:
-        bridge_dialog.show_bridge(content)
+    def on_success(verified: VerifiedBridge) -> None:
+        bridge_dialog.show_bridge(verified)
 
     def on_failure(exc: Exception) -> None:
-        bridge_dialog.show_error(str(exc))
+        if isinstance(exc, BridgeLeakedError):
+            # Hard gate: still leaking after a retry means no usable
+            # bridge exists for this card right now - close silently
+            # rather than show an alarming error the student can't act
+            # on. The student did nothing wrong here.
+            bridge_dialog.close()
+        else:
+            bridge_dialog.show_error(str(exc))
 
     QueryOp(
         parent=bridge_dialog,
-        op=lambda _col: _generate_bridge(api_key, front, back),
+        op=lambda _col: _generate_and_verify_bridge(api_key, front, back),
         success=on_success,
     ).failure(on_failure).without_collection().run_in_background()
     bridge_dialog.exec()
@@ -384,18 +737,21 @@ def maybe_show_socratic_bridge(
     label = "Dangerous error" if decision == GateDecision.DANGEROUS_ERROR else "Worth a closer look"
     dialog = SocraticBridgeDialog(reviewer.mw, label)
 
-    def on_success(content: BridgeContent) -> None:
-        dialog.show_bridge(content)
+    def on_success(verified: VerifiedBridge) -> None:
+        dialog.show_bridge(verified)
 
     def on_failure(exc: Exception) -> None:
-        dialog.show_error(str(exc))
+        if isinstance(exc, BridgeLeakedError):
+            dialog.close()
+        else:
+            dialog.show_error(str(exc))
 
     # Start the (async, background-thread) API call before blocking on the
     # modal below - QueryOp's completion signal still gets delivered by
     # Qt's event loop while dialog.exec() runs its own nested loop.
     QueryOp(
         parent=dialog,
-        op=lambda _col: _generate_bridge(api_key, front, back),
+        op=lambda _col: _generate_and_verify_bridge(api_key, front, back),
         success=on_success,
     ).failure(on_failure).without_collection().run_in_background()
 
@@ -409,24 +765,11 @@ def maybe_show_socratic_bridge(
     dialog.exec()
 
 
-# --- Phase 2/3 design notes, not built ---
-#
-# Phase 2 (curriculum RAG grounding): _generate_bridge currently only
-# sees the single card's front/back, same scope as the MVP ablation.
-# Grounding it in a curriculum index would mean: (1) chunking/embedding
-# a curriculum corpus (e.g. an expanded speedrun/ai/source_material.md,
-# or the official AAMC outline once §8's mapping exists), (2) retrieving
-# the 1-3 most relevant chunks for the card's topic, (3) passing those
-# chunks into the bridge-generation prompt alongside the card, so a
-# bridge can reference a related concept from the curriculum, not just
-# the one fact on this card. This needs a real retrieval index (even a
-# simple embedding-similarity one) that doesn't exist yet.
-#
-# Phase 3 (leak check): before showing a bridge to the student, verify
-# BRIDGE_ANSWER/SYNTHESIS don't already contain the gold answer text
-# verbatim or near-verbatim - otherwise the "bridge" is just a
-# restated answer wearing a question mark, defeating the whole
-# mechanism. Same n-gram-overlap pattern as
-# speedrun/tools/leakage-check/check.py, applied per-bridge before
-# display rather than as an offline audit script. Not built - this
-# file trusts the model's instruction-following for now, unverified.
+# Phase 2/3 (curriculum grounding + leak check) are live above, in
+# _generate_and_verify_bridge and its helpers - see this module's
+# top-of-file doc comment for the design and speedrun/docs/socratic-agent.md
+# for the offline numbers they were proven against first. Still not
+# built: extending speedrun/ai/source_material.md beyond the Krebs
+# cycle, and a retry loop for grounding the way there already is one
+# for leaks (grounding is a soft signal by design, not a gate, so a
+# retry loop wasn't needed to ship this).
