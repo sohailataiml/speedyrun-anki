@@ -1,191 +1,354 @@
-# Speedrun Brainlift v1
+# Speedrun Brainlift v2 — the DOK 4 pivot
 
-Exam: **MCAT** (472–528 scale, four sections of 118–132, ±2-point total confidence band per AAMC). Chosen because it's the one exam on the PRD's list where both halves of the mission are simultaneously hard — a huge fact base (coverage is genuinely difficult) *and* passage-based transfer (DOK 3 reasoning is genuinely difficult) — so a tool that only measures recall has the most room to be quietly wrong.
+**This supersedes v1's primary thesis.** [brainlift-v1.md](brainlift-v1.md) is
+preserved in full, not deleted — its POV 1 (topic-interleaved review) was
+taken all the way through a real Rust feature and a real three-way
+ablation (see [paraphrase-test.md](paraphrase-test.md)), and those results
+are still true and still worth having. But the spiky POV driving this
+project going forward has changed, to something sharper and more
+mechanism-specific. This document explains the new POV, what evidence
+backs it, and — stated plainly, per this project's own honesty rule —
+**what is and isn't empirically tested yet.** Short version: the new POV
+has a concrete design and real literature behind it, but it has not been
+run through its own Section 9 ablation the way v1's POV was. That's a
+real gap, named here rather than blurred.
 
-Caveat on method, stated up front: the competitor teardown below is **desk research** — public docs, marketing pages, and reviews — not hands-on paid use. That's a real limitation (see §0), not something to paper over.
+**What did not change:** the exam (MCAT), the three-score architecture
+(Memory/Performance/Readiness, never blended), the give-up gate, and
+everything already shipped and verified (§3-§10 in
+[ARCHITECTURE.md](../../ARCHITECTURE.md)). This pivot is about *what the
+Performance/Readiness scores should be built to capture next* — it
+doesn't undo the engine underneath them.
+
+**A note on where this POV came from, stated honestly:** the DOK-framed
+tool analysis and the "Socratic Gatekeeper" mechanism below originated
+as a structured reflection I wrote outside this document and brought in
+wholesale as the new spiky POV — not something re-derived from scratch
+here. The learning-science sourcing, the self-administered consensus
+check, and the honest accounting of what remains untested are this
+document's own work, done to bring that reflection up to the same
+evidentiary bar as v1.
 
 ---
 
 ## 0. Purpose, and what's out of scope
 
-**Purpose.** Speedrun gives MCAT students three separate, honest scores — Memory, Performance, Readiness — instead of the one blended confidence number every competitor sells. It measures the bridge from "I can recall this fact" to "I can answer a novel passage question" to "I would score X today," and it says so when it doesn't have enough data to claim any of the three.
+**Purpose (updated).** Speedrun still gives MCAT students three separate,
+honest scores instead of one blended number. What's new: the product's
+real point of leverage isn't just *scoring* recall vs. transfer
+accurately — it's **protecting the moment where transfer would have been
+learned, before the answer gets revealed and that moment is lost.**
+Every DOK 1-3 tool in the market (flashcards, visual mnemonics,
+practice questions) still ends the same way: you see the back of the
+card or the correct answer, and whatever incomplete reasoning you were
+mid-way through gets short-circuited. Speedrun's new thesis is that
+*when* and *whether* the answer gets revealed — not just what score gets
+computed afterward — is itself the highest-leverage design surface.
 
-**Out of scope for v1:**
-- Teaching new content or curriculum design (Speedrun scores and schedules study; it doesn't replace a content course).
-- Non-cognitive admissions coaching (personal statements, interviews, school selection).
-- Any exam other than MCAT — the architecture is exam-agnostic where possible, but the Readiness scale, give-up thresholds, and coverage map are MCAT-specific for v1.
-- Gamification/social features on the phone client — the phone is a companion for running real sessions and seeing the same three scores, not a separate product surface.
-- A new spaced-repetition scheduling algorithm. FSRS stays FSRS; Speedrun's original work is the two bridges above it, not memory scheduling itself.
-- Proving the Readiness number against real student outcomes (Section 10's bonus tier) — a week isn't enough to gather that honestly; this Brainlift is scoped to what's gradeable now.
-- **iOS.** No Mac or cloud Mac CI is available for this project, and there is no supported way to build, sign, or run an iOS app on Windows. The phone companion ships as Android only (fork of AnkiDroid, which already embeds Anki's Rust backend). The PRD's phone-companion requirement and its grading hard limit are both phrased around having *a* working phone client sharing the engine and syncing, not specifically both platforms, so Android alone is the honest, achievable target — stated here rather than discovered as a gap on submission day.
-
-**Desk-research limitation, named honestly.** The PRD asks for hands-on use of 3 competitor tools to log where they break. I did not create paid accounts or run study sessions inside UWorld, Blueprint, or the AnKing deck. What follows is built from their own documentation, marketing copy, and independent reviews — good enough to establish *what each tool claims to measure and what it visibly doesn't*, weaker than firsthand use for catching in-product failure modes (e.g., exactly how UWorld's UI behaves when a student is clearly guessing). Flagged wherever the evidence is inferred from marketing language rather than observed behavior.
+**Out of scope for v2** (mostly unchanged from v1, see
+[brainlift-v1.md §0](brainlift-v1.md) for the full list; deltas noted):
+- Same MCAT-only, Android-only, no-new-scheduler-algorithm, no-outcome-validation
+  scope as v1.
+- **New:** building a general-purpose Socratic dialogue tutor (open-ended
+  back-and-forth conversation) is explicitly out of scope for v2 — the
+  POV below is a bounded *gate* (show a hint or don't, ask one bridging
+  question or don't), not a full tutoring chatbot. Scoping it that way
+  keeps it buildable and testable in the time available; a full
+  conversational tutor is a different, much bigger project.
+- Proving this POV against real student outcomes remains out of scope,
+  same reason as v1 (§10 bonus tier, needs longer than a week of real
+  usage).
 
 ---
 
-## 1. Research part one — tearing down three real MCAT tools
+## 1. The tool landscape, reframed by Depth of Knowledge
 
-Lead question for each: **what DOK level does this tool actually measure, and what level does it imply it measured?**
+v1's teardown (UWorld, AnKing, Blueprint — see
+[brainlift-v1.md §1](brainlift-v1.md)) still holds; this section adds the
+frame that motivates the new POV: **which DOK level does each category
+of tool operate at, and where does the market have nothing at all?**
 
-### UWorld MCAT QBank
-
-- **What it measures:** Item-level accuracy on UWorld's own question bank (DOK 2/3 — these are novel, exam-style items, not the source flashcards).
-- **What it implies:** A **scaled score, 472–528** — directly on the real exam's scale — derived from QBank performance. That is a DOK 4 claim (a projected real-world score) built on DOK 2/3 data.
-- **The tell:** UWorld's own materials caution that "UWorld performance alone should not be treated as a reliable score predictor because UWorld questions are intentionally slightly harder than the real MCAT." That's UWorld admitting, in a footnote, exactly the failure mode the PRD calls an automatic fail: presenting a number on the real scale without the honesty layer (evidence, range, coverage, confidence) attached to it in the product itself. The caveat lives in support articles, not on the score screen.
-- **Does it ever say "I don't know"?** Not in the product surface, per the docs found — the disclaimer is out-of-band.
-- **Does it reword questions to test transfer vs. recall?** No paraphrase/rewording mechanic found — UWorld's own explanations are rich, but nothing separates "you got this exact item right" from "you'd get a reworded version right."
-- **Content-as-progress?** Detailed performance reports break down by subject/topic, which is a real step toward decomposed feedback — better than a single number, but still folds straight back into the same 472–528 scaled score at the top.
-
-### AnKing MCAT Deck (Anki / AnkiHub)
-
-- **What it measures:** DOK 1 only — card-level recall, scheduled by SM-2/FSRS. ~6,200 cards merged from several community decks, tagged by subject/system/source, plus UWorld-question-ID cross-reference tags.
-- **What it implies:** Nothing on the real exam scale — no score, no readiness claim. This is the most *honest* of the three by omission: it doesn't claim a DOK level it doesn't measure.
-- **The tell:** the dishonesty isn't in the tool, it's in how students use it — "content volume sold as progress" shows up as the card count itself (6,200 cards, continuously updated) functioning as the de facto progress metric in the community, even though card-review completion says nothing about passage-level transfer. The tool is honest; the surrounding culture treats DOK 1 completion as a proxy for DOK 4 readiness anyway.
-- **Timing:** no per-card timing signal surfaced to the student at all.
-
-### Blueprint MCAT
-
-- **What it measures:** Full-length practice exams (closest of the three to real DOK 4 conditions — same length, same timing, adaptive-feeling analytics) plus a large QBank, analyzed by "AAMC reasoning skill" via an AI tutor ("Blue").
-- **What it implies:** Directional score improvement, explicitly *not* claimed as precise. Blueprint's own review copy: practice-test scores are "directionally accurate... but not precise enough for fine-grained predictions," positioned as "a directional baseline, not a final predictor."
-- **The tell, and the most interesting finding of the teardown:** Blueprint is the one competitor whose public language already gestures at the honesty rule (calibration, don't over-claim precision) — but it still leads its marketing with a single predicted-score number and an analytics stack that decomposes by skill *without* ever showing a range or a give-up threshold. It has the right instinct and doesn't build the product around it.
-
-### What the teardown actually exposes (cross-tool pattern)
-
-| Question | UWorld | AnKing | Blueprint |
+| DOK level | Focus | Tool landscape | What actually happens |
 |---|---|---|---|
-| DOK level measured | 2/3 | 1 | ~2/3 + simulated 4 |
-| DOK level implied | 4 (scaled score) | none | 4 (directional) |
-| Says "I don't know" in-product | No (caveat is out-of-band) | N/A (no score) | Partially (marketing hedge, not in-app) |
-| Reword/paraphrase check | Not found | Not found | Not found |
-| Volume sold as progress | Topic-count breakdowns | Card count (6,200) | Question count (5,000+) |
-| Timing signal to student | Full-length only | None | Full-length only |
-| Shows a range instead of one number | No | N/A | No |
+| DOK 1 — Recall & Reproduction | Fact retrieval, definitions | Anki/AnKing, Quizlet | Passive — the "task" is complete the instant the back of the card appears |
+| DOK 2 — Skills & Concepts | Comparing, relating, summarizing | Sketchy MCAT, Pixorize | Assisted — the student follows someone else's mental map, not their own |
+| DOK 3 — Strategic Thinking | Reasoning from evidence, multi-step | UWorld, AAMC Section Bank | Active — real struggle, but the tool doesn't manage *how* the struggle happens |
+| DOK 4 — Extended Thinking | Synthesis, metacognition, generative logic | **None.** | Currently exists only in the discipline of individual students who refuse to flip early |
 
-Every tool examined either doesn't try to bridge DOK 1 → DOK 4 (AnKing) or bridges it with a single number and a footnote instead of a range (UWorld, Blueprint). None of the three appear to test whether a student's card-level recall predicts their performance on a *reworded* version of the same idea — which is exactly the DOK 1 vs. DOK 2 gap the PRD's paraphrase test is designed to catch. That gap is the opportunity.
+**The gap this exposes:** DOK 1-3 tools compete on *what* they show you
+(better facts, better visuals, better questions). None of them manage
+*when* they show it to you, or condition that on how you're actually
+performing in the moment. That's the DOK 4 gap, and it's untouched
+regardless of how good the DOK 1-3 content gets.
 
----
-
-## 2. Research part two — the learning science (DOK 1 and 2)
-
-Ten primary sources: three establish the systems lineage (SuperMemo → FSRS → Anki), seven establish the learning-science claims the product design leans on.
-
-### Systems lineage
-
-**1. Piotr Woźniak, "Optimization of Learning" (1990 master's thesis; SM-2 published in *Computers & Education*).**
-[SuperMemo: the true history of spaced repetition](https://www.supermemo.com/en/blog/the-true-history-of-spaced-repetition) · [Piotr Woźniak (researcher) — background](https://en.wikipedia.org/wiki/Piotr_Wo%C5%BAniak_(researcher))
-- *Took:* SM-2's core insight — schedule review just before predicted forgetting, using an easiness factor updated from grading history — is the ancestor of every scheduler in this space, including Anki's. Empirically grounded in years of the author's own self-study data, not a lab experiment.
-- *Rejected:* SM-2's fixed easiness-factor update rule is a hand-tuned heuristic, not a fitted probabilistic model of memory. It doesn't generalize well across card types or students, which is precisely why FSRS superseded it.
-
-**2. FSRS / DSR model (Jarrett Ye and the open-spaced-repetition community).**
-[The fundamental of FSRS](https://github.com/open-spaced-repetition/fsrs4anki/wiki/The-fundamental-of-FSRS) · [ABC of FSRS](https://github.com/open-spaced-repetition/fsrs4anki/wiki/abc-of-fsrs)
-- *Took:* the Difficulty/Stability/Retrievability decomposition is the right abstraction for Memory — Retrievability is exactly "chance of recalling this fact right now," which is the PRD's own definition of the Memory score. Speedrun's Memory score should be read directly off retrievability, not reinvented.
-- *Rejected:* FSRS optimizes scheduling *efficiency* (minimize reviews for a target retention). That objective says nothing about whether the material being scheduled efficiently is the material that predicts exam performance — efficiency and transfer are orthogonal, which is exactly the gap Speedrun's Performance score has to cover that FSRS was never designed to.
-
-**3. Anki's own scheduler design decisions.**
-[What spaced repetition algorithm does Anki use? — Anki FAQs](https://faqs.ankiweb.net/what-spaced-repetition-algorithm.html) · [How to plug a scheduling algorithm into Anki](https://www.milchior.fr/blog_en/index.php/post/2020/02/22/How-to-plug-a-scheduling-algorithm-into-Anki)
-- *Took:* Anki deliberately simplified SuperMemo's 6-point grading to 4 buttons (Again/Hard/Good/Easy) and made interval growth configurable — a product decision that trades some scheduling precision for usability. That's the right lesson for Speedrun's own UI: don't ask the student for more granularity than they can honestly give.
-- *Rejected:* the 4-button grade is still a **self-reported** correctness signal, unverified by the system. Section 10's stress test — "a student tapping Good without reading" — exists precisely because Anki's own design never tried to detect this; it's an open problem Speedrun inherits, not one Anki solved.
-
-### Learning science
-
-**4. Bjork & Bjork — desirable difficulties.**
-[Introducing Desirable Difficulties Into Practice and Instruction (UNH)](https://www.unh.edu/teaching-learning-resource-hub/sites/default/files/media/2023-06/itow-introducing-desirable-difficulties-into-practice-and-instruction-bjork-and-bjork.pdf)
-- *Took:* conditions that feel harder *during* study (spacing, retrieval practice, interleaving) produce more durable learning than conditions that feel easy. Meta-analytic support: retrieval + spacing effect size g = 0.74 across 29 studies. This underwrites the whole premise that "feels harder" (a reworded question) is a legitimate, not unfair, test of learning.
-- *Rejected:* Bjork's frame is about *durability* of memory, not about *transfer* to novel problems. It's necessary background for why spacing works at all, but it doesn't by itself justify a claim about passage-level performance — that's a different literature (interleaving, transfer), not an extension of this one.
-
-**5. Rohrer & Taylor (2010), "The Effects of Interleaved Practice."**
-[Taylor & Rohrer 2010 (full text PDF)](http://uweb.cas.usf.edu/~drohrer/pdfs/Taylor&Rohrer2010ACP.pdf)
-- *Took:* interleaving (not just spacing) doubled next-day test scores over blocked practice, and error analysis showed the mechanism is discrimination — interleaved practice teaches you to *tell problem types apart and pick the right procedure*, which blocked/isolated practice never trains. This is the single strongest piece of evidence for Speedrun's core thesis: isolated flashcard review can raise recall without ever training the "which concept applies here" skill an MCAT passage demands.
-- *Rejected:* the original study is math procedure learning (children, arithmetic problem types) — a substantial generalization gap to MCAT science passages and CARS reasoning. Treat the mechanism (discrimination training) as the transferable claim, not the effect size.
-
-**6. Sweller — cognitive load theory.**
-[Cognitive Load Theory, Learning Difficulty, and Instructional Design (1994)](https://pressbooks.pub/learningenvironmentsdesign/chapter/sweller-cognitive-load-theory-learning-difficulty-and-instructional-design/)
-- *Took:* the intrinsic/extraneous/germane load distinction explains why "more cards reviewed" isn't the same as "more schema built" — germane load (effort spent building usable structure) is what predicts transfer, and it's not the same quantity as review count or even accuracy.
-- *Rejected:* cognitive load is notoriously hard to measure directly (it's usually inferred from performance, not measured independently) — Speedrun should not pretend to measure "load" as a first-class number; use it as a design principle (don't let volume stand in for structure), not a metric to report to the student.
-
-**7. Ericsson, Krampe & Tesch-Römer (1993) — deliberate practice — and its 2019 revisit.**
-[The role of deliberate practice in expert performance (original)](https://eric.ed.gov/?id=EJ471947) · [Revisiting Ericsson, Krampe & Tesch-Römer (1993), Royal Society Open Science, 2019](https://royalsocietypublishing.org/rsos/article/6/8/190327/68523/The-role-of-deliberate-practice-in-expert)
-- *Took:* deliberate practice requires a task just beyond current ability, with immediate, specific feedback, repeated with intent to improve — not just repetition. This is the standard against which "review a flashcard" should be judged: right/wrong is feedback, but it isn't *specific* feedback about why a passage-level answer was wrong.
-- *Rejected — and this is a real DOK 3 disagreement, not a footnote:* the 2019 replication/re-analysis found deliberate practice explains a much smaller share of performance variance than the original claimed, and the field has since pushed back hard on "10,000 hours"-style overclaiming. Speedrun should use the deliberate-practice *design principles* (specific feedback, targeted difficulty) without importing the original's overstated causal claim about practice alone producing expertise.
-
-**8. Dunlosky, Rawson, Marsh, Nathan & Willingham (2013) — effective learning techniques meta-analysis.**
-[Improving Students' Learning With Effective Learning Techniques](https://journals.sagepub.com/doi/abs/10.1177/1529100612453266)
-- *Took:* of ten common study techniques ranked by evidence quality, distributed practice and practice testing rank highest utility; rereading and highlighting rank lowest. This is the field's authoritative validation that spacing + testing (what SRS tools already do) is the right foundation — Speedrun isn't fighting the consensus on Memory, it's building past it.
-- *Rejected:* in the 2013 paper, interleaving was rated "moderate" utility partly because it had *less* evidence behind it at the time, not because it was weaker — a caveat, not a demotion. (A larger follow-up meta-analysis in 2021, 242 studies, mean effect size 0.56, gives interleaving considerably stronger footing — noted here as "what changed" between sources, which is exactly the kind of update the honesty rule asks for.)
-
-**9. Barnett & Ceci (2002) — taxonomy for far transfer.**
-[When and Where Do We Apply What We Learn? (full text)](https://rapunselshair.pbworks.com/f/barnett_2002.pdf)
-- *Took:* "near vs. far transfer" isn't one dial, it's nine dimensions (knowledge domain, physical/temporal/functional/social context, modality, and more). This gives Speedrun precise language for exactly what a rewritten exam question is testing: same knowledge domain, same temporal context, but a different surface/modality — a *specific*, nameable transfer distance, not just "harder."
-- *Rejected:* the taxonomy is descriptive, not predictive — it doesn't tell you how much a given transfer distance will reduce accuracy. Speedrun's paraphrase test has to measure that gap empirically per-topic; the taxonomy only tells you what you're measuring.
-
-**10. Metacognitive calibration / judgment-of-learning research.**
-[Metacognitive Monitoring: Fixing Learner Overconfidence](https://www.structural-learning.com/post/metacognitive-monitoring-fixing-student) · [Calibration of metacognitive judgments: the underconfidence-with-practice effect](https://www.sciencedirect.com/science/article/abs/pii/S0749596X13000454)
-- *Took:* students are systematically miscalibrated (usually overconfident), the miscalibration itself predicts *worse* study decisions (skipping unmastered material), and — critically — the direction and size of the bias *changes with practice* (the underconfidence-with-practice effect: calibration isn't a fixed offset you can just correct for). This is the direct evidence base for the PRD's honesty rule and for the give-up rule specifically: a system that trusts self-report without checking calibration will inherit the same overconfidence its users have.
-- *Rejected:* most of this literature measures calibration via post-hoc judgment-of-learning ratings in lab settings, not via real-time signals like response latency in a live app — Speedrun will need its own instrumentation (see POV 3) to bring this into a shipping product; the lab findings establish *that* the problem is real, not exactly *how* to detect it in the wild.
+**The specific failure mode this names — "the spacebar reflex":** most
+students use Anki at DOK 1 even when the card content is DOK 2/3-worthy.
+Front appears, a fuzzy-match feeling fires, spacebar gets hit, back
+appears, "yeah I knew that" — and the extended-thinking moment the card
+could have prompted was killed before it started. This is a real,
+observable behavior pattern (not literature-backed on its own, see
+§2's sourcing for what *is* backed), and it's the concrete target the
+new POV is designed against.
 
 ---
 
-## 3. DOK 3 — what the sources disagree on, what the field assumes, what the teardown exposed
+## 2. Learning science backing the new POV
 
-- **Assumption nobody checks:** that a scheduler tuned for efficient recall (FSRS) is also, by implication, a reasonable proxy for exam readiness. It isn't — FSRS's objective function has nothing to do with transfer, and no competitor examined treats this as a distinct thing to measure.
-- **Where sources disagree:** Ericsson's original deliberate-practice claim vs. its own field's 2019 replication — how much of performance practice actually explains is contested, not settled. Speedrun should build on the *design principles* (specific feedback, calibrated difficulty) without repeating the overclaim.
-- **Where the field's evidence got stronger over time:** Dunlosky et al. (2013) hedged on interleaving; the 2021 meta-analysis (242 studies) gives it much firmer footing. Worth stating explicitly because it's an example of the honesty rule applied to the literature itself, not just to Speedrun's own numbers.
-- **What the teardown exposed that the science predicts:** every competitor's headline number is near-transfer at best (UWorld/Blueprint QBank items resemble their own training questions) dressed as far-transfer prediction (a real exam score). Barnett & Ceci's taxonomy names exactly why that's a problem: transfer distance isn't binary, and none of these tools report where on that distance their evidence actually sits.
-- **The metacognition problem the teardown didn't even get to test:** self-graded recall (Anki's 4-button grade) is a judgment-of-learning report, and the calibration literature says those reports are systematically biased. Every SRS-based tool, including AnKing, inherits this blind spot silently.
+Sources 1-3, 6, and 9 below are carried over from v1 because they remain
+directly applicable (spaced repetition's own lineage, desirable
+difficulties, transfer taxonomy) — marked **[carried over]**. Sources 4,
+5, 7, and 8 are new, chosen specifically to evaluate the Socratic
+Gatekeeper mechanism rather than the topic-interleaving one.
+
+### Systems lineage **[carried over from v1, unchanged — see brainlift-v1.md §2 for full entries]**
+
+1. Woźniak / SM-2 — the ancestor of every SRS scheduler, including this one.
+2. FSRS / DSR model — Retrievability is still exactly what the Memory
+   score should read, regardless of which POV is primary.
+3. Anki's own 4-button design — still the right lesson (don't ask for
+   more granularity than a student can honestly give), now directly
+   relevant to *how* a confidence input gets added without over-asking.
+
+### Learning science for the new POV
+
+**4. Roediger & Karpicke (2006), "The Power of Testing Memory."**
+[Full text (PDF)](http://psychnet.wustl.edu/memory/wp-content/uploads/2018/04/Roediger-Karpicke-2006_PPS.pdf)
+- *Took:* repeated testing beat repeated rereading on one-week retention,
+  61% to 40% — and critically, the effect held *even when the tests were
+  given without feedback*. This is the direct evidence that the act of
+  retrieving (or attempting to, and failing) is where the learning
+  happens, not the moment the correct answer is revealed. It's the
+  strongest single justification for "don't flip yet" as a design
+  principle rather than just an inconvenience.
+- *Rejected:* this literature measures retention of the *tested material
+  itself* — it doesn't by itself establish that forcing a longer
+  pre-flip reasoning chain (the "reconstruct the countercurrent
+  multiplier" step in the new POV's example) produces *better* retention
+  than a shorter one. The dosage question — how much forced reasoning is
+  optimal before it becomes friction without added benefit — isn't
+  answered here and needs the ablation §7 proposes.
+
+**5. Kapur (2016), "Productive Failure, Productive Success, Unproductive
+Failure, and Unproductive Success."**
+[Full text](https://www.tandfonline.com/doi/full/10.1080/00461520.2016.1155457)
+- *Took:* letting students struggle with and fail at a problem *before*
+  receiving instruction produces stronger conceptual understanding and
+  transfer than instruction-first designs (effect sizes up to d=0.58) —
+  directly supports the new POV's core move of withholding the "back of
+  the card" until reasoning has been attempted.
+- *Rejected — and this is the load-bearing caveat for the whole POV:*
+  Kapur's own framework names *boundary conditions* — failure is only
+  productive under specific conditions (the right problem difficulty,
+  the right scaffolding *afterward*, students with enough prior
+  knowledge to generate something). "Unproductive failure" is a named
+  failure mode in the same paper. This directly implies the Socratic
+  Gatekeeper cannot just withhold answers indiscriminately — it has to
+  target the withholding at moments where struggle is likely to be
+  productive (this is exactly what the latency/confidence-based
+  branching in §4 is trying to operationalize, not just a UX
+  nicety).
+
+**6. Bjork & Bjork — desirable difficulties. [carried over from v1 §2]**
+Still directly relevant: "feels harder now, helps more later" is the
+premise under both the old and new POV. What's new in v2 is a specific
+mechanism for *which* difficulties to introduce and when, rather than a
+general spacing/retrieval prescription.
+
+**7. VanLehn (2011), "The Relative Effectiveness of Human Tutoring,
+Intelligent Tutoring Systems, and Other Tutoring Systems."**
+[Overview and effect sizes](https://journals.sagepub.com/doi/10.3102/0034654315581420)
+- *Took:* step-based tutoring (hints/feedback delivered at the level of
+  a solution step) reached ~0.76 effect size, nearly matching average
+  human tutors. This is real evidence that *well-targeted* hint-giving
+  works, not just that struggle-then-reveal works in the abstract —
+  directly supports building a real Socratic-hint mechanism rather than
+  a plain timer-based reveal delay.
+- *Rejected — the second load-bearing caveat:* VanLehn found *substep*-level
+  tutoring (hints broken down further, more granular hand-holding) was
+  meaningfully *less* effective (~0.40) than step-level tutoring. More
+  scaffolding is not better scaffolding — over-decomposing the Socratic
+  hint (spelling out too much before the student reasons) actively hurts
+  the mechanism the POV is trying to protect. This is a concrete design
+  constraint on the hint content itself, not just on when to show it.
+
+**8. Metacognitive calibration and confidence — extends v1 source 10.**
+[Metacognitive Monitoring: Fixing Learner Overconfidence](https://www.structural-learning.com/post/metacognitive-monitoring-fixing-student)
+· [Improving metacognitive accuracy: how failing to retrieve practice
+items reduces overconfidence](https://www.sciencedirect.com/science/article/abs/pii/S1053810014001469)
+- *Took:* students are systematically miscalibrated (usually
+  overconfident), and — the piece that's new here — retrieval *failure*
+  specifically is shown to reduce subsequent overconfidence, i.e.
+  confronting a wrong-but-confident answer has a real, measurable
+  calibration-improving effect. This is the direct evidence base for the
+  new POV's highest-priority branch: "High Confidence + Incorrect Answer
+  → mandatory intervention," which the design calls a "Dangerous Error."
+- *Rejected:* still true as in v1 — this is mostly lab-based, judgment-
+  of-learning-rating research, not real-time in-app signal. Confidence
+  as a construct has to be operationalized as an actual UI input
+  (a tap, not an inference), and that operationalization is untested —
+  named directly in §7.
+
+**9. Barnett & Ceci — transfer taxonomy. [carried over from v1 §2]**
+Still the right language for the new POV's own worked example ("would
+you have known this if the MCAT asked about a desert-dwelling rodent
+instead?") — same near/far transfer framing, now applied to *what a
+Socratic bridge question should probe* rather than to a paraphrase test.
+
+---
+
+## 3. DOK 3 — the tensions the new POV has to hold at once
+
+- **Productive failure vs. unproductive failure aren't self-selecting.**
+  Kapur's own boundary conditions mean the gate has to actually *target*
+  interventions, not apply them uniformly — this is why the decision
+  table in §4 branches on latency *and* confidence *and* correctness
+  together, not on any single signal.
+- **More scaffolding isn't more learning.** VanLehn's step vs. substep
+  finding is in direct tension with the intuitive design instinct to
+  make hints more detailed when a student is struggling more. The
+  correct response to "the hint didn't work" is probably a *different*
+  hint, not a *more detailed* one — an open design question, not
+  resolved by any source here.
+- **Confidence is self-reported, same blind spot as v1's original POV 3.**
+  Asking "how confident are you?" is still asking the student to
+  self-assess, which is exactly the biased signal the metacognitive
+  calibration literature warns about. The new POV doesn't escape this —
+  it *uses* the known bias (confident-and-wrong is diagnostic) rather
+  than pretending confidence reports are unbiased ground truth. That's a
+  meaningful difference from treating self-report as truth, but it's a
+  reframe, not a fix.
+- **Latency is a noisy proxy for "struggling."** A 3-second answer could
+  be genuine fast recall or a lucky guess; a 15-second answer could be
+  productive reasoning or getting distracted. The decision table treats
+  latency as one input among three, not the sole trigger — worth stating
+  explicitly since it's the easiest signal to over-trust.
 
 ---
 
 ## 4. DOK 4 — Spiky POVs
 
-Each shaped as: consensus says X, I think Y, evidence, what would prove me wrong.
+### POV 1 (new primary thesis) — the Socratic Gatekeeper
 
-### POV 1 — the thesis candidate for Section 9
+**Consensus:** the flashcard "flip" is a neutral, binary event — you
+either know it or you don't, and revealing the answer is just how you
+find out which.
 
-**Consensus:** more spaced-repetition review predicts higher exam readiness (implicit in every competitor's progress bar and card count, and in AnKing's culture of tracking cards-reviewed as the proxy for "done").
+**I think:** the flip is not neutral — it's the single highest-leverage
+moment in the whole review loop, because it's the exact instant that
+determines whether a struggling or overconfident student gets to fix
+their own reasoning or just gets told the answer. Most tools treat every
+flip identically; the flip should instead be *gated* on three signals
+already available in every review — response latency, a stated
+confidence level, and correctness — and only some combinations of those
+three should trigger an intervention before the answer is shown.
 
-**I think:** past a moderate threshold of card-level retention (roughly 80–90%), further gains in exam-style item accuracy come from transfer training, not more card repetitions — because SRS drills isolated recall of a single fact, while exam items require discriminating which of several similar-looking facts/procedures applies, which is a different skill Rohrer & Taylor showed blocked/isolated practice never builds.
+**The mechanism, concretely (the "Socratic Gatekeeper" decision table):**
 
-**Evidence:** Rohrer & Taylor (2010) — interleaved practice doubled next-day scores over blocked practice via better discrimination, not better recall; the teardown found zero competitors testing paraphrase/rewording against card-level recall; MCAT-prep community sources describe plateaus explicitly caused by "familiarity" (recall/recognition) substituting for the actual tested skills.
+| Signal combination | What it means | Response |
+|---|---|---|
+| Fast + high confidence + correct | Automated mastery | Move on immediately — don't waste stamina on cards that don't need it |
+| Fast + high confidence + **incorrect** | **Dangerous error** — a confident misconception | Mandatory Socratic bridge question before revealing the answer, forcing the student to locate where their certainty was wrong |
+| Slow (struggling) + any confidence | Productive-failure opportunity | Withhold the back; show a scaffolded hint (not the answer) to nudge reconstruction, per VanLehn's step-level (not substep) granularity |
+| Fast + low confidence + correct | Lucky guess | Optional "verify your logic" prompt — cheap to offer, not mandatory |
 
-**What would prove me wrong:** if, in the paraphrase test (30 cards, 2 reworded exam-style questions each), reworded-question accuracy tracks card-recall accuracy closely (say within ~5 points) across a range of topic-coverage levels, then recall and transfer aren't actually diverging in this population and the thesis fails. This is the feature Section 9's ablation should test: a topic-interleaved review mode, on vs. off vs. plain Anki.
+**Evidence:** Roediger & Karpicke's testing effect (retrieval attempts,
+even failed ones, drive retention); Kapur's productive failure (struggle
+before instruction beats instruction-first, within named boundary
+conditions); VanLehn's tutoring meta-analysis (targeted, step-level
+hints work; over-granular ones don't); the metacognitive-calibration
+literature's specific finding that confronting confident-wrong answers
+measurably improves calibration. Four independent literatures converge
+on the same structural claim: *what happens in the seconds before the
+answer is revealed matters more than what happens after.*
 
-### POV 2
+**What would prove me wrong:** if, in an ablation comparing (a) the
+Gatekeeper's conditional intervention, (b) unconditional Socratic
+prompts on every card, and (c) plain immediate-flip Anki, condition (a)
+shows no advantage over (c) on next-session reworded-question accuracy —
+or if it shows no advantage over (b), meaning the *conditioning* logic
+itself isn't earning its complexity and a dumber "always ask" policy
+would have done just as well.
 
-**Consensus:** a single predicted score is the right product to ship — every competitor examined leads with one number (UWorld's scaled score, Blueprint's practice-test score).
+### POV 2 — decomposed scores **[unchanged from v1, still standing]**
 
-**I think:** a blended number destroys the information a student needs to act, because a low score caused by low coverage, low transfer accuracy, and slow timing each demand a completely different next study session — and collapsing them into one number means the app can never tell the student which one it was.
+See [brainlift-v1.md](brainlift-v1.md) — a blended number destroys
+actionable information; three separate scores let a student act on
+*which* of Memory/Performance/Readiness is actually weak. This POV is
+orthogonal to the pivot above and doesn't need to change.
 
-**Evidence:** even Blueprint's own analytics decompose by section and "AAMC reasoning skill" internally, then re-blend it into one headline score for marketing — implicitly conceding decomposition is more useful while still shipping the blend. Deliberate-practice literature is unambiguous that feedback has to be specific to be actionable.
+### Prior POV 1 (v1's primary thesis) — topic-interleaved review, now a validated secondary finding
 
-**What would prove me wrong:** if, in an ablation, students shown one blended number allocate their next study session to their actual weakest area about as often as students shown three separated scores, decomposition isn't earning its complexity and this POV fails.
+v1's original thesis — that isolated card review never trains
+discrimination, and topic-interleaved review should close that gap —
+**was taken all the way to a real ablation and produced a real,
+if narrower-than-hoped, result:** interleaved review beat blocked review
+by 16 points at a 10-card study budget, but that gap closed by 20 cards.
+Full writeup: [paraphrase-test.md](paraphrase-test.md), summarized in
+[brainlift-v1.md §7](brainlift-v1.md). This isn't retracted — it's real,
+it's shipped (`speedrunTopicOrder` in `rslib/`), and it remains true. It's
+demoted from *primary* thesis because the new POV above is a sharper,
+more mechanism-specific claim about *why* isolated review falls short
+(it never interrupts the flip, not just that it under-covers topics) —
+but the two aren't in conflict, and a future iteration could plausibly
+combine them (e.g. the Gatekeeper's hint content could itself draw on
+under-covered neighboring topics).
 
-### POV 3
-
-**Consensus:** a student's self-graded recall (Again/Hard/Good/Easy) is a good enough signal to both schedule reviews and estimate knowledge state — every SRS tool, Anki included, treats it as ground truth.
-
-**I think:** self-graded correctness is a metacognitively biased signal, not ground truth, and a nontrivial share of "Good" grades are the PRD's own named failure mode — a student tapping Good without reading — contaminating both the scheduler's inputs and any Performance model trained on top of it.
-
-**Evidence:** the calibration literature's finding that judgment-of-learning accuracy is systematically biased and that the bias itself shifts with practice (not a fixed, correctable offset); the PRD independently names this exact failure mode as something the system will be tested against.
-
-**What would prove me wrong:** if response-latency-flagged "suspiciously fast" grades show no detectable difference in downstream item accuracy from normal-latency grades of the same nominal rating, the contamination isn't real (or isn't detectable this way) and building latency-based flagging isn't worth it.
+**v1's original POV 3** (self-graded correctness is a biased signal) is
+**absorbed into the new POV 1 above**, not carried forward as a separate
+POV — the Socratic Gatekeeper *is* a concrete, buildable answer to POV
+3's problem (confidence-contingent intervention rather than just latency
+flagging), so keeping both as separate open POVs would be double-counting
+the same underlying claim.
 
 ---
 
 ## 5. The AI consensus check
 
-**Caveat, stated honestly:** a genuine consensus check means putting the POV to an independently-instantiated frontier model with no visibility into this document. I'm the same model family drafting this Brainlift, so I cannot be that independent check on myself — folding my own critique in here would be grading my own homework. What follows is a best-effort adversarial pass I ran against POV 1 in this session, clearly labeled as self-administered, not independent. **Before this Brainlift is treated as final, re-run POV 1 (and ideally 2 and 3) cold against a model in a fresh session with no prior context, and log that transcript here in its place.**
+Same caveat as v1: this is a self-administered adversarial pass, not an
+independent one, since I'm the same model family drafting this document.
+**Before this Brainlift is treated as final, run this cold against an
+independently-instantiated model with no prior context.**
 
-### Self-administered adversarial pass (not independent — see caveat)
+### Self-administered adversarial pass on the new POV 1
 
-**Pass 1, POV 1 stated cold, no evidence:**
-> "Past a threshold of card-level retention, further review gains stop predicting exam-item accuracy — the skill that predicts scores past that point is transfer/discrimination training, which spaced-repetition review doesn't provide."
+**Pass 1, POV stated cold, no evidence:**
+> "Gating the flashcard flip on latency, stated confidence, and
+> correctness — intervening with a Socratic question only on confident-
+> wrong answers or genuine struggle — produces better transfer than an
+> unconditional flip or an unconditional Socratic prompt."
 
-Objections raised: (1) this assumes a clean threshold exists, when in practice the retention-to-performance relationship is probably continuous and topic-dependent, not a step function; (2) MCAT science content still has a large enough raw fact base that for many students, coverage/recall gaps — not transfer — are still the binding constraint even late in prep, so the claim may only hold for students who've already covered most content; (3) "discrimination training" and "spaced repetition" aren't necessarily separable in practice — interleaved SRS decks already mix topics within a session, which muddies the clean distinction the POV draws.
+Objections raised: (1) confidence is an extra tap on every single card,
+forever — the friction cost of asking it at scale, across thousands of
+reviews, could easily outweigh the benefit on the (likely large) share
+of cards where the answer is just "yes, correct, move on"; (2) latency
+is confounded by things that have nothing to do with reasoning quality —
+phone notifications, re-reading a long front, interruptions — and the
+design doesn't yet say how to distinguish "productively struggling" from
+"got distracted"; (3) the "Dangerous Error" branch assumes a confident
+wrong answer always reflects a genuine, fixable misconception, but it
+could just as easily be a careless misread of the question, which a
+Socratic bridge question wouldn't meaningfully help with.
 
-**Pass 2, with evidence (Rohrer & Taylor's discrimination mechanism, the teardown's finding that no competitor tests paraphrase vs. recall, MCAT community plateau reports):**
-The retention-vs-performance evidence (Rohrer & Taylor) was accepted as directly on point for the *mechanism* claim (discrimination is a trainable, distinct skill from recall). The objection that held up: the "threshold" language is still doing more work than the evidence supports — Rohrer & Taylor didn't establish a retention percentage at which transfer becomes the binding constraint, that number is this project's own hypothesis, not a cited finding. That's a real gap, not a communication problem — it means the paraphrase test needs to measure the *shape* of the recall-vs-transfer-accuracy relationship across a range of coverage levels, not assume a single cutoff going in.
+**Pass 2, with evidence (Kapur's boundary conditions, VanLehn's
+step-vs-substep finding, the retrieval-failure-reduces-overconfidence
+result):**
+The core mechanism claim (confident-wrong answers are diagnostic and
+worth intervening on) held up — it's directly supported by the
+calibration literature, not just intuition. The objection that survived:
+objection (1), the friction cost, isn't resolved by any source cited
+here. Every piece of evidence gathered is about whether the
+*intervention itself* works once triggered — none of it measures the
+tolerance cost of asking for confidence on every card. That's a real,
+unaddressed gap, not a communication problem.
 
-**What moved, what didn't:** the discrimination mechanism (interleaving builds transfer, isolated review doesn't) held up under pressure and is the load-bearing part of POV 1. The specific "80–90% retention threshold" framing did not survive — it's restated above as "a range of coverage levels" rather than a fixed cutoff, which is the honest version of the claim going into Section 9.
+**What moved, what didn't:** the confident-wrong branch is the
+load-bearing, best-evidenced part of the POV and survives cleanest. The
+"ask confidence on every card" implementation detail does not survive
+unscathed — the honest revision is that confidence capture should
+probably be sampled or made optional/lightweight rather than mandatory
+on every single review, to avoid the friction cost nothing here rules
+out. That revision is carried into §7's proposed test design below,
+not left as a loose end.
 
 ---
 
@@ -193,80 +356,61 @@ The retention-vs-performance evidence (Rohrer & Taylor) was accepted as directly
 
 | POV | What it forces us to build | How we'll know if it was wrong |
 |---|---|---|
-| POV 1 (thesis) | Performance model kept architecturally separate from the Memory (FSRS) score; paraphrase-test harness (30 cards × 2 rewordings); Section 9 ablation of a topic-interleaved review mode (on / off / plain Anki) | Reworded-question accuracy tracks card-recall accuracy closely across coverage levels — no meaningful recall/transfer gap to build a Performance model around |
-| POV 2 (decomposed scores) | Three-score dashboard that never blends into one number; per-score give-up rule instead of one global threshold | Students shown one blended number allocate next-session study time to their true weak area about as accurately as students shown three separated scores |
-| POV 3 (grade contamination) | Response-latency capture in the review loop; a confidence/flag signal feeding the mastery query so suspiciously-fast grades can be down-weighted | Latency-flagged "Good" grades show no detectable accuracy difference from normal-latency ones |
-
-Every row points at a real component (performance model, dashboard, latency capture) and a real test that could fail. No row is decorative.
+| POV 1 (Socratic Gatekeeper, new primary) | Response-latency capture in the review loop (partially free — Anki's card model already tracks `time_taken()`); a lightweight confidence input at grading time; a decision-table function combining latency/confidence/correctness (natural fit for a Rust RPC, same shape as `give_up_gate`); AI-generated Socratic bridge questions (reuses the existing `ai-cardgen`/Claude API infrastructure, new prompt design) | An ablation (proposed, not run — see §7) shows the conditional Gatekeeper doing no better than unconditional prompting or plain Anki on reworded-question accuracy |
+| POV 2 (decomposed scores) | Unchanged — three-score dashboard, per-score give-up rule. Already built. | Unchanged from v1 |
+| Prior POV 1 (topic interleaving) | Already built and tested — `speedrunTopicOrder`, the ablation in paraphrase-test.md | Already answered: partial support, front-loaded effect only |
 
 ---
 
-## 7. By Sunday — what changed
+## 7. What's actually validated right now, stated plainly
 
-The ablation and paraphrase-test numbers came in. Full methodology, all
-results, and the reproduction commands are in
-[paraphrase-test.md](paraphrase-test.md) — this section is the summary.
+**Empirically tested, real results, nothing invented:** prior POV 1
+(topic-interleaved review) — see [paraphrase-test.md](paraphrase-test.md)
+and [brainlift-v1.md §7](brainlift-v1.md). That work stands regardless of
+this pivot.
 
-**POV 1 (thesis) — partial support, with the shape corrected from what v1 assumed.**
+**Not yet empirically tested:** the new POV 1 (Socratic Gatekeeper) above.
+This document gives it real literature support and a self-administered
+adversarial pass, but — unlike prior POV 1 — **no ablation has been run
+for it.** Stated directly rather than implied by omission.
 
-Two independent measurements, both real (real Claude API calls against a
-pre-committed 30-card set, real Rust queue output driving the ablation,
-zero fabricated data):
+**What that ablation would need to look like, if built:** the same
+three-arm structure that worked for prior POV 1 — (a) the full Gatekeeper
+with conditional intervention, (b) unconditional Socratic prompting on
+every card, (c) plain immediate-flip review — run through the same kind
+of counterfactual-content, no-study-control-verified measurement
+methodology already proven out in `speedrun/tools/paraphrase-test/`
+(that pipeline's `run.py`/`report.py` machinery is largely reusable; what's
+new is the *stimulus*: cards would need to carry a scaffolded hint field,
+and the "student" simulation would need to model a confidence report,
+which has no existing analog in the current harness and would need real
+design work, not just a parameter change).
 
-1. **Item-side sufficiency test:** rewording a card's question while
-   keeping it a "near-transfer" item (same fact, different wording) stays
-   93% answerable from the card alone. Rewording it into a
-   "discrimination" item (requires ruling out a plausible neighboring
-   fact) drops to 73% — a real 20-point gap, not noise. Recall and
-   discrimination are measurably separable skills, which is POV 1's
-   underlying premise.
-2. **Three-way ablation** (topic-interleaved review vs. blocked vs.
-   unmodified Anki, using this fork's new `speedrunTopicOrder` Rust
-   feature to drive genuinely different — not simulated — review queues):
-   interleaved review beats blocked by **+16 points at a 10-card study
-   budget** (43% vs. 28% correct on reworded/discrimination items), but
-   that gap **closes entirely by a 20-card budget** (47% vs. 48%) once
-   blocked review has caught up to most topics anyway.
-
-**What v1 assumed that turned out wrong:** v1's framing implied
-interleaving should help however deep or shallow the review session is.
-It doesn't — it's a **front-loaded, low-coverage-budget effect**. Once a
-student has reviewed enough cards to have touched most topics regardless
-of ordering, the interleaved/blocked distinction stops mattering. That's
-a materially different, and more useful, claim than "always interleave":
-it says interleaving matters most early in a study session or for
-students who study in short bursts, not as a blanket policy.
-
-**What would have falsified this, and didn't happen:** a no-study control
-(same 90 questions, nothing studied) scored 0/90 — confirming the
-measurement isn't contaminated by the model's own prior biochemistry
-knowledge (all cycle-specific terms were counterfactually renamed
-specifically to force this test). If that control had scored high, none
-of the numbers above would mean anything.
-
-**Honest limitations, not hidden:** the "student" is an LLM reading cards
-from a context window once, not a human undergoing repeated spaced
-practice — so this measures topic-coverage breadth, a real and
-mechanically-grounded proxy, rather than Rohrer & Taylor's
-discrimination-training mechanism directly. Sample size (n=90/condition)
-gives ~±10-point confidence intervals — enough to see the budget-10 gap
-and the budget-20 convergence clearly, not enough to call either result
-bulletproof in isolation. Full limitations list in paraphrase-test.md.
-
-**POV 2 and POV 3** were not re-tested this cycle — the ablation and
-paraphrase-test infrastructure built for POV 1 doesn't directly carry
-over to testing "does a blended score misdirect study time" (POV 2) or
-"do fast grades hide poor retention" (POV 3), and building separate
-measurement harnesses for those wasn't achievable alongside POV 1's given
-the Sunday deadline. They remain open, stated plainly rather than
-implicitly declared settled by POV 1's result.
+**Given the deadline, this ablation was not attempted.** Building it
+properly — including resolving objection (2) from §5's consensus check
+(distinguishing productive struggle from mere latency) — is real,
+unscoped design work, not a quick rerun of the existing pipeline. Listed
+in "Open items" below as the top priority for whoever picks this up
+next, rather than rushed into an unreliable result under time pressure.
 
 ---
 
 ## Open items carried into build
 
-- ~~Rust feature choice~~ — resolved: mastery query shipped as the primary Rust feature (§3), and the ablation's own Rust feature (`speedrunTopicOrder`, a queue-order toggle) shipped alongside it once §9 needed something to actually ablate. See [rust-change-note.md](rust-change-note.md).
-- ~~§9 ablation and paraphrase test~~ — resolved, see §7 above and [paraphrase-test.md](paraphrase-test.md).
-- Re-run §5's AI consensus check independently before calling this Brainlift final. **Not done** — deprioritized under the Sunday deadline in favor of actually running §9's ablation rather than re-validating §5's reasoning a second time.
-- POV 2 and POV 3 remain untested — no ablation or measurement harness was built for either this cycle. Stated in §7 rather than left implicit.
-- If time allows before Friday, replace desk research in §1 with real hands-on notes from at least one of the three tools (per the "you do the hands-on part" option, if that gets picked up later). **Not done.**
+- **New, highest priority:** design and run a Section 9-style ablation
+  for the new POV 1 (Socratic Gatekeeper), per §7 above. Not started.
+- **New:** resolve the friction-cost objection from §5's consensus pass —
+  should confidence be asked every card, sampled, or optional? No
+  evidence gathered here answers this; needs either new literature or a
+  pilot.
+- Re-run §5's AI consensus check independently (both the original v1 pass
+  and this document's new pass) — carried over from v1, still not done.
+- POV 2 remains untested (unchanged from v1).
+- Desk-research limitation in §1 (competitor teardown, hands-on use)
+  remains unaddressed — carried over from v1.
+- **Not a gap, but worth flagging:** many other docs in this repo
+  (ARCHITECTURE.md, demo.md, demo-script.md, rust-change-note.md) still
+  describe prior POV 1 (topic interleaving) as "the thesis" without
+  reference to this pivot. They weren't rewritten as part of producing
+  this document — that's a real, separate follow-up if this new POV is
+  adopted going forward, not done here.
