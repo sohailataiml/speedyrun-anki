@@ -137,9 +137,9 @@ This service can run as a local process embedded in the desktop/mobile app (no n
 | Exam outline mapping file | Official outline → topic tags, for coverage map | Not built |
 | Held-back question bank (train/eval split) | Performance model training + input to leakage check | Not built |
 | Gold set (50 QA pairs) | AI card-quality eval | **Done** — `speedrun/ai/gold_set.json`, cutoff-committed before generation, used by `speedrun/tools/ai-cardgen/eval.py`. See [ai-subsystem.md](speedrun/docs/ai-subsystem.md). |
-| Performance history | Per-topic accuracy on held-back exam-style questions, feeds the Performance model | Not built |
-| Readiness prediction log | Each estimate + range + inputs, for the calibration chart (§10.1) | Not built |
-| Calibration log | Predicted-vs-actual outcomes, source of Brier/log-loss numbers (§6, §10) | Not built |
+| Performance history | Per-topic accuracy on held-back exam-style questions, feeds the Performance model | Not built as an ongoing per-topic log — but the Performance model's held-back accuracy on a synthetic labeled dataset (80/20 split, real numbers) is validated and documented: [performance-model-eval.md](speedrun/docs/performance-model-eval.md) |
+| Readiness prediction log | Each estimate + range + inputs, for the calibration chart (§10.1) | Not built — no live collection log of real Readiness predictions over time exists yet |
+| Calibration log | Predicted-vs-actual outcomes, source of Brier/log-loss numbers (§6, §10) | Not built as a live ongoing log — but the §10.1 requirement itself (Brier score + reliability diagram, proven on held-back data) is done: `rslib/src/stats/memory_calibration.rs` fits FSRS on a synthetic training split and evaluates only on held-back items never seen during fitting. Real numbers, rerunnable via `cargo test -p anki --lib stats::memory_calibration`. See [memory-calibration.md](speedrun/docs/memory-calibration.md). |
 
 ## 9. Decisions locked by Brainlift v1
 

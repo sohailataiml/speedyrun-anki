@@ -1,0 +1,36 @@
+{
+  "brier_score": 0.16796914,
+  "n_predictions": 7505,
+  "n_held_back_items": 1000,
+  "n_train_items": 4000,
+  "buckets": [
+    {
+      "bucket_start": 0.6,
+      "bucket_end": 0.7,
+      "mean_predicted": 0.6806566,
+      "observed_accuracy": 0.625,
+      "n": 8
+    },
+    {
+      "bucket_start": 0.7,
+      "bucket_end": 0.8,
+      "mean_predicted": 0.7683936,
+      "observed_accuracy": 0.7866667,
+      "n": 75
+    },
+    {
+      "bucket_start": 0.8,
+      "bucket_end": 0.9,
+      "mean_predicted": 0.8697008,
+      "observed_accuracy": 0.7352941,
+      "n": 510
+    },
+    {
+      "bucket_start": 0.9,
+      "bucket_end": 1.0,
+      "mean_predicted": 0.94380146,
+      "observed_accuracy": 0.81958914,
+      "n": 6912
+    }
+  ]
+}
