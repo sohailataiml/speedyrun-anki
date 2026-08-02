@@ -11,8 +11,10 @@ Scoring Service this reads from.
 
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
 
 import anki.stats_pb2 as stats_pb2
 import aqt
@@ -37,13 +39,43 @@ class DashboardData:
     topics: list[str]
     mastery: list[stats_pb2.TopicMastery]
     readiness: stats_pb2.ReadinessQueryResponse | None
+    # PRD §8's coverage map: measured against the real AAMC outline, not
+    # against the topics that happen to exist in this collection. None if
+    # the outline file couldn't be read.
+    outline_coverage: dict | None = None
+
+
+def _fetch_outline_coverage(col: Collection) -> dict | None:
+    """Coverage against the official AAMC content outline.
+
+    Deliberately computed here rather than by the Rust `give_up_gate`'s
+    `topic_coverage`, which measures a different (and much easier) thing:
+    the proportion of the *requested* topics that have a review. That
+    number trends to 100% as you study whatever you already have, and
+    says nothing about the exam. This one uses the full 31-category
+    outline as the denominator, so unstudied sections count against you.
+    See speedrun/docs/coverage-map.md for why both still exist.
+    """
+    try:
+        sys.path.insert(0, str(Path(__file__).parent.parent.parent / "speedrun" / "tools" / "coverage-map"))
+        from coverage import compute_coverage, counts_from_collection
+
+        card_counts, reviewed_counts = counts_from_collection(col)
+        return compute_coverage(card_counts, reviewed_counts).to_dict()
+    except Exception:
+        # The dashboard must still render its other two scores if the
+        # outline file is missing (e.g. a packaged build that doesn't
+        # bundle speedrun/) - same degrade-don't-crash rule as the rest
+        # of this project.
+        return None
 
 
 def _fetch_dashboard_data(col: Collection) -> DashboardData:
     tags = [t[len("topic::") :] for t in col.tags.all() if t.startswith("topic::")]
     topics = sorted(set(tags))
+    coverage = _fetch_outline_coverage(col)
     if not topics:
-        return DashboardData(topics=[], mastery=[], readiness=None)
+        return DashboardData(topics=[], mastery=[], readiness=None, outline_coverage=coverage)
     mastery = list(col.mastery_query(topics))
     # readiness_query runs the give-up gate and Performance model
     # internally, so one call gets us all three scores' worth of data.
@@ -52,7 +84,9 @@ def _fetch_dashboard_data(col: Collection) -> DashboardData:
         average_difficulty=ASSUMED_DIFFICULTY,
         average_timing_seconds=ASSUMED_TIMING_SECONDS,
     )
-    return DashboardData(topics=topics, mastery=mastery, readiness=readiness)
+    return DashboardData(
+        topics=topics, mastery=mastery, readiness=readiness, outline_coverage=coverage
+    )
 
 
 def _headline_label(text: str) -> QLabel:
@@ -120,8 +154,68 @@ class SpeedrunDashboard(QDialog):
 
         self._layout.addWidget(self._memory_group(data.mastery))
         self._layout.addWidget(self._performance_group(data.readiness))
-        self._layout.addWidget(self._readiness_group(data.readiness))
+        self._layout.addWidget(
+            self._readiness_group(data.readiness, data.outline_coverage)
+        )
+        self._layout.addWidget(self._coverage_group(data.outline_coverage))
         self._add_close_row()
+
+    def _coverage_group(self, coverage: dict | None) -> QGroupBox:
+        """PRD §8's coverage map, measured against the real AAMC outline.
+
+        Shown as its own panel rather than folded into Readiness because
+        it answers a different question: not "how ready are you on what
+        you've studied" but "how much of the exam have you touched at
+        all". A high Memory score on 10% coverage is exactly the
+        "content volume sold as progress" failure the Brainlift's
+        teardown calls out, and burying this number would reproduce it.
+        """
+        box = QGroupBox("Coverage map (AAMC content outline)")
+        layout = QVBoxLayout()
+        if not coverage:
+            layout.addWidget(
+                _wrapped_label(
+                    "Coverage unavailable — speedrun/data/mcat_outline.json "
+                    "could not be read. The other scores are unaffected."
+                )
+            )
+            box.setLayout(layout)
+            return box
+
+        pct = coverage["coverage_percent"]
+        covered = coverage["covered_categories"]
+        total = coverage["total_categories"]
+        by_status = coverage["by_status"]
+        layout.addWidget(_headline_label(f"Coverage: {pct}%"))
+        layout.addWidget(
+            _wrapped_label(
+                f"{covered} of {total} content categories have at least one "
+                f"reviewed card. {by_status['has_cards_unreviewed']} more have "
+                f"cards but no reviews yet; {by_status['uncovered']} have no "
+                "cards at all."
+            )
+        )
+        studied = [
+            c for c in coverage["categories"] if c["status"] != "uncovered"
+        ]
+        if studied:
+            lines = "\n".join(
+                f"  {c['id']} — {c['title'][:60]} "
+                f"({c['cards']} cards, {c['reviewed_cards']} reviewed)"
+                for c in studied
+            )
+            layout.addWidget(_wrapped_label(f"Touched so far:\n{lines}"))
+        layout.addWidget(
+            _wrapped_label(
+                "Denominator is the official outline, not the tags in this "
+                "collection — unstudied sections count against you. CARS is "
+                "excluded: it has no memorizable content outline, so a "
+                "flashcard deck structurally can't cover it. That means even "
+                "100% here would leave a quarter of the exam unmeasured."
+            )
+        )
+        box.setLayout(layout)
+        return box
 
     def _memory_group(self, mastery: list[stats_pb2.TopicMastery]) -> QGroupBox:
         with_reviews = [t for t in mastery if t.cards_with_reviews > 0]
@@ -217,8 +311,41 @@ class SpeedrunDashboard(QDialog):
         box.setLayout(layout)
         return box
 
+    def _outline_coverage_caveat(self, coverage: dict | None) -> QLabel | None:
+        """Warn when the give-up gate passed on its easier measure while
+        real outline coverage is far lower.
+
+        This is not decoration. The gate's `topic_coverage` counts the
+        proportion of *requested* topics with a review, which on this
+        collection reads ~67% while genuine coverage of the AAMC outline
+        is under 10%. Emitting a projected score on that basis without
+        saying so is close to the PRD's automatic-fail line ("dressing a
+        guess as a measurement"), so the gap is stated on the same panel
+        as the number it undercuts. Fixing the gate itself needs the
+        outline in Rust — see speedrun/docs/coverage-map.md.
+        """
+        if not coverage:
+            return None
+        pct = coverage["coverage_percent"]
+        if pct >= 50.0:
+            return None
+        label = _wrapped_label(
+            f"⚠ Read this number with the coverage map: only {pct}% of the "
+            f"official AAMC outline "
+            f"({coverage['covered_categories']}/{coverage['total_categories']} "
+            "content categories) has any reviewed card. The give-up rule "
+            "above passed on a different, easier measure — the share of "
+            "the topics you already have cards for — which says nothing "
+            "about the rest of the exam. Treat this projection as an "
+            "estimate over a small slice, not a whole-exam prediction."
+        )
+        label.setStyleSheet("color: darkorange;")
+        return label
+
     def _readiness_group(
-        self, readiness: stats_pb2.ReadinessQueryResponse | None
+        self,
+        readiness: stats_pb2.ReadinessQueryResponse | None,
+        outline_coverage: dict | None = None,
     ) -> QGroupBox:
         box = QGroupBox("Readiness (DOK 4 — projected exam score)")
         layout = QVBoxLayout()
@@ -248,6 +375,9 @@ class SpeedrunDashboard(QDialog):
                     "student outcomes. See rslib/src/stats/readiness_mapper.rs."
                 )
             )
+            caveat = self._outline_coverage_caveat(outline_coverage)
+            if caveat is not None:
+                layout.addWidget(caveat)
         elif which == "insufficient":
             layout.addWidget(
                 _headline_label("Readiness: refusing to score — not enough data")

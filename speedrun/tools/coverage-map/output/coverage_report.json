@@ -1,0 +1,305 @@
+{
+  "_collection": "./output/_snapshot.anki2",
+  "coverage_percent": 9.7,
+  "covered_categories": 3,
+  "total_categories": 31,
+  "excluded_sections": [
+    "cars"
+  ],
+  "by_status": {
+    "covered": 3,
+    "has_cards_unreviewed": 1,
+    "uncovered": 27
+  },
+  "categories": [
+    {
+      "id": "1A",
+      "section": "bio_biochem",
+      "title": "Structure and function of proteins and their constituent amino acids",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "1B",
+      "section": "bio_biochem",
+      "title": "Transmission of genetic information from the gene to the protein",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "1C",
+      "section": "bio_biochem",
+      "title": "Transmission of heritable information from generation to generation and the processes that increase genetic diversity",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "1D",
+      "section": "bio_biochem",
+      "title": "Principles of bioenergetics and fuel molecule metabolism",
+      "status": "covered",
+      "topic_tags": [
+        "topic::krebs_cycle",
+        "topic::glycolysis"
+      ],
+      "cards": 2,
+      "reviewed_cards": 2
+    },
+    {
+      "id": "2A",
+      "section": "bio_biochem",
+      "title": "Assemblies of molecules, cells, and groups of cells within single cellular and multicellular organisms",
+      "status": "has_cards_unreviewed",
+      "topic_tags": [
+        "topic::cell_biology"
+      ],
+      "cards": 1,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "2B",
+      "section": "bio_biochem",
+      "title": "The structure, growth, physiology, and genetics of prokaryotes and viruses",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "2C",
+      "section": "bio_biochem",
+      "title": "Processes of cell division, differentiation, and specialization",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "3A",
+      "section": "bio_biochem",
+      "title": "Structure and functions of the nervous and endocrine systems and ways in which these systems coordinate the organ systems",
+      "status": "covered",
+      "topic_tags": [
+        "topic::endocrine",
+        "topic::neuromuscular"
+      ],
+      "cards": 2,
+      "reviewed_cards": 1
+    },
+    {
+      "id": "3B",
+      "section": "bio_biochem",
+      "title": "Structure and integrative functions of the main organ systems",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "4A",
+      "section": "chem_phys",
+      "title": "Translational motion, forces, work, energy, and equilibrium in living systems",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "4B",
+      "section": "chem_phys",
+      "title": "Importance of fluids for the circulation of blood, gas movement, and gas exchange",
+      "status": "covered",
+      "topic_tags": [
+        "topic::gas_laws"
+      ],
+      "cards": 1,
+      "reviewed_cards": 1
+    },
+    {
+      "id": "4C",
+      "section": "chem_phys",
+      "title": "Electrochemistry and electrical circuits and their elements",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "4D",
+      "section": "chem_phys",
+      "title": "How light and sound interact with matter",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "4E",
+      "section": "chem_phys",
+      "title": "Atoms, nuclear decay, electronic structure, and atomic chemical behavior",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "5A",
+      "section": "chem_phys",
+      "title": "Unique nature of water and its solutions",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "5B",
+      "section": "chem_phys",
+      "title": "Nature of molecules and intermolecular interactions",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "5C",
+      "section": "chem_phys",
+      "title": "Separation and purification methods",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "5D",
+      "section": "chem_phys",
+      "title": "Structure, function, and reactivity of biologically-relevant molecules",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "5E",
+      "section": "chem_phys",
+      "title": "Principles of chemical thermodynamics and kinetics",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "6A",
+      "section": "psych_soc",
+      "title": "Sensing the environment",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "6B",
+      "section": "psych_soc",
+      "title": "Making sense of the environment",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "6C",
+      "section": "psych_soc",
+      "title": "Responding to the world",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "7A",
+      "section": "psych_soc",
+      "title": "Individual influences on behavior",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "7B",
+      "section": "psych_soc",
+      "title": "Social processes that influence human behavior",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "7C",
+      "section": "psych_soc",
+      "title": "Attitude and behavior change",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "8A",
+      "section": "psych_soc",
+      "title": "Self-identity",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "8B",
+      "section": "psych_soc",
+      "title": "Social thinking",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "8C",
+      "section": "psych_soc",
+      "title": "Social interactions",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "9A",
+      "section": "psych_soc",
+      "title": "Understanding social structure",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "9B",
+      "section": "psych_soc",
+      "title": "Demographic characteristics and processes",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    },
+    {
+      "id": "10A",
+      "section": "psych_soc",
+      "title": "Social inequality",
+      "status": "uncovered",
+      "topic_tags": [],
+      "cards": 0,
+      "reviewed_cards": 0
+    }
+  ]
+}

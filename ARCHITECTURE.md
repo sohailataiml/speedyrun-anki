@@ -134,7 +134,7 @@ This service can run as a local process embedded in the desktop/mobile app (no n
 | Entity | Purpose | Status |
 |---|---|---|
 | `topic::<name>` tag | Links cards to outline topics | Done — reuses Anki's tag table |
-| Exam outline mapping file | Official outline → topic tags, for coverage map | Not built |
+| Exam outline mapping file | Official outline → topic tags, for coverage map | **Done** — `speedrun/data/mcat_outline.json`: the real AAMC outline (4 sections, 10 foundational concepts, 31 content categories), spot-verified against AAMC's own pages, plus our `topic::` tag mapping. Drives the coverage map on the desktop dashboard. See [coverage-map.md](speedrun/docs/coverage-map.md). |
 | Held-back question bank (train/eval split) | Performance model training + input to leakage check | Not built |
 | Gold set (50 QA pairs) | AI card-quality eval | **Done** — `speedrun/ai/gold_set.json`, cutoff-committed before generation, used by `speedrun/tools/ai-cardgen/eval.py`. See [ai-subsystem.md](speedrun/docs/ai-subsystem.md). |
 | Performance history | Per-topic accuracy on held-back exam-style questions, feeds the Performance model | Not built as an ongoing per-topic log — but the Performance model's held-back accuracy on a synthetic labeled dataset (80/20 split, real numbers) is validated and documented: [performance-model-eval.md](speedrun/docs/performance-model-eval.md) |
