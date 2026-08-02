@@ -60,16 +60,33 @@ class CoverageReport:
 
     @property
     def covered(self) -> int:
+        """Categories with at least one *reviewed* card. This is the
+        headline number: having made a card is not having studied it."""
         return sum(1 for c in self.categories if c.status == "covered")
+
+    @property
+    def with_content(self) -> int:
+        """Categories with cards at all, reviewed or not. Reported
+        alongside `covered` rather than instead of it - the gap between
+        the two is the honest distance between "we built material for
+        this" and "this has actually been studied", and collapsing them
+        into one number is how a coverage metric gets inflated."""
+        return sum(1 for c in self.categories if c.status != "uncovered")
 
     @property
     def percent(self) -> float:
         return (self.covered / self.total) if self.total else 0.0
 
+    @property
+    def content_percent(self) -> float:
+        return (self.with_content / self.total) if self.total else 0.0
+
     def to_dict(self) -> dict:
         return {
             "coverage_percent": round(self.percent * 100, 1),
             "covered_categories": self.covered,
+            "content_percent": round(self.content_percent * 100, 1),
+            "categories_with_content": self.with_content,
             "total_categories": self.total,
             "excluded_sections": self.excluded_sections,
             "by_status": {
@@ -183,8 +200,10 @@ def main() -> None:
             )
     print()
     print(f"by status: {data['by_status']}")
-    print(f"COVERAGE: {data['coverage_percent']}% "
-          f"({data['covered_categories']}/{data['total_categories']} categories)")
+    print(f"CONTENT built : {data['content_percent']}% "
+          f"({data['categories_with_content']}/{data['total_categories']} categories have cards)")
+    print(f"COVERAGE      : {data['coverage_percent']}% "
+          f"({data['covered_categories']}/{data['total_categories']} have a *reviewed* card)")
     print(f"\nWrote {out_dir / 'coverage_report.json'}")
 
 

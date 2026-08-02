@@ -185,6 +185,8 @@ class SpeedrunDashboard(QDialog):
         pct = coverage["coverage_percent"]
         covered = coverage["covered_categories"]
         total = coverage["total_categories"]
+        content_pct = coverage["content_percent"]
+        with_content = coverage["categories_with_content"]
         by_status = coverage["by_status"]
         layout.addWidget(_headline_label(f"Coverage: {pct}%"))
         layout.addWidget(
@@ -193,6 +195,18 @@ class SpeedrunDashboard(QDialog):
                 f"reviewed card. {by_status['has_cards_unreviewed']} more have "
                 f"cards but no reviews yet; {by_status['uncovered']} have no "
                 "cards at all."
+            )
+        )
+        # Two numbers on purpose. Content built is the deck's reach;
+        # coverage is what's actually been studied. Collapsing them into
+        # one figure is how a coverage metric gets inflated - writing
+        # cards would silently count as progress.
+        layout.addWidget(
+            _wrapped_label(
+                f"Content built: {content_pct}% ({with_content}/{total} "
+                "categories have material). The gap between that and "
+                f"{pct}% is material written but not yet studied — having "
+                "made a card is not having learned it."
             )
         )
         studied = [

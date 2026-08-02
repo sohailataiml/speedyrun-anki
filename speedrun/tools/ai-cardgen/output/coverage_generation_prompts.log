@@ -1,0 +1,568 @@
+=== aa-01 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: aa-01, "The shared backbone of an amino acid"):
+
+Every standard amino acid is built on the same skeleton: a central alpha
+carbon bonded to four groups — an amino group, a carboxyl group, a
+hydrogen, and a variable side chain conventionally called R. Because the
+alpha carbon carries four different substituents in every amino acid
+except glycine, it is a chiral centre, and the amino acids used in
+proteins are the L-enantiomers. Glycine is the exception: its side chain
+is a single hydrogen, so its alpha carbon has two identical substituents
+and it is achiral.
+
+Write exactly 3 flashcards from this passage.
+
+=== aa-02 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: aa-02, "Why side chains are the whole story"):
+
+Since the backbone is identical across all twenty, everything that
+distinguishes one amino acid from another lives in the side chain. Side
+chains are usually grouped by how they behave in water: nonpolar
+(hydrophobic), polar but uncharged, acidic (negatively charged at
+physiological pH), and basic (positively charged at physiological pH).
+This grouping predicts where a residue tends to sit in a folded protein —
+hydrophobic side chains are typically buried away from water in the
+interior, while charged and polar ones are typically exposed on the
+surface.
+
+Write exactly 3 flashcards from this passage.
+
+=== aa-03 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: aa-03, "Zwitterions and titration behaviour"):
+
+At physiological pH an amino acid is not neutral in the naive sense; the
+carboxyl group has lost a proton and the amino group has gained one, so
+the molecule carries both a negative and a positive charge at once. This
+doubly-charged but net-neutral form is called a zwitterion. Because there
+are at least two ionisable groups, titrating an amino acid produces a
+curve with multiple buffering regions, and the pH at which the molecule
+carries no net charge is its isoelectric point, or pI.
+
+Write exactly 3 flashcards from this passage.
+
+=== aa-04 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: aa-04, "The peptide bond"):
+
+Amino acids are joined when the carboxyl group of one attacks the amino
+group of the next, releasing a molecule of water — a condensation, or
+dehydration, reaction. The resulting amide linkage is the peptide bond.
+It has partial double-bond character because the nitrogen's lone pair
+delocalises into the adjacent carbonyl, which makes the bond rigid and
+planar and prevents free rotation about it. Rotation is instead possible
+around the two single bonds flanking each alpha carbon, and those
+rotations are what allow a chain to fold at all.
+
+Write exactly 3 flashcards from this passage.
+
+=== aa-05 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: aa-05, "Primary and secondary structure"):
+
+Primary structure is simply the sequence of residues, written from the
+free amino end to the free carboxyl end. Secondary structure is local,
+repeating folding stabilised entirely by hydrogen bonds between backbone
+atoms — not side chains. The two common motifs are the alpha helix, a
+right-handed coil in which each backbone carbonyl hydrogen bonds to an
+amide roughly four residues further along, and the beta pleated sheet, in
+which extended strands lie alongside one another and hydrogen bond across
+the gap.
+
+Write exactly 3 flashcards from this passage.
+
+=== aa-06 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: aa-06, "Tertiary and quaternary structure"):
+
+Tertiary structure is the overall three-dimensional shape of a single
+polypeptide, and unlike secondary structure it is driven mainly by side
+chain interactions: hydrophobic residues clustering away from water,
+hydrogen bonds, ionic attractions between oppositely charged side chains,
+and covalent disulfide bridges between cysteine residues. Quaternary
+structure exists only in proteins built from more than one polypeptide
+chain, and describes how those separate subunits associate. Haemoglobin,
+with four subunits, has quaternary structure; myoglobin, a single chain,
+does not.
+
+Write exactly 3 flashcards from this passage.
+
+=== aa-07 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: aa-07, "Denaturation"):
+
+Denaturation is the loss of a protein's higher-order structure while its
+primary sequence stays intact — the peptide bonds are not broken, so the
+sequence survives even as the shape is destroyed. Heat, extremes of pH,
+and certain solutes can all cause it, and because function depends on
+shape, a denatured protein generally loses activity. This is a common
+exam trap: denaturation does not break the backbone, and describing it as
+"breaking the protein into amino acids" confuses it with hydrolysis.
+
+Write exactly 3 flashcards from this passage.
+
+=== aa-08 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: aa-08, "MCAT relevance and common traps"):
+
+Frequently tested points include recognising that only side chains differ
+between amino acids, that the peptide bond's rigidity comes from
+resonance rather than from being a true double bond, and that secondary
+structure is backbone hydrogen bonding while tertiary structure is side
+chain driven. Another recurring trap is assuming every amino acid is
+chiral — glycine is not. Students should also be able to reason from side
+chain polarity to the likely location of a residue in a folded protein.
+
+Write exactly 3 flashcards from this passage.
+
+=== cd-01 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cd-01, "The overall flow"):
+
+The central dogma describes the normal direction of information transfer:
+DNA is transcribed into RNA, and RNA is translated into protein. DNA also
+replicates to produce more DNA. The dogma is a statement about the usual
+direction, not an absolute prohibition — retroviruses carry reverse
+transcriptase and copy RNA back into DNA, which is exactly why they are a
+favourite exam example of an apparent exception.
+
+Write exactly 3 flashcards from this passage.
+
+=== cd-02 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cd-02, "DNA structure and antiparallel strands"):
+
+DNA is a double helix of two strands running antiparallel, one oriented
+5' to 3' and the other 3' to 5'. The backbone is sugar-phosphate; the
+bases point inward and pair specifically, adenine with thymine by two
+hydrogen bonds and guanine with cytosine by three. Because G-C pairs have
+an extra hydrogen bond, regions rich in G and C take more energy to
+separate, which is why they have higher melting temperatures.
+
+Write exactly 3 flashcards from this passage.
+
+=== cd-03 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cd-03, "Replication is semiconservative"):
+
+When DNA replicates, each parent strand serves as a template for a new
+partner, so every daughter molecule contains one old strand and one newly
+synthesised strand. This is what "semiconservative" means. DNA polymerase
+can only add nucleotides to a free 3' hydroxyl, so synthesis always
+proceeds 5' to 3'. That constraint forces one strand to be built
+continuously toward the replication fork while the other is built in
+short fragments pointing away from it, later joined together.
+
+Write exactly 3 flashcards from this passage.
+
+=== cd-04 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cd-04, "Transcription"):
+
+Transcription copies one strand of DNA into RNA using RNA polymerase.
+Only one strand — the template strand — is read; the other, the coding
+strand, matches the RNA sequence except that RNA carries uracil where DNA
+carries thymine. RNA polymerase, unlike DNA polymerase, does not require
+a primer to begin. The immediate product in eukaryotes is a precursor
+that must be processed before it can leave the nucleus.
+
+Write exactly 3 flashcards from this passage.
+
+=== cd-05 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cd-05, "RNA processing in eukaryotes"):
+
+Eukaryotic pre-mRNA undergoes three main modifications. A modified
+guanine cap is added at the 5' end, a string of adenines called the poly-A
+tail is added at the 3' end, and introns are removed by splicing while
+the remaining exons are joined. The cap and tail protect the transcript
+from degradation and assist in export and ribosome binding. Because a
+single transcript can be spliced in more than one way, alternative
+splicing lets one gene yield several distinct proteins.
+
+Write exactly 3 flashcards from this passage.
+
+=== cd-06 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cd-06, "The genetic code"):
+
+The code is read in three-base units called codons, each specifying one
+amino acid or a stop signal. It is degenerate — most amino acids are
+specified by more than one codon — but it is unambiguous, since any given
+codon specifies only one amino acid. It is also nearly universal across
+organisms. AUG serves both as the start codon and as the codon for
+methionine, and three codons signal termination rather than coding for
+any amino acid.
+
+Write exactly 3 flashcards from this passage.
+
+=== cd-07 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cd-07, "Translation"):
+
+Translation occurs on ribosomes, which assemble from a large and a small
+subunit around the mRNA. Transfer RNAs deliver amino acids; each tRNA
+carries an anticodon that base pairs with the matching mRNA codon,
+ensuring the right amino acid is added. The ribosome catalyses peptide
+bond formation between the growing chain and the incoming amino acid, and
+moves along the message codon by codon until it reaches a stop codon, at
+which point the finished polypeptide is released.
+
+Write exactly 3 flashcards from this passage.
+
+=== cd-08 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cd-08, "Mutations and MCAT traps"):
+
+A point mutation changes a single base. If the new codon still specifies
+the same amino acid the mutation is silent, thanks to degeneracy; if it
+specifies a different amino acid it is missense; if it creates a stop
+codon it is nonsense and truncates the protein. Insertions or deletions
+that are not multiples of three shift the reading frame and typically
+garble everything downstream, which is why frameshifts are usually far
+more damaging than point mutations. A frequent trap is forgetting that
+the coding strand, not the template strand, reads the same as the mRNA.
+
+Write exactly 3 flashcards from this passage.
+
+=== cx-01 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cx-01, "The cell cycle at a glance"):
+
+The cell cycle alternates between interphase, where the cell grows and
+copies its DNA, and the mitotic phase, where it physically divides.
+Interphase subdivides into G1 (growth and normal function), S (DNA
+synthesis), and G2 (further growth and preparation for division). Most of
+a cell's life is spent in interphase. Cells that stop dividing, such as
+mature neurons, exit the cycle into a resting state called G0.
+
+Write exactly 3 flashcards from this passage.
+
+=== cx-02 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cx-02, "Checkpoints"):
+
+Progression is controlled at checkpoints that verify conditions before
+committing to the next stage. The G1 checkpoint asks whether the cell is
+large enough and the DNA undamaged before entering S phase; the G2
+checkpoint verifies that replication finished correctly; and a checkpoint
+during mitosis confirms that chromosomes are properly attached to the
+spindle before they are pulled apart. Failure of checkpoint control
+allows damaged cells to keep dividing, which is central to how cancers
+develop.
+
+Write exactly 3 flashcards from this passage.
+
+=== cx-03 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cx-03, "Mitosis produces identical cells"):
+
+Mitosis divides the replicated genome into two identical nuclei. In
+prophase chromosomes condense and the spindle forms; in metaphase they
+align along the cell's midline; in anaphase sister chromatids are pulled
+to opposite poles; and in telophase nuclear envelopes reform around the
+two sets. Cytokinesis, the physical splitting of the cytoplasm, usually
+overlaps with telophase. The result is two diploid cells genetically
+identical to the parent.
+
+Write exactly 3 flashcards from this passage.
+
+=== cx-04 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cx-04, "Meiosis produces gametes"):
+
+Meiosis takes one diploid cell through two consecutive divisions to yield
+four haploid gametes. DNA is replicated only once, before the first
+division, which is why the chromosome number halves. Meiosis I separates
+homologous chromosome pairs and is therefore called the reductional
+division; meiosis II separates sister chromatids and resembles mitosis
+mechanically. A common exam trap is assuming both divisions halve the
+chromosome number — only the first does.
+
+Write exactly 3 flashcards from this passage.
+
+=== cx-05 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cx-05, "Sources of genetic diversity"):
+
+Two events in meiosis I generate most of the variation among gametes. In
+prophase I, homologous chromosomes pair and exchange segments in crossing
+over, producing chromosomes that mix maternal and paternal sequence. In
+metaphase I, each homologous pair orients on the spindle independently of
+the others, so which member of each pair goes to which pole is
+effectively random. Together these produce enormous combinatorial
+diversity before fertilisation adds more.
+
+Write exactly 3 flashcards from this passage.
+
+=== cx-06 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cx-06, "Nondisjunction"):
+
+If chromosomes fail to separate properly — nondisjunction — the resulting
+gametes carry the wrong number of chromosomes. Nondisjunction in meiosis
+I means homologues failed to separate, so all four resulting gametes are
+abnormal; in meiosis II sister chromatids failed to separate, so two are
+abnormal and two are normal. Fertilisation involving such a gamete
+produces an embryo with an incorrect chromosome count, which is the
+mechanism behind several well-known chromosomal disorders.
+
+Write exactly 3 flashcards from this passage.
+
+=== cx-07 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cx-07, "Differentiation and potency"):
+
+Differentiation is the process by which a cell becomes specialised for a
+particular function. Crucially, it generally involves changes in which
+genes are expressed, not loss of genetic material — most differentiated
+cells retain the full genome. Cells are described by potency: totipotent
+cells can form any cell type plus supporting tissues, pluripotent cells
+can form any body cell type, and multipotent cells are limited to a
+related family of types.
+
+Write exactly 3 flashcards from this passage.
+
+=== cx-08 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: cx-08, "MCAT relevance and common traps"):
+
+High-yield points include knowing that DNA replicates once but the cell
+divides twice in meiosis, that crossing over occurs in prophase I rather
+than in mitosis, and that mitosis yields two diploid cells while meiosis
+yields four haploid ones. Another recurring trap is thinking
+differentiation deletes unused genes; it regulates their expression
+instead. Students should also be able to trace how a checkpoint failure
+leads to uncontrolled division.
+
+Write exactly 3 flashcards from this passage.
+
+=== wa-01 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: wa-01, "Why water behaves unusually"):
+
+Water is bent rather than linear, and oxygen pulls electron density away
+from the two hydrogens, so the molecule carries a partial negative charge
+near the oxygen and partial positives at the hydrogens. This polarity lets
+each molecule hydrogen bond with several neighbours. Hydrogen bonding is
+what gives water its unusually high boiling point, high heat capacity, and
+high heat of vaporisation for a molecule of its size, and it is why ice —
+held in an open lattice — is less dense than liquid water and floats.
+
+Write exactly 3 flashcards from this passage.
+
+=== wa-02 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: wa-02, "Water as a solvent"):
+
+Polar and ionic substances dissolve readily in water because water
+molecules surround and stabilise the separated particles, a process called
+solvation or hydration. Nonpolar substances do not dissolve well; rather
+than water actively repelling them, the system simply gains more from
+water hydrogen bonding with itself than with a nonpolar molecule. This is
+the basis of the hydrophobic effect, which drives lipid bilayer formation
+and protein folding.
+
+Write exactly 3 flashcards from this passage.
+
+=== wa-03 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: wa-03, "Autoionisation and the pH scale"):
+
+Water self-ionises slightly, so even pure water contains a small
+concentration of hydrogen and hydroxide ions. At 25 degrees Celsius the
+product of those two concentrations is a constant, 1.0 x 10^-14. pH is
+defined as the negative logarithm of hydrogen ion concentration, so
+neutral water at that temperature has a pH of 7. Because the scale is
+logarithmic, a change of one pH unit is a tenfold change in hydrogen ion
+concentration.
+
+Write exactly 3 flashcards from this passage.
+
+=== wa-04 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: wa-04, "Acids and bases"):
+
+Under the Bronsted-Lowry definition an acid donates a proton and a base
+accepts one. Every acid has a conjugate base, formed by losing that
+proton, and every base has a conjugate acid. Strong acids and bases
+dissociate essentially completely in water, while weak ones establish an
+equilibrium in which most of the substance remains undissociated. The
+strength of a weak acid is expressed by its dissociation constant, or by
+the negative logarithm of that constant, pKa.
+
+Write exactly 3 flashcards from this passage.
+
+=== wa-05 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: wa-05, "Buffers"):
+
+A buffer resists changes in pH when small amounts of acid or base are
+added. It consists of a weak acid together with its conjugate base, which
+can absorb added protons or added hydroxide respectively. A buffer works
+best when the two components are present in comparable amounts, which
+occurs when the pH is near the weak acid's pKa; the useful range is
+roughly one pH unit either side of that value. Blood is buffered largely
+by the carbonic acid and bicarbonate system.
+
+Write exactly 3 flashcards from this passage.
+
+=== wa-06 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: wa-06, "Titration curves"):
+
+Titrating a weak acid with a strong base produces a curve with a gently
+sloping buffering region followed by a steep rise at the equivalence
+point. At the half-equivalence point exactly half the acid has been
+converted to its conjugate base, the two are equal in concentration, and
+the pH equals the pKa — which is why that point is the standard way to
+read a pKa off a curve. The equivalence point of a weak acid titration is
+above pH 7, because the conjugate base left in solution is itself basic.
+
+Write exactly 3 flashcards from this passage.
+
+=== wa-07 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: wa-07, "Solubility and concentration"):
+
+Solubility describes how much solute can dissolve before a solution
+becomes saturated. For sparingly soluble ionic compounds this is captured
+by a solubility product constant. Adding an ion already present in the
+equilibrium pushes it toward the solid and reduces solubility — the
+common ion effect. Concentration itself can be expressed several ways,
+including molarity (moles per litre of solution) and molality (moles per
+kilogram of solvent); molality is preferred where temperature changes,
+since volume expands but mass does not.
+
+Write exactly 3 flashcards from this passage.
+
+=== wa-08 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: wa-08, "MCAT relevance and common traps"):
+
+Recurring points include recognising that ice floating is a consequence of
+hydrogen bonding geometry, that pH is logarithmic so small numerical
+changes are large concentration changes, and that pH equals pKa at the
+half-equivalence point rather than at the equivalence point — a very
+common confusion. Another trap is assuming the equivalence point is always
+pH 7; that holds only for a strong acid with a strong base. Students
+should also be able to explain the hydrophobic effect without describing
+water as "repelling" nonpolar molecules.
+
+Write exactly 3 flashcards from this passage.
+
+=== tk-01 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: tk-01, "Thermodynamics versus kinetics"):
+
+Thermodynamics asks whether a reaction is favourable and where the
+equilibrium lies; kinetics asks how fast it gets there. The two are
+independent, and conflating them is one of the most common errors on this
+material. A reaction can be strongly favourable thermodynamically and still
+be immeasurably slow — the conversion of diamond to graphite is favourable
+but does not visibly occur — because favourability says nothing about the
+height of the barrier in the way.
+
+Write exactly 3 flashcards from this passage.
+
+=== tk-02 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: tk-02, "Enthalpy"):
+
+Enthalpy change is the heat absorbed or released at constant pressure. A
+negative value means heat is released and the reaction is exothermic; a
+positive value means heat is absorbed and it is endothermic. Bond breaking
+requires energy while bond forming releases it, so the sign of the overall
+enthalpy change reflects whether the bonds formed in the products are
+collectively stronger than those broken in the reactants.
+
+Write exactly 3 flashcards from this passage.
+
+=== tk-03 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: tk-03, "Entropy"):
+
+Entropy is a measure of how many microscopic arrangements are consistent
+with a system's state — loosely, its disorder or dispersal of energy.
+Entropy increases when a solid melts, when a liquid vaporises, when a
+gas expands, and generally when the number of gas molecules rises during a
+reaction. The second law states that the entropy of the universe increases
+for any spontaneous process, which permits a local decrease in a system's
+entropy provided the surroundings increase more.
+
+Write exactly 3 flashcards from this passage.
+
+=== tk-04 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: tk-04, "Gibbs free energy"):
+
+Gibbs free energy combines the two: the change in free energy equals the
+change in enthalpy minus the absolute temperature times the change in
+entropy. A negative free energy change means the process is spontaneous in
+the direction written, a positive value means it is not, and zero means
+the system is at equilibrium. Because temperature multiplies the entropy
+term, reactions with opposing enthalpy and entropy signs switch between
+spontaneous and non-spontaneous depending on temperature.
+
+Write exactly 3 flashcards from this passage.
+
+=== tk-05 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: tk-05, "Free energy and equilibrium"):
+
+The standard free energy change is related to the equilibrium constant: a
+large equilibrium constant, meaning products are favoured, corresponds to
+a negative standard free energy change, and a constant less than one
+corresponds to a positive value. When the constant equals one the standard
+free energy change is zero. This link is what allows a measured
+equilibrium position to be translated into an energetic statement, and
+vice versa.
+
+Write exactly 3 flashcards from this passage.
+
+=== tk-06 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: tk-06, "Reaction rates and rate laws"):
+
+The rate of a reaction expresses how quickly reactant concentrations fall
+or product concentrations rise. A rate law relates rate to reactant
+concentrations raised to experimentally determined exponents called
+orders. Those orders must be measured; they cannot be read off the
+balanced equation, which is a frequent misconception. The overall order is
+the sum of the individual orders, and the rate constant itself varies
+strongly with temperature.
+
+Write exactly 3 flashcards from this passage.
+
+=== tk-07 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: tk-07, "Activation energy and catalysts"):
+
+Every reaction must pass through a high-energy transition state, and the
+energy required to reach it from the reactants is the activation energy.
+Raising temperature speeds a reaction because a larger fraction of
+molecules have enough energy to clear that barrier. A catalyst speeds a
+reaction by providing an alternative pathway with a lower activation
+energy; it is not consumed, it speeds the forward and reverse directions
+equally, and — critically — it does not change the equilibrium position or
+the free energy change. Enzymes are biological catalysts.
+
+Write exactly 3 flashcards from this passage.
+
+=== tk-08 ===
+SYSTEM: You write flashcards for MCAT students studying biochemistry. Given a short passage, write exam-style question/answer flashcards that test understanding of the passage - not just word-for-word recall. Each answer must be fully supported by the passage; do not add outside facts. Respond with a JSON object: {"cards": [{"front": "...", "back": "..."}, ...]}. Nothing else - no markdown, no commentary outside the JSON.
+USER: Passage (source: tk-08, "MCAT relevance and common traps"):
+
+The single most tested idea here is that catalysts and enzymes change the
+rate but never the equilibrium or the overall energetics. Other recurring
+points include reading reaction coordinate diagrams to identify activation
+energy versus overall energy change, recognising that spontaneous does not
+mean fast, and knowing that reaction orders come from experiment rather
+than stoichiometry. Students should also be able to predict how changing
+temperature affects a reaction whose enthalpy and entropy terms oppose
+each other.
+
+Write exactly 3 flashcards from this passage.
+

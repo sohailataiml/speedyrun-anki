@@ -2,32 +2,38 @@
   "_collection": "./output/_snapshot.anki2",
   "coverage_percent": 9.7,
   "covered_categories": 3,
+  "content_percent": 29.0,
+  "categories_with_content": 9,
   "total_categories": 31,
   "excluded_sections": [
     "cars"
   ],
   "by_status": {
     "covered": 3,
-    "has_cards_unreviewed": 1,
-    "uncovered": 27
+    "has_cards_unreviewed": 6,
+    "uncovered": 22
   },
   "categories": [
     {
       "id": "1A",
       "section": "bio_biochem",
       "title": "Structure and function of proteins and their constituent amino acids",
-      "status": "uncovered",
-      "topic_tags": [],
-      "cards": 0,
+      "status": "has_cards_unreviewed",
+      "topic_tags": [
+        "topic::amino_acids"
+      ],
+      "cards": 24,
       "reviewed_cards": 0
     },
     {
       "id": "1B",
       "section": "bio_biochem",
       "title": "Transmission of genetic information from the gene to the protein",
-      "status": "uncovered",
-      "topic_tags": [],
-      "cards": 0,
+      "status": "has_cards_unreviewed",
+      "topic_tags": [
+        "topic::central_dogma"
+      ],
+      "cards": 24,
       "reviewed_cards": 0
     },
     {
@@ -75,9 +81,11 @@
       "id": "2C",
       "section": "bio_biochem",
       "title": "Processes of cell division, differentiation, and specialization",
-      "status": "uncovered",
-      "topic_tags": [],
-      "cards": 0,
+      "status": "has_cards_unreviewed",
+      "topic_tags": [
+        "topic::cell_division"
+      ],
+      "cards": 24,
       "reviewed_cards": 0
     },
     {
@@ -152,9 +160,11 @@
       "id": "5A",
       "section": "chem_phys",
       "title": "Unique nature of water and its solutions",
-      "status": "uncovered",
-      "topic_tags": [],
-      "cards": 0,
+      "status": "has_cards_unreviewed",
+      "topic_tags": [
+        "topic::water_solutions"
+      ],
+      "cards": 24,
       "reviewed_cards": 0
     },
     {
@@ -188,9 +198,11 @@
       "id": "5E",
       "section": "chem_phys",
       "title": "Principles of chemical thermodynamics and kinetics",
-      "status": "uncovered",
-      "topic_tags": [],
-      "cards": 0,
+      "status": "has_cards_unreviewed",
+      "topic_tags": [
+        "topic::thermo_kinetics"
+      ],
+      "cards": 24,
       "reviewed_cards": 0
     },
     {
