@@ -239,16 +239,40 @@ no crash.
   `card.answer()`, not raw note fields), so this works across notetypes,
   not just "Basic".
 
-**Not yet done:** Android. AnkiDroid's review flow would need an
-equivalent hook (its own `Reviewer` class, likely a different
-integration point than desktop's `gui_hooks`), a Kotlin port of the
-decision mirror, and a Kotlin dialog for the two-stage reveal. Given
-this session's own documented history with Android (multi-minute Gradle
-rebuild cycles, repeated ANR loops under host memory pressure — see the
-"Gotcha" notes in [rust-change-note.md](rust-change-note.md)), this
-carries real time risk against the deadline and was deliberately not
-attempted without first locking in the desktop win. See brainlift.md's
-open items for the honest status.
+## Phase 1: wired into the real Android app, confirmed live
+
+Also done, after desktop. `apps/android/AnkiDroid/src/main/java/com/ichi2/anki/speedrun/SocraticGate.kt`
+is a Kotlin port of the same decision logic, called from
+`Reviewer.answerCardInner()` right after a card is graded. One real
+platform difference caught and fixed: AnkiDroid's `Rating` proto enum is
+**0-indexed** (`AGAIN=0`), unlike desktop's 1-indexed `ease` convention
+— "correct" is computed as `rating != Rating.AGAIN`, not a numeric
+threshold, to avoid an off-by-one bug. `card.timeTaken(col)` is the
+exact Kotlin equivalent of desktop's `card.time_taken()` — same
+already-captured latency, no new capture engineering. The API key is
+threaded through `local.properties` → `BuildConfig.ANTHROPIC_API_KEY`,
+the same pattern the fork already uses for `ANALYTICS_API_KEY`, since
+this is a public repo and the key can't be hardcoded.
+
+**One real bug caught by live testing, not by the build:** the first
+build compiled and installed cleanly, but the API call failed at
+runtime with `400 messages: Input should be a valid array`. Root cause:
+`JSONObject.put("messages", listOf(...))` stores a raw Kotlin `List`
+object — Android's `org.json` does not auto-convert a `List` into a
+JSON array during serialization, unlike Python's `json` module (which is
+why the identical-looking desktop code never hit this). Fixed by
+building an explicit `org.json.JSONArray` instead. Rebuilt, reinstalled,
+retested — confirmed working.
+
+**Confirmed live** on an emulator (`speedrun_test`, API 33): reviewed a
+"Heart of a cell" card, graded it "Again" after a deliberately slow
+answer (Productive Struggle branch), and got a real Claude-generated
+bridge: *"If a cell needs to produce large amounts of ATP quickly for
+muscle contraction or nerve impulses, which organelle would need to be
+especially abundant or active, and why?"* — Reveal showed the real
+bridge answer and synthesis, correctly tying back to "mitochondria."
+App process stayed alive throughout (same PID before and after), and the
+Reviewer resumed normally afterward.
 
 ## Phase 2/3 (designed, not built)
 

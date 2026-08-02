@@ -446,15 +446,16 @@ whoever picks this up next.
   wash on transfer/discrimination (63-70% either way) — real evidence
   for *conditional* application, not a universal win.
 - ~~Wire the gate into the real app, not just a script~~ — **done on
-  desktop**, confirmed live: a real due card, graded wrong, triggered a
-  real Claude-generated bridge question shown in an actual dialog in the
-  running app. See [socratic-gate-mvp.md](socratic-gate-mvp.md)'s
-  "Phase 1" section. **Not done on Android** — deliberately not
-  attempted yet given this session's own documented Android time cost
-  (multi-minute rebuilds, repeated ANR loops); the actual gate decision
-  (not item-type-as-proxy) determining which correction a review
-  receives is now real on desktop, and remains the harder unattempted
-  case for Android.
+  both desktop and Android**, confirmed live on each: a real due card,
+  graded wrong, triggered a real Claude-generated bridge question shown
+  in an actual dialog in the running app, with a working two-stage
+  reveal. See [socratic-gate-mvp.md](socratic-gate-mvp.md)'s "Phase 1"
+  sections for both platforms. Android caught one real bug invisible to
+  desktop testing — Android's `org.json` doesn't auto-serialize a Kotlin
+  `List` into a JSON array the way Python's `json` module does, which
+  broke the live API call until fixed. The actual gate decision (not
+  item-type-as-proxy) now determines which correction a review receives
+  on both platforms, not just in an offline script.
 - **New:** Phase 2 (curriculum RAG grounding for the bridge content) and
   Phase 3 (a leak check verifying the bridge doesn't restate the gold
   answer) are both designed but not built — see the design notes at the
