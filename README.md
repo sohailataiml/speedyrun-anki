@@ -2,8 +2,8 @@
 
 A desktop + mobile study app for the **MCAT**, forked from [Anki](https://apps.ankiweb.net).
 Three separate, honest scores — Memory, Performance, Readiness — instead of
-one blended confidence number. Full reasoning in
-[speedrun/docs/brainlift.md](speedrun/docs/brainlift.md).
+one blended confidence number. Short summary of brinlift is at below link:
+https://github.com/sohailataiml/speedyrun-anki/blob/4a0b0aefab173d0712f76fccfe506a32f4860a0b/Brainlift_summary.md.
 
 <img width="2848" height="1600" alt="image" src="https://github.com/user-attachments/assets/9b1d8352-469b-4cc8-b161-429c8401d39f" />
 
