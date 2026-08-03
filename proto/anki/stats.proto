@@ -95,6 +95,26 @@ message TopicMastery {
   float average_recall = 3;
   uint32 cards_with_reviews = 4;
   uint32 cards_total = 5;
+
+  // Speedrun addition (Brainlift v3): latency statistics. See
+  // rslib/src/stats/latency_monitor.rs and
+  // speedrun/docs/latency-volatility.md.
+  //
+  // Coefficient of variation (SD / mean) of this topic's graded-review
+  // latencies. `optional` is load-bearing, not decoration: fewer than two
+  // reviews means there is no dispersion to measure, and a defaulted 0.0
+  // would sit *below* the rote-pattern threshold — every barely-studied
+  // topic would be flagged as spacebar-reflex. Absent means "not enough
+  // data", which is a different claim from "measured as zero".
+  optional float latency_volatility = 6;
+  // Reviews faster than the fast/slow threshold (recognition) vs slower
+  // (analytical) — Kahneman's System 1 / System 2.
+  uint32 system1_review_count = 7;
+  uint32 system2_review_count = 8;
+  // Reviews answered faster than this topic's cards could physically be
+  // read. Distinct from merely being fast.
+  uint32 below_min_reading_time_count = 9;
+  uint32 graded_review_count = 10;
 }
 
 // Speedrun addition: the give-up rule (PRD §5) — refuses to return score
@@ -126,6 +146,33 @@ message InsufficientData {
   float topic_coverage = 2;
   uint32 reviews_required = 3;
   float coverage_required = 4;
+
+  // Speedrun addition (Brainlift v3 POV 2): *why* the app is refusing.
+  //
+  // Repeated, not a single enum, because more than one rule can fail at
+  // once and collapsing them would let the UI report a fixable problem
+  // while hiding a second one. A client that shows only the first reason
+  // would have the student chase review count while the real blocker is
+  // that they are pattern-matching.
+  enum Reason {
+    REASON_UNSPECIFIED = 0;
+    NOT_ENOUGH_REVIEWS = 1;
+    NOT_ENOUGH_COVERAGE = 2;
+    // Brainlift v3 §7's "Insufficient Data: Rote Pattern Detected".
+    ROTE_PATTERN_DETECTED = 3;
+  }
+  repeated Reason reasons = 5;
+
+  // Populated when ROTE_PATTERN_DETECTED is present: the share of topics
+  // whose latency volatility fell below the rote threshold, and the share
+  // at which the rule trips.
+  float rote_pattern_topic_fraction = 6;
+  float rote_pattern_fraction_allowed = 7;
+  // The coefficient-of-variation threshold a topic must clear. Surfaced
+  // so a client never has to hardcode it — see latency-volatility.md on
+  // why this number is an interpretation of an underspecified brainlift
+  // threshold rather than a quoted constant.
+  float rote_pattern_cv_threshold = 8;
 }
 
 // Speedrun addition: predicts accuracy on held-back exam-style questions
@@ -151,6 +198,18 @@ message PerformanceData {
   // correctly.
   float predicted_accuracy = 1;
   GiveUpGateData inputs = 2;
+
+  // Speedrun addition (Brainlift v3 POV 3): accuracy on AI-generated
+  // "jitter" cards — context-shifted variants that test far transfer
+  // rather than recall of the original card. Reserved here so Phase 5 of
+  // the pivot plan needs no second Android AAR cross-compile.
+  //
+  // Optional for the same reason as latency_volatility: jitter cards only
+  // appear every Nth review of reasoning-heavy cards, so on a young
+  // collection there are legitimately none, and a defaulted 0.0 accuracy
+  // would read as "the student gets every transfer question wrong".
+  optional float jitter_accuracy = 3;
+  uint32 jitter_attempts = 4;
 }
 
 // Speedrun addition: maps the Performance prediction onto the exam's real
@@ -183,6 +242,18 @@ message ReadinessData {
   }
   Confidence confidence = 4;
   PerformanceData inputs = 5;
+
+  // Speedrun addition (Brainlift v3 §8): Readiness is a composite of
+  // Memory and Performance "weighted by Latency Volatility". Reserved
+  // here so Phase 6 needs no second AAR cross-compile.
+  //
+  // The multiplier actually applied, surfaced rather than folded silently
+  // into projected_score: a score that has been penalised should be able
+  // to say so on screen. 1.0 means no penalty was applied.
+  float latency_volatility_weight = 6;
+  // Reviews across the scored topics answered faster than the card could
+  // be read — what the penalty is charged for.
+  uint32 spacebar_reflex_reviews = 7;
 }
 
 message GraphsRequest {

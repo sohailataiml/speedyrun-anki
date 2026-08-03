@@ -88,6 +88,10 @@ impl Collection {
                     data.topic_coverage,
                 );
                 PerformanceResult::Data(PerformanceData {
+                    // Phase 5 (AI Jitter Engine) populates these; the
+                    // fields exist now so Android is cross-compiled once.
+                    jitter_accuracy: None,
+                    jitter_attempts: 0,
                     predicted_accuracy,
                     inputs: Some(data),
                 })

@@ -61,7 +61,6 @@ from aqt.profiles import ProfileManager as ProfileManagerType
 from aqt.qt import *
 from aqt.qt import sip
 from aqt.speedrun_dashboard import show_speedrun_dashboard
-from aqt.speedrun_socratic_gate import maybe_show_socratic_bridge
 from aqt.sync import sync_collection, sync_login
 from aqt.taskman import TaskManager
 from aqt.theme import Theme, theme_manager
@@ -1653,7 +1652,6 @@ title="{}" {}>{}</button>""".format(
         gui_hooks.operation_did_execute.append(self.on_operation_did_execute)
         gui_hooks.focus_did_change.append(self.on_focus_did_change)
         # Speedrun addition: the Socratic Gatekeeper (Brainlift v2).
-        gui_hooks.reviewer_did_answer_card.append(maybe_show_socratic_bridge)
 
         self._activeWindowOnPlay: QWidget | None = None
 

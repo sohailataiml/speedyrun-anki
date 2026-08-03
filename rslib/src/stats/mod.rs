@@ -4,12 +4,12 @@
 mod card;
 mod give_up_gate;
 mod graphs;
+mod latency_monitor;
 mod mastery;
 mod memory_calibration;
 mod performance_model;
 mod readiness_mapper;
 mod service;
-mod socratic_gate;
 mod today;
 
 pub use today::studied_today;

@@ -153,6 +153,7 @@ class SpeedrunDashboard(QDialog):
             return
 
         self._layout.addWidget(self._memory_group(data.mastery))
+        self._layout.addWidget(self._latency_group(data.mastery))
         self._layout.addWidget(self._performance_group(data.readiness))
         self._layout.addWidget(
             self._readiness_group(data.readiness, data.outline_coverage)
@@ -308,17 +309,10 @@ class SpeedrunDashboard(QDialog):
         elif which == "insufficient":
             insufficient = readiness.insufficient
             layout.addWidget(
-                _headline_label("Performance: refusing to score — not enough data")
+                _headline_label(self._refusal_headline("Performance", insufficient))
             )
-            layout.addWidget(
-                self._give_up_status_label(
-                    insufficient.total_graded_reviews,
-                    insufficient.topic_coverage,
-                    passed=False,
-                    reviews_required=insufficient.reviews_required,
-                    coverage_required=insufficient.coverage_required,
-                )
-            )
+            for widget in self._refusal_reason_widgets(insufficient):
+                layout.addWidget(widget)
         else:
             layout.addWidget(QLabel("Performance: unavailable"))
 
@@ -393,9 +387,12 @@ class SpeedrunDashboard(QDialog):
             if caveat is not None:
                 layout.addWidget(caveat)
         elif which == "insufficient":
+            insufficient = readiness.insufficient
             layout.addWidget(
-                _headline_label("Readiness: refusing to score — not enough data")
+                _headline_label(self._refusal_headline("Readiness", insufficient))
             )
+            for widget in self._refusal_reason_widgets(insufficient):
+                layout.addWidget(widget)
         else:
             layout.addWidget(QLabel("Readiness: unavailable"))
 
@@ -426,6 +423,155 @@ class SpeedrunDashboard(QDialog):
         label = QLabel(text)
         label.setStyleSheet("color: green;" if passed else "color: darkorange;")
         return label
+
+    def _refusal_headline(
+        self, score_name: str, insufficient: stats_pb2.InsufficientData
+    ) -> str:
+        """"Not enough data" is the wrong headline for a rote-pattern
+        refusal, and saying it anyway would understate the app's own
+        argument. There is plenty of data in that case - the problem is
+        that the data shows pattern-matching. The brainlift's own wording
+        is "Insufficient Data: Rote Pattern Detected", so the rote case
+        gets its own headline rather than being folded into the volume
+        rules."""
+        if stats_pb2.InsufficientData.Reason.ROTE_PATTERN_DETECTED in insufficient.reasons:
+            return f"{score_name}: refusing to score — rote pattern detected"
+        return f"{score_name}: refusing to score — not enough data"
+
+    def _refusal_reason_widgets(
+        self, insufficient: stats_pb2.InsufficientData
+    ) -> list[QLabel]:
+        """One line per rule that actually failed.
+
+        The backend returns *every* failing reason, and this renders every
+        one rather than the first. A single-reason display would send the
+        student off to grind review count while a second blocker still
+        stands - and in the rote-pattern case it would hide the only
+        reason that says something about *how* they are studying rather
+        than how much.
+        """
+        Reason = stats_pb2.InsufficientData.Reason
+        out: list[QLabel] = []
+
+        for reason in insufficient.reasons:
+            if reason == Reason.NOT_ENOUGH_REVIEWS:
+                text = (
+                    f"✗ Not enough graded reviews: "
+                    f"{insufficient.total_graded_reviews} of "
+                    f"{insufficient.reviews_required} needed."
+                )
+                colour = "darkorange"
+            elif reason == Reason.NOT_ENOUGH_COVERAGE:
+                text = (
+                    f"✗ Not enough topic coverage: "
+                    f"{insufficient.topic_coverage:.0%} of "
+                    f"{insufficient.coverage_required:.0%} needed."
+                )
+                colour = "darkorange"
+            elif reason == Reason.ROTE_PATTERN_DETECTED:
+                text = (
+                    "✗ Rote pattern detected — "
+                    f"{insufficient.rote_pattern_topic_fraction:.0%} of "
+                    "measurable topics show near-identical response times "
+                    f"(volatility below {insufficient.rote_pattern_cv_threshold:.2f}); "
+                    f"at most {insufficient.rote_pattern_fraction_allowed:.0%} is "
+                    "allowed.\n"
+                    "This is not a data-volume problem. Reviews that all take "
+                    "the same time look like recognising the card rather than "
+                    "retrieving the fact, so a score computed from them would "
+                    "not mean what it appears to mean."
+                )
+                # Deliberately the strongest colour on the panel: this is
+                # the refusal the whole thesis exists to make, and styling
+                # it like the two volume rules would bury it.
+                colour = "crimson"
+            else:
+                continue
+            label = _wrapped_label(text)
+            label.setStyleSheet(f"color: {colour};")
+            out.append(label)
+
+        if not out:
+            fallback = _wrapped_label(
+                "✗ Refusing to score — the backend did not say which rule "
+                "failed. That is a bug worth reporting, not a judgement "
+                "about your studying."
+            )
+            fallback.setStyleSheet("color: darkorange;")
+            out.append(fallback)
+        return out
+
+    def _latency_group(self, topics: list[stats_pb2.TopicMastery]) -> QGroupBox:
+        """Brainlift v3 POV 1: how the recall happened, not just whether.
+
+        FSRS treats a 1.0s "Good" and a 6.0s "Good" as the same event. On
+        reasoning-heavy material they are not, and this panel is the only
+        place that difference is visible.
+        """
+        box = QGroupBox("Latency volatility (how you recall, not just whether)")
+        layout = QVBoxLayout()
+
+        measurable = [t for t in topics if t.HasField("latency_volatility")]
+        if not measurable:
+            layout.addWidget(
+                _wrapped_label(
+                    "No topic has two or more graded reviews yet, so there is "
+                    "no spread in response time to measure. Deliberately blank "
+                    "rather than showing 0.00 — a volatility of zero would read "
+                    "as a perfect rote pattern, which is the opposite of "
+                    "'not measured yet'."
+                )
+            )
+            box.setLayout(layout)
+            return box
+
+        threshold = 0.2
+        rote = [t for t in measurable if t.latency_volatility < threshold]
+        layout.addWidget(
+            _wrapped_label(
+                f"{len(rote)} of {len(measurable)} measurable topics look like "
+                "pattern-matching. Higher is better: it means your response "
+                "times vary, which is what thinking looks like."
+            )
+        )
+
+        for topic in sorted(measurable, key=lambda t: t.latency_volatility):
+            flag = "  ⚠ rote pattern" if topic.latency_volatility < threshold else ""
+            reflex = (
+                f" · {topic.below_min_reading_time_count} answered faster than "
+                "the card can be read"
+                if topic.below_min_reading_time_count
+                else ""
+            )
+            row = _wrapped_label(
+                f"{topic.topic}: volatility {topic.latency_volatility:.2f}"
+                f" · {topic.system1_review_count} fast / "
+                f"{topic.system2_review_count} considered{reflex}{flag}"
+            )
+            if topic.latency_volatility < threshold:
+                row.setStyleSheet("color: crimson;")
+            layout.addWidget(row)
+
+        unmeasured = len(topics) - len(measurable)
+        if unmeasured:
+            note = _wrapped_label(
+                f"{unmeasured} topic(s) not shown: fewer than two graded "
+                "reviews, so volatility is undefined rather than zero."
+            )
+            note.setStyleSheet("color: gray;")
+            layout.addWidget(note)
+
+        method = _wrapped_label(
+            "Volatility is the coefficient of variation (SD ÷ mean) of your "
+            "response times per topic. The 0.20 line is an interpretation of "
+            "an unitless threshold in the brainlift, not a fitted constant — "
+            "see speedrun/docs/latency-volatility.md."
+        )
+        method.setStyleSheet("color: gray;")
+        layout.addWidget(method)
+
+        box.setLayout(layout)
+        return box
 
     def _add_close_row(self) -> None:
         row = QHBoxLayout()

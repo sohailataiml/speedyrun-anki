@@ -72,6 +72,12 @@ impl Collection {
                 let projected_score = map_accuracy_to_mcat_score(data.predicted_accuracy);
                 let half_width = range_half_width(confidence);
                 ReadinessResult::Data(ReadinessData {
+                    // Phase 6 weights Readiness by latency volatility.
+                    // 1.0 = no penalty applied, which is the honest value
+                    // today: the penalty is not implemented yet, so the
+                    // score must not imply it has been adjusted.
+                    latency_volatility_weight: 1.0,
+                    spacebar_reflex_reviews: 0,
                     projected_score,
                     range_low: projected_score.saturating_sub(half_width).max(MCAT_MIN),
                     range_high: (projected_score + half_width).min(MCAT_MAX),
