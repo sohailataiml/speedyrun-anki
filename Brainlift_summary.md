@@ -1,7 +1,7 @@
 # Speedrun Brainlift v1: The Latency-Volatility Pivot (MCAT)
 
 Note: the full brainlink doc is at this location:
-https://github.com/sohailataiml/speedyrun-anki/blob/a25b8ca593c20cd15bed51ebe8386d69735f73b2/brainlift.docx
+https://github.com/sohailataiml/speedyrun-anki/blob/63b0ab5893636f0d6f4957ced45ba022334f2880/brainlift.md
 
 ## 1. The Problem: The Readiness Illusion
 Current MCAT tools (AnKing, UWorld) measure **Retention** or **Accuracy**, but fail to detect "Anki-Brain." Students often achieve 95% retention through rote recognition (System 1) but plateau on the actual exam because they haven't mastered the underlying science (System 2).
