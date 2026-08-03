@@ -2,7 +2,7 @@
 
 **Exam:** MCAT (Medical College Admission Test)  
 **Target Scale:** 472–528  
-**Spiky POV:** Retention is a vanity metric; **Latency Volatility** is the only true measure of DOK-3 mastery.
+**Spiky POV:** Retention is a vanity metric. **Latency Volatility** does not measure mastery — it measures whether a retention number can be trusted at all, and the app refuses to score when it can't.
 
 ---
 

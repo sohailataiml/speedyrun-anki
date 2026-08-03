@@ -7,7 +7,7 @@ https://github.com/sohailataiml/speedyrun-anki/blob/63b0ab5893636f0d6f4957ced45b
 Current MCAT tools (AnKing, UWorld) measure **Retention** or **Accuracy**, but fail to detect "Anki-Brain." Students often achieve 95% retention through rote recognition (System 1) but plateau on the actual exam because they haven't mastered the underlying science (System 2).
 
 ## 2. The Spiky POV: Latency > Retention
-**Retention is a vanity metric; Latency Volatility is the only true measure of DOK-3 mastery.**
+**Retention is a vanity metric. Latency Volatility does not measure mastery — it measures whether a retention number can be trusted at all, and the app refuses to score when it can't.**
 *   **The Argument:** Fast recall on complex concepts is a signal of pattern recognition, not mastery.
 *   **The Spacebar Reflex:** Answering DOK-3 cards (e.g., Enzyme Kinetics) in <2 seconds indicates a "Fluency Illusion" where ease of processing masks weak mental models.
 

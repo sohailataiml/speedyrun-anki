@@ -1,7 +1,7 @@
 # Speedrun Brainlift v1: The Latency-Volatility Pivot
 
 **Exam:** MCAT (Medical College Admission Test)  
-**Spiky POV:** Retention is a vanity metric; **Latency Volatility** is the only true measure of DOK-3 mastery.
+**Spiky POV:** Retention is a vanity metric. **Latency Volatility** does not measure mastery — it measures whether a retention number can be trusted at all, and the app refuses to score when it can't.
 
 ---
 
