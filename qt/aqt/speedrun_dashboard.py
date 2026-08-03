@@ -104,6 +104,33 @@ def _wrapped_label(text: str) -> QLabel:
     return label
 
 
+def _clear_layout_recursively(layout: QLayout) -> None:
+    while (item := layout.takeAt(0)) is not None:
+        if widget := item.widget():
+            widget.setParent(None)
+            widget.deleteLater()
+        elif child := item.layout():
+            _clear_layout_recursively(child)
+            child.deleteLater()
+
+
+def _cap_table_height(table: QTableWidget, min_rows: int, max_rows: int) -> None:
+    """Give a table a scrollable window instead of letting it size to its
+    content.
+
+    Without this a table either collapses to a two-row sliver or grows
+    tall enough to push the panels below it off the dialog, and the
+    dashboard has no outer scroll area to rescue either case. A floor
+    keeps a few rows readable at a glance; a ceiling stops one topic-heavy
+    panel from hiding Performance and Readiness.
+    """
+    header_h = table.horizontalHeader().height()
+    row_h = table.verticalHeader().defaultSectionSize()
+    frame = 2 * table.frameWidth()
+    table.setMinimumHeight(header_h + row_h * min_rows + frame)
+    table.setMaximumHeight(header_h + row_h * max_rows + frame)
+
+
 def show_speedrun_dashboard(mw: aqt.main.AnkiQt) -> None:
     diag = SpeedrunDashboard(mw)
     diag.show()
@@ -121,10 +148,39 @@ class SpeedrunDashboard(QDialog):
         disable_help_button(self)
         restoreGeom(self, TITLE)
 
-        self._layout = QVBoxLayout()
-        self._layout.addWidget(QLabel("Loading…"))
-        self.setLayout(self._layout)
+        # The panels live inside a scroll area, not directly on the
+        # dialog. Five panels plus two tables can easily exceed the
+        # window height, and a QVBoxLayout that cannot honour its
+        # children's minimum sizes compresses them until they overlap -
+        # which is what put the volatility footnote on top of the table
+        # it belongs under. With a scroll area the content keeps its
+        # natural height and the viewport scrolls instead.
+        outer = QVBoxLayout()
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        content = QWidget()
+        self._layout = QVBoxLayout(content)
+        scroll.setWidget(content)
+        outer.addWidget(scroll, 1)
 
+        # Refresh/Close stay pinned outside the scroll area so they are
+        # reachable without scrolling to the bottom of a long dashboard.
+        self._footer = QLabel()
+        self._footer.setStyleSheet("color: gray;")
+        outer.addWidget(self._footer)
+        row = QHBoxLayout()
+        refresh = QPushButton("Refresh")
+        qconnect(refresh.clicked, self._refresh)
+        row.addWidget(refresh)
+        row.addStretch()
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+        qconnect(buttons.rejected, self.close)
+        row.addWidget(buttons)
+        outer.addLayout(row)
+        self.setLayout(outer)
+
+        self._layout.addWidget(QLabel("Loading…"))
         self._refresh()
 
     def _refresh(self) -> None:
@@ -135,9 +191,17 @@ class SpeedrunDashboard(QDialog):
         ).run_in_background()
 
     def _clear_layout(self) -> None:
-        while (item := self._layout.takeAt(0)) is not None:
-            if widget := item.widget():
-                widget.deleteLater()
+        """Empty the panel area, including widgets nested inside child
+        layouts.
+
+        The obvious version - take each item and `deleteLater()` its
+        widget - silently leaks anything added with `addLayout()`, because
+        a layout item's `.widget()` is None. Those widgets stay parented
+        to the dialog at their old geometry and reappear painted on top of
+        the newly rendered panels, which looks exactly like text floating
+        over other text. Refresh made it worse each time.
+        """
+        _clear_layout_recursively(self._layout)
 
     def _render(self, data: DashboardData) -> None:
         self._clear_layout()
@@ -270,8 +334,11 @@ class SpeedrunDashboard(QDialog):
                 3,
                 QTableWidgetItem(f"{topic.cards_with_reviews} / {topic.cards_total}"),
             )
-        table.horizontalHeader().setStretchLastSection(True)
         table.resizeColumnsToContents()
+        header = table.horizontalHeader()
+        header.setStretchLastSection(False)
+        header.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        _cap_table_height(table, min_rows=4, max_rows=8)
         layout.addWidget(table)
         box.setLayout(layout)
         return box
@@ -590,22 +657,44 @@ class SpeedrunDashboard(QDialog):
             )
         )
 
-        for topic in sorted(measurable, key=lambda t: t.latency_volatility):
-            flag = "  ⚠ rote pattern" if topic.latency_volatility < threshold else ""
-            reflex = (
-                f" · {topic.below_min_reading_time_count} answered faster than "
-                "the card can be read"
-                if topic.below_min_reading_time_count
-                else ""
-            )
-            row = _wrapped_label(
-                f"{topic.topic}: volatility {topic.latency_volatility:.2f}"
-                f" · {topic.system1_review_count} fast / "
-                f"{topic.system2_review_count} considered{reflex}{flag}"
-            )
-            if topic.latency_volatility < threshold:
-                row.setStyleSheet("color: crimson;")
-            layout.addWidget(row)
+        # A table rather than stacked labels, matching the Memory panel:
+        # labels grow the dialog without bound, so on a deck with more
+        # than a handful of topics the rows ran off the bottom with no way
+        # to reach them. A QTableWidget scrolls natively and keeps the
+        # columns aligned, which matters here because the whole point is
+        # comparing volatility *across* topics.
+        ordered = sorted(measurable, key=lambda t: t.latency_volatility)
+        table = QTableWidget(len(ordered), 5)
+        table.setHorizontalHeaderLabels(
+            ["Topic", "Volatility", "Fast", "Considered", "Too fast to read"]
+        )
+        table.verticalHeader().setVisible(False)
+        table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        for row, topic in enumerate(ordered):
+            is_rote = topic.latency_volatility < threshold
+            cells = [
+                topic.topic + ("  ⚠ rote pattern" if is_rote else ""),
+                f"{topic.latency_volatility:.2f}",
+                str(topic.system1_review_count),
+                str(topic.system2_review_count),
+                str(topic.below_min_reading_time_count) or "0",
+            ]
+            for col, text in enumerate(cells):
+                item = QTableWidgetItem(text)
+                if is_rote:
+                    item.setForeground(QBrush(QColor("crimson")))
+                table.setItem(row, col, item)
+        table.resizeColumnsToContents()
+        # Stretch the *topic* column, not the last one. The four numeric
+        # columns are two or three characters wide; letting the last of
+        # them absorb the slack leaves a nearly empty "Too fast to read"
+        # column stretched across half the panel while topic names clip.
+        header = table.horizontalHeader()
+        header.setStretchLastSection(False)
+        header.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        _cap_table_height(table, min_rows=3, max_rows=8)
+        layout.addWidget(table)
 
         unmeasured = len(topics) - len(measurable)
         if unmeasured:
@@ -629,20 +718,15 @@ class SpeedrunDashboard(QDialog):
         return box
 
     def _add_close_row(self) -> None:
-        row = QHBoxLayout()
-        refresh = QPushButton("Refresh")
-        qconnect(refresh.clicked, self._refresh)
-        row.addWidget(refresh)
-        row.addStretch()
-
-        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
-        qconnect(buttons.rejected, self.close)
-        row.addWidget(buttons)
-
-        footer = QLabel(f"Last updated {datetime.now().strftime('%H:%M:%S')}")
-        footer.setStyleSheet("color: gray;")
-        self._layout.addWidget(footer)
-        self._layout.addLayout(row)
+        """Refresh/Close are built once in __init__ and live outside the
+        scroll area, so a re-render only has to update the timestamp.
+        Rebuilding them here is what leaked a fresh pair of buttons onto
+        the dialog on every refresh."""
+        self._footer.setText(
+            f"Last updated {datetime.now().strftime('%H:%M:%S')}"
+        )
+        # Keeps the last panel clear of the pinned footer.
+        self._layout.addStretch(1)
 
     def closeEvent(self, event: QCloseEvent | None) -> None:  # noqa: N802
         saveGeom(self, TITLE)
