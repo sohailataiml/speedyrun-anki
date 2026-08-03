@@ -28,6 +28,7 @@ use anki_proto::stats::readiness_query_response::Result as ReadinessResult;
 use anki_proto::stats::ReadinessData;
 use anki_proto::stats::ReadinessQueryResponse;
 
+use anki_proto::stats::TopicMastery;
 use crate::prelude::*;
 
 // AAMC's published MCAT score distribution. See module doc for the
@@ -69,15 +70,13 @@ impl Collection {
                     .expect("performance_query always sets inputs on its data branch");
                 let confidence =
                     confidence_tier(gate_data.total_graded_reviews, gate_data.topic_coverage);
-                let projected_score = map_accuracy_to_mcat_score(data.predicted_accuracy);
+                let reflex = spacebar_reflex_penalty(&gate_data.topics);
+                let projected_score =
+                    map_accuracy_to_mcat_score(data.predicted_accuracy * reflex.weight);
                 let half_width = range_half_width(confidence);
                 ReadinessResult::Data(ReadinessData {
-                    // Phase 6 weights Readiness by latency volatility.
-                    // 1.0 = no penalty applied, which is the honest value
-                    // today: the penalty is not implemented yet, so the
-                    // score must not imply it has been adjusted.
-                    latency_volatility_weight: 1.0,
-                    spacebar_reflex_reviews: 0,
+                    latency_volatility_weight: reflex.weight,
+                    spacebar_reflex_reviews: reflex.reflex_reviews,
                     projected_score,
                     range_low: projected_score.saturating_sub(half_width).max(MCAT_MIN),
                     range_high: (projected_score + half_width).min(MCAT_MAX),
@@ -89,6 +88,50 @@ impl Collection {
         Ok(ReadinessQueryResponse {
             result: Some(result),
         })
+    }
+}
+
+/// Brainlift v3 §8: Readiness is "a composite of Memory and Performance,
+/// weighted by Latency Volatility".
+///
+/// **Memory is not added as a separate term, on purpose.** The Performance
+/// model already takes mean topic mastery - which *is* the Memory score -
+/// as one of its inputs (`performance_model.rs`). Adding it again here
+/// would double-count the same quantity and make Readiness move twice for
+/// one change in recall. So Readiness is a composite of Memory and
+/// Performance in the sense that matters: Performance carries Memory,
+/// and this function supplies the volatility weighting on top.
+///
+/// The weighting implements the v1 docx's rule literally: *"a 0.5x
+/// multiplier to the score of any card answered faster than the calculated
+/// Minimum Reading Time"*. Aggregated over the scored topics, reviews that
+/// were too fast to be real count half, so the weight is
+/// `1 - 0.5 * (reflex reviews / graded reviews)`. No reflexes leaves the
+/// score untouched at 1.0; every review a reflex halves it.
+///
+/// Note this penalises the *spacebar reflex* (answering faster than the
+/// card can be read) rather than low volatility. The two are different
+/// signals and are used differently on purpose: low volatility makes the
+/// app **refuse to score at all** (`give_up_gate.rs`), which is a
+/// stronger response than a discount. Applying both to the same evidence
+/// would punish it twice.
+struct ReflexPenalty {
+    weight: f32,
+    reflex_reviews: u32,
+}
+
+fn spacebar_reflex_penalty(topics: &[TopicMastery]) -> ReflexPenalty {
+    let graded: u32 = topics.iter().map(|t| t.graded_review_count).sum();
+    let reflex: u32 = topics.iter().map(|t| t.below_min_reading_time_count).sum();
+    if graded == 0 {
+        return ReflexPenalty {
+            weight: 1.0,
+            reflex_reviews: 0,
+        };
+    }
+    ReflexPenalty {
+        weight: 1.0 - 0.5 * (reflex as f32 / graded as f32),
+        reflex_reviews: reflex,
     }
 }
 
@@ -179,6 +222,66 @@ fn inverse_normal_cdf(p: f64) -> f64 {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    fn topic_with(graded: u32, reflex: u32) -> TopicMastery {
+        TopicMastery {
+            graded_review_count: graded,
+            below_min_reading_time_count: reflex,
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn no_spacebar_reflex_leaves_the_score_untouched() {
+        // 1.0, not 0.0: a score that has not been penalised must not
+        // imply that it has.
+        let p = spacebar_reflex_penalty(&[topic_with(100, 0)]);
+        assert_eq!(p.weight, 1.0);
+        assert_eq!(p.reflex_reviews, 0);
+    }
+
+    #[test]
+    fn every_review_a_reflex_halves_the_weight() {
+        // The v1 docx's "0.5x multiplier" is the floor, not a slope that
+        // can run past it into a negative score.
+        let p = spacebar_reflex_penalty(&[topic_with(100, 100)]);
+        assert_eq!(p.weight, 0.5);
+        assert_eq!(p.reflex_reviews, 100);
+    }
+
+    #[test]
+    fn penalty_scales_with_the_share_of_reflex_reviews() {
+        let p = spacebar_reflex_penalty(&[topic_with(100, 40)]);
+        assert!((p.weight - 0.8).abs() < 1e-6, "weight {}", p.weight);
+    }
+
+    #[test]
+    fn penalty_aggregates_across_topics() {
+        let p = spacebar_reflex_penalty(&[topic_with(50, 10), topic_with(50, 30)]);
+        // 40 reflexes of 100 graded -> 1 - 0.5*0.4 = 0.8
+        assert!((p.weight - 0.8).abs() < 1e-6, "weight {}", p.weight);
+        assert_eq!(p.reflex_reviews, 40);
+    }
+
+    #[test]
+    fn no_reviews_at_all_is_not_a_penalty() {
+        // Absence of evidence is not evidence of the reflex - the same
+        // rule the latency monitor applies to volatility.
+        let p = spacebar_reflex_penalty(&[topic_with(0, 0)]);
+        assert_eq!(p.weight, 1.0);
+    }
+
+    #[test]
+    fn the_penalty_actually_lowers_the_projected_score() {
+        // The point of the whole phase: a deck answered too fast to be
+        // read must not project the same score as one that was read.
+        let honest = map_accuracy_to_mcat_score(0.7 * 1.0);
+        let reflexive = map_accuracy_to_mcat_score(0.7 * 0.5);
+        assert!(
+            reflexive < honest,
+            "reflex-penalised {reflexive} should be below honest {honest}"
+        );
+    }
 
     #[test]
     fn inverse_normal_cdf_matches_known_values() {

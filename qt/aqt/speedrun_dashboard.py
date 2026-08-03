@@ -296,6 +296,7 @@ class SpeedrunDashboard(QDialog):
                     "from a real exam-style question attempt."
                 )
             )
+            layout.addWidget(self._jitter_label(performance))
             reasons = self._top_weak_topics(performance.inputs.topics)
             if reasons:
                 layout.addWidget(QLabel(f"Weakest topics: {reasons}"))
@@ -374,6 +375,9 @@ class SpeedrunDashboard(QDialog):
                     "count and topic coverage."
                 )
             )
+            penalty = self._reflex_penalty_label(data)
+            if penalty is not None:
+                layout.addWidget(penalty)
             layout.addWidget(
                 _wrapped_label(
                     "Method: treats predicted accuracy as an approximate "
@@ -423,6 +427,57 @@ class SpeedrunDashboard(QDialog):
         label = QLabel(text)
         label.setStyleSheet("color: green;" if passed else "color: darkorange;")
         return label
+
+    def _reflex_penalty_label(
+        self, data: stats_pb2.ReadinessData
+    ) -> QLabel | None:
+        """Brainlift v3 §8's spacebar-reflex discount, shown rather than
+        folded silently into the number.
+
+        A projected score that has been marked down should be able to say
+        so on screen. Hiding the adjustment would leave the student
+        comparing a penalised score against an unpenalised one without
+        knowing the difference - which is the same "dressing a guess as a
+        measurement" failure the PRD calls an automatic fail.
+
+        Returns None when no penalty applied: a line saying "no penalty"
+        on every honest deck is noise.
+        """
+        if data.latency_volatility_weight >= 0.999:
+            return None
+        label = _wrapped_label(
+            f"⚠ Score reduced to {data.latency_volatility_weight:.0%} of the "
+            f"model's estimate: {data.spacebar_reflex_reviews} review(s) were "
+            "answered faster than the card could be read. Those count half, "
+            "because a review that outran the prompt is not evidence of "
+            "recall."
+        )
+        label.setStyleSheet("color: darkorange;")
+        return label
+
+    def _jitter_label(self, performance: stats_pb2.PerformanceData) -> QLabel:
+        """Brainlift v3 POV 3: accuracy on context-shifted variants.
+
+        `HasField` rather than reading the value, for the same reason as
+        latency volatility: proto3 defaults an absent float to 0.0, and
+        "no transfer questions answered yet" would then render as "gets
+        every transfer question wrong" - the opposite claim, and a
+        demoralising one to show a student who simply hasn't been asked.
+        """
+        if not performance.HasField("jitter_accuracy"):
+            label = _wrapped_label(
+                "Transfer (jitter) accuracy: not measured yet — no "
+                "context-shifted variant has been answered. Deliberately "
+                "blank rather than 0%, which would claim you got them all "
+                "wrong."
+            )
+            label.setStyleSheet("color: gray;")
+            return label
+        return _wrapped_label(
+            f"Transfer (jitter) accuracy: {performance.jitter_accuracy:.0%} "
+            f"over {performance.jitter_attempts} context-shifted variant(s) — "
+            "the same principle asked in a situation you haven't seen."
+        )
 
     def _refusal_headline(
         self, score_name: str, insufficient: stats_pb2.InsufficientData

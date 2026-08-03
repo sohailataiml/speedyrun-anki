@@ -20,6 +20,7 @@ use anki_proto::stats::PerformanceQueryResponse;
 use serde::Deserialize;
 
 use crate::prelude::*;
+use crate::search::SortMode;
 
 const WEIGHTS_JSON: &str =
     include_str!("../../../speedrun/tools/scoring-train/weights/performance_model.json");
@@ -69,7 +70,45 @@ fn mean_mastery(topics: &[anki_proto::stats::TopicMastery]) -> f32 {
     topics.iter().map(|t| t.mastery).sum::<f32>() / topics.len() as f32
 }
 
+/// Accuracy on AI-generated "jitter" cards - context-shifted variants
+/// that test whether a fact survives a change of scenario (Brainlift v3
+/// POV 3). `accuracy` is `None` rather than 0.0 when there are no
+/// attempts, because "no transfer questions answered yet" and "gets every
+/// transfer question wrong" are opposite claims and a defaulted zero
+/// would report the second.
+pub(crate) struct JitterAccuracy {
+    pub accuracy: Option<f32>,
+    pub attempts: u32,
+}
+
 impl Collection {
+    /// Jitter variants are ordinary cards carrying a `jitter::` tag, so
+    /// their accuracy is the existing revlog math with a tag filter -
+    /// no new schema, and it syncs like any other card. See
+    /// speedrun/docs/jitter-engine.md for why that shape was chosen.
+    pub(crate) fn jitter_accuracy(&mut self) -> Result<JitterAccuracy> {
+        let guard = self.search_cards_into_table("tag:jitter::*", SortMode::NoOrder)?;
+        let revlog = guard.col.storage.get_revlog_entries_for_searched_cards()?;
+        drop(guard);
+        let graded: Vec<_> = revlog
+            .iter()
+            .filter(|e| e.has_rating_and_affects_scheduling())
+            .collect();
+        if graded.is_empty() {
+            return Ok(JitterAccuracy {
+                accuracy: None,
+                attempts: 0,
+            });
+        }
+        // Same convention as mastery.rs: anything above "Again" counts as
+        // a correct recall.
+        let correct = graded.iter().filter(|e| e.button_chosen > 1).count();
+        Ok(JitterAccuracy {
+            accuracy: Some(correct as f32 / graded.len() as f32),
+            attempts: graded.len() as u32,
+        })
+    }
+
     pub(crate) fn performance_query(
         &mut self,
         topics: &[String],
@@ -77,6 +116,7 @@ impl Collection {
         average_timing_seconds: f32,
     ) -> Result<PerformanceQueryResponse> {
         let gate = self.give_up_gate(topics)?;
+        let jitter = self.jitter_accuracy()?;
         let result = match gate.result.unwrap() {
             GateResult::Insufficient(insufficient) => PerformanceResult::Insufficient(insufficient),
             GateResult::Data(data) => {
@@ -88,10 +128,8 @@ impl Collection {
                     data.topic_coverage,
                 );
                 PerformanceResult::Data(PerformanceData {
-                    // Phase 5 (AI Jitter Engine) populates these; the
-                    // fields exist now so Android is cross-compiled once.
-                    jitter_accuracy: None,
-                    jitter_attempts: 0,
+                    jitter_accuracy: jitter.accuracy,
+                    jitter_attempts: jitter.attempts,
                     predicted_accuracy,
                     inputs: Some(data),
                 })
@@ -106,6 +144,84 @@ impl Collection {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    use crate::revlog::RevlogEntry;
+    use crate::revlog::RevlogReviewKind;
+
+    fn add_jitter_card(col: &mut Collection, src_nid: u64) -> Result<CardId> {
+        let mut note = NoteAdder::basic(&mut *col).fields(&["variant", "answer"]).note();
+        note.tags = vec![format!("jitter::src::{src_nid}"), "topic::krebs".to_string()];
+        col.add_note(&mut note, DeckId(1))?;
+        Ok(col.search_cards(note.id, SortMode::NoOrder)?[0])
+    }
+
+    fn grade(col: &mut Collection, cid: CardId, button_chosen: u8) -> Result<()> {
+        col.storage.add_revlog_entry(
+            &RevlogEntry {
+                id: RevlogId::new(),
+                cid,
+                button_chosen,
+                review_kind: RevlogReviewKind::Review,
+                ..Default::default()
+            },
+            true,
+        )?;
+        Ok(())
+    }
+
+    #[test]
+    fn no_jitter_attempts_reports_none_not_zero_accuracy() -> Result<()> {
+        // "No transfer questions answered yet" and "gets every transfer
+        // question wrong" are opposite claims. A defaulted 0.0 would
+        // report the second and make an untested student look hopeless.
+        let mut col = Collection::new();
+        let jitter = col.jitter_accuracy()?;
+        assert_eq!(jitter.accuracy, None);
+        assert_eq!(jitter.attempts, 0);
+        Ok(())
+    }
+
+    #[test]
+    fn jitter_accuracy_counts_only_jitter_tagged_cards() -> Result<()> {
+        let mut col = Collection::new();
+        // An ordinary card, graded wrong - must not drag jitter accuracy
+        // down, since it is not a transfer question.
+        let mut plain = NoteAdder::basic(&mut col).fields(&["a", "b"]).note();
+        plain.tags = vec!["topic::krebs".to_string()];
+        col.add_note(&mut plain, DeckId(1))?;
+        let plain_cid = col.search_cards(plain.id, SortMode::NoOrder)?[0];
+        grade(&mut col, plain_cid, 1)?;
+
+        let j = add_jitter_card(&mut col, 123)?;
+        grade(&mut col, j, 3)?;
+        grade(&mut col, j, 3)?;
+        grade(&mut col, j, 1)?;
+
+        let jitter = col.jitter_accuracy()?;
+        assert_eq!(jitter.attempts, 3);
+        assert!((jitter.accuracy.unwrap() - 2.0 / 3.0).abs() < 1e-5);
+        Ok(())
+    }
+
+    #[test]
+    fn jitter_accuracy_reaches_the_performance_response() -> Result<()> {
+        let mut col = Collection::new();
+        let j = add_jitter_card(&mut col, 123)?;
+        for _ in 0..250 {
+            grade(&mut col, j, 3)?;
+        }
+        let resp = col.performance_query(&["krebs".to_string()], 0.5, 70.0)?;
+        match resp.result.unwrap() {
+            PerformanceResult::Data(data) => {
+                assert_eq!(data.jitter_attempts, 250);
+                assert_eq!(data.jitter_accuracy, Some(1.0));
+            }
+            PerformanceResult::Insufficient(i) => {
+                panic!("expected data, got insufficient: {:?}", i.reasons)
+            }
+        }
+        Ok(())
+    }
 
     /// A small hand-picked weights fixture, independent of the real trained
     /// file, so this test checks the math rather than the training run.

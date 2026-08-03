@@ -150,7 +150,11 @@ overrides it per card when present.
 
 Both clients render the new reason.
 
-## Phase 5 — AI Jitter Engine (POV 3) — the one genuinely new build
+## Phase 5 — AI Jitter Engine (POV 3) — **DONE**
+
+Results, and the measurement bug it shipped with: [jitter-engine.md](jitter-engine.md).
+
+### Original plan
 
 Design chosen to need **no new schema**:
 
@@ -168,18 +172,26 @@ Design chosen to need **no new schema**:
   existing revlog math filtered to the `jitter::` tag**. Nothing new to
   store, and it syncs for free.
 
-## Phase 6 — Readiness weighted by volatility (§8)
+## Phase 6 — Readiness weighted by volatility (§8) — **DONE**
+
+Results, and why the effect is smaller than "0.5x" sounds: [readiness-volatility-weighting.md](readiness-volatility-weighting.md).
 
 - Composite of Memory and Performance, scaled by a volatility weight.
 - The docx's 0.5× multiplier for any card answered below its minimum
   reading time.
 
-**A number that will stop being true, stated up front:** the held-back
-calibration currently reports **Brier 0.168**. That was fit against the
-*current* Performance definition. Redefining Performance as jitter
-accuracy **invalidates it**. I would either re-run the calibration or mark
-the old figure as superseded — I won't leave it on the dashboard implying
-it still describes the shipped model.
+**Correction — I got this wrong when planning.** This document originally
+warned that redefining Performance would invalidate the held-back
+**Brier 0.168** figure. It does not. That number measures the *FSRS
+memory model's* calibration — `fsrs::current_retrievability` bucketed
+against observed pass/fail on held-back reviews
+([memory-calibration.md](memory-calibration.md)). It is independent of how
+Performance and Readiness are defined, so nothing in Phases 5–6 touches
+it. Checked before acting on it rather than after; recorded here because
+the original claim was stated confidently and was simply incorrect.
+
+What *would* invalidate it is a change to the memory model or to FSRS
+parameters. Neither has happened.
 
 ## Phase 7 — Both clients — **DONE**
 
